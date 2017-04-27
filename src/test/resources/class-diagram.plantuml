@@ -1,0 +1,32 @@
+@startuml
+
+interface Vehicule
+
+class Car {
+  brand : String
+  model : String
+  driver : Driver
+  price : Price
+}
+
+class Driver {
+  name : String
+}
+
+class Price {
+  amount : BigDecimal
+  devise : Devise
+}
+
+enum Devise {
+  CHF
+  EUR
+  USD
+}
+
+Vehicule <|-- Car
+Car --> Driver : driver
+Car --> Price : price
+Price --> Devise : devise
+
+@enduml
