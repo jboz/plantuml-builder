@@ -7,8 +7,16 @@
     <artifactId>plantuml-builder</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <name>Plantuml builder</name>
     <description>Plantuml diagram from java sources</description>
     <url>https://github.com/jboz/plantuml-builder</url>
+    <inceptionYear>2017</inceptionYear>
+
+    <organization>
+        <name>Focus IT</name>
+        <url>http://ifocusit.ch</url>
+    </organization>
 
     <licenses>
         <license>
