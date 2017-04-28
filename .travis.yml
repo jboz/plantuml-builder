@@ -1,1 +1,15 @@
 language: java
+
+sudo: false
+
+jdk:
+  - oraclejdk8
+#  - openjdk7
+
+branches:
+  only:
+  - master
+
+notifications:
+  email:
+  - julienboz@gmail.com
