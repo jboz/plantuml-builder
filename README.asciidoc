@@ -1,4 +1,5 @@
 = Plantuml builder
+image:https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
 
 Tools to generate plantuml diagram from java sources.
 
