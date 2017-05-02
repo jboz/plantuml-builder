@@ -25,20 +25,8 @@ package ch.ifocusit.plantuml;
 /**
  * @author Julien Boz
  */
-public class Attribut {
-    private String type;
-    private String name;
+public interface Attribut {
 
-    public Attribut(String name, String type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
+    public String getTypeString();
+    public String getName();
 }

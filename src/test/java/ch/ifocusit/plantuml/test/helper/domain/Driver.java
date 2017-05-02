@@ -20,26 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml;
+package ch.ifocusit.plantuml.test.helper.domain;
 
-/**
- * @author Julien Boz
- */
-public enum Association {
+import java.util.List;
 
-    LINK("-"),
-    DIRECTION("-->"),
-    BI_DIRECTION("<->"),
-    INHERITANCE("<|--");
-
-    private String symbol;
-
-    Association(String symbol) {
-        this.symbol = symbol;
-    }
-
-    @Override
-    public String toString() {
-        return symbol;
-    }
+public class Driver {
+    private String name;
+    private Long ignored;
+    private List<Car> cars;
 }

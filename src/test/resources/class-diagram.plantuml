@@ -7,16 +7,20 @@ class Car {
   model : String
   driver : Driver
   price : Price
+  wheels : Collection<Wheel>
 }
 
 class Driver {
   name : String
+  cars : List<Car>
 }
 
 class Price {
   amount : BigDecimal
   devise : Devise
 }
+
+class Wheel
 
 enum Devise {
   CHF
@@ -25,8 +29,9 @@ enum Devise {
 }
 
 Vehicule <|-- Car
-Car --> Driver : driver
+Car "*" <-> Driver : driver
 Car --> Price : price
+Car --> "*" Wheel : wheels
 Price --> Devise : devise
 
 @enduml

@@ -20,26 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml;
+package ch.ifocusit.plantuml.test.helper.domain;
 
-/**
- * @author Julien Boz
- */
-public enum Association {
+import java.io.Serializable;
+import java.math.BigDecimal;
 
-    LINK("-"),
-    DIRECTION("-->"),
-    BI_DIRECTION("<->"),
-    INHERITANCE("<|--");
+public class Price implements Serializable {
+    public static final long serialVersionUID = 42L;
+    static final String CONST = "aConstant";
 
-    private String symbol;
-
-    Association(String symbol) {
-        this.symbol = symbol;
-    }
-
-    @Override
-    public String toString() {
-        return symbol;
-    }
+    private BigDecimal amount;
+    private Devise devise;
 }

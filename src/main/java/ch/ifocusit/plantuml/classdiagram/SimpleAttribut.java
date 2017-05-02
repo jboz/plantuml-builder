@@ -20,26 +20,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml;
+package ch.ifocusit.plantuml.classdiagram;
 
-/**
- * @author Julien Boz
- */
-public enum Association {
+import ch.ifocusit.plantuml.Attribut;
 
-    LINK("-"),
-    DIRECTION("-->"),
-    BI_DIRECTION("<->"),
-    INHERITANCE("<|--");
+public class SimpleAttribut implements Attribut {
 
-    private String symbol;
+    private String type;
+    private String name;
 
-    Association(String symbol) {
-        this.symbol = symbol;
+    public SimpleAttribut(String name, String type) {
+        this.type = type;
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override
-    public String toString() {
-        return symbol;
+    public String getTypeString() {
+        return getType();
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

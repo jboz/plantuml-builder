@@ -41,6 +41,7 @@ public class PlantUmlBuilder {
     public static final String BRACE_CLOSE = "}";
     public static final String TAB = SPACE + SPACE;
     public static final String NEWLINE = System.getProperty("line.separator");
+    public static final String QUOTE = "\"";
 
     private final StringBuilder content = new StringBuilder();
 
@@ -62,14 +63,14 @@ public class PlantUmlBuilder {
     // TYPE
     //*********************************************************************************
 
-    public PlantUmlBuilder addClass(String name, Type type, Attribut... attributs) {
+    public PlantUmlBuilder addType(String name, Type type, Attribut... attributs) {
         content.append(type).append(SPACE).append(name);
         if (attributs.length > 0) {
             content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
             for (Attribut attribut : attributs) {
                 content.append(TAB).append(attribut.getName());
-                if (StringUtils.isNotBlank(attribut.getType())) {
-                    content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribut.getType());
+                if (StringUtils.isNotBlank(attribut.getTypeString())) {
+                    content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribut.getTypeString());
                 }
                 content.append(NEWLINE);
             }
@@ -83,26 +84,39 @@ public class PlantUmlBuilder {
     // TYPE ASSOCIATION
     //*********************************************************************************
 
-    public PlantUmlBuilder addAssociation(String a, String b) {
-        return addAssociation(a, b, DIRECTION, null);
+    public PlantUmlBuilder addAssociation(String aName, String bName) {
+        return addAssociation(aName, bName, DIRECTION, null);
     }
 
-    public PlantUmlBuilder addAssociation(String a, String b, Association assoc) {
-        return addAssociation(a, b, assoc, null);
+    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc) {
+        return addAssociation(aName, bName, assoc, null);
     }
 
-    public PlantUmlBuilder addAssociation(String a, String b, String label) {
-        return addAssociation(a, b, DIRECTION, label);
+    public PlantUmlBuilder addAssociation(String aName, String bName, String label) {
+        return addAssociation(aName, bName, DIRECTION, label);
     }
 
-    public PlantUmlBuilder addAssociation(String a, String b, Association assoc, String label) {
-        Validate.notBlank(a, "Class a name is mandatory");
-        Validate.notBlank(b, "Class b name is mandatory");
+    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label) {
+        return addAssociation(aName, bName, assoc, label, null, null);
+    }
+
+    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, String aCardinality, String bCardinality) {
+        Validate.notBlank(aName, "Class a name is mandatory");
+        Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(assoc, "Association type is mandatory");
 
-        content.append(a).append(SPACE).append(assoc).append(SPACE).append(b);
+        content.append(aName);
+        if (StringUtils.isNotBlank(aCardinality)) {
+            content.append(SPACE).append(QUOTE).append(aCardinality).append(QUOTE);
+        }
+        content.append(SPACE).append(assoc).append(SPACE);
+        if (StringUtils.isNotBlank(bCardinality)) {
+            content.append(QUOTE).append(bCardinality).append(QUOTE).append(SPACE);
+        }
+        content.append(bName);
         if (StringUtils.isNotBlank(label)) {
             content.append(SPACE).append(SEMICOLON).append(SPACE).append(label);
+
         }
         content.append(NEWLINE);
         return this;
