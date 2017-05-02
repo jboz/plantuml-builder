@@ -8,11 +8,52 @@ Tools to generate plantuml diagram from java sources.
 This code :
 [source,java]
 ----
-include::./src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest.java[tags=createSimple]
+String diagram = new ClassDiagramBuilder()
+        .excludes(".*\\.ignored")
+        .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
+        .build();
 ----
 
 Will get :
 [plantuml]
-plantuml::./src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram"]
+....
+@startuml
+
+interface Vehicule
+
+class Car {
+  brand : String
+  model : String
+  driver : Driver
+  price : Price
+  wheels : Collection<Wheel>
+}
+
+class Driver {
+  name : String
+  cars : List<Car>
+}
+
+class Price {
+  amount : BigDecimal
+  devise : Devise
+}
+
+class Wheel
+
+enum Devise {
+  CHF
+  EUR
+  USD
+}
+
+Vehicule <|-- Car
+Car "*" <-> Driver : driver
+Car --> Price : price
+Car --> "*" Wheel : wheels
+Price --> Devise : devise
+
+@enduml
+....
 
 For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
