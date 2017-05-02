@@ -64,6 +64,6 @@ Price --> Devise : devise
 @enduml
 ....
 
-image::src/main/doc/class-diagram.png[Asciidoctor Diagram classes diagram]
+image::images/class-diagram.png[Asciidoctor Diagram classes diagram]
 
 === For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
