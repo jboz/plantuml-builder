@@ -1,3 +1,10 @@
+ifdef::env-github[:toc: macro]
+ifndef::env-site[:toc: preamble]
+ifndef::imagesdir[:imagesdir: images]
+:icons: font
+:source-highlighter: coderay
+:source-language: asciidoc
+
 image::https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
 = Plantuml builder
 
@@ -15,7 +22,8 @@ String diagram = new ClassDiagramBuilder()
 ----
 
 Will get :
-[plantuml]
+
+[plantuml, diagram-classes, png]
 ....
 @startuml
 
@@ -56,4 +64,6 @@ Price --> Devise : devise
 @enduml
 ....
 
-For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
+image::src/main/doc/class-diagram.png[Asciidoctor Diagram classes diagram]
+
+=== For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
