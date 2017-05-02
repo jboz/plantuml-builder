@@ -25,61 +25,66 @@ package ch.ifocusit.plantuml;
 import ch.ifocusit.plantuml.classdiagram.SimpleAttribut;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.*;
 
 public class PlantUmlBuilderTest {
+
+    private static final String CR = PlantUmlBuilder.NEWLINE;
+
     @Test
-    public void build() throws Exception {
+    public void buildInterface() {
+        final String diagram = new PlantUmlBuilder().addType("Vehicule", Type.INTERFACE).build();
+        assertThat(diagram).isEqualTo("interface Vehicule" + CR + CR);
+    }
 
-        String expected = "interface Vehicule\r\n" +
-                "\r\n" +
-                "class Car {\r\n" +
-                "  brand : String\r\n" +
-                "  wheels : Collection<Wheel>\r\n" +
-                "}\r\n" +
-                "\r\n" +
-                "class Price {\r\n" +
-                "  amount : BigDecimal\r\n" +
-                "  devise : Devise\r\n" +
-                "}\r\n" +
-                "\r\n" +
-                "class Wheel\r\n" +
-                "\r\n" +
-                "enum Devise {\r\n" +
-                "  CHF\r\n" +
-                "  EUR\r\n" +
-                "  USD\r\n" +
-                "}\r\n" +
-                "\r\n" +
-                "Vehicule <|-- Car\r\n" +
-                "Car --> Price : price\r\n" +
-                "Car --> \"*\" Wheel : wheels\r\n" +
-                "Price --> Devise\r\n";
+    @Test
+    public void buildClassNoField() {
+        final String diagram = new PlantUmlBuilder().addType("Wheel", Type.CLASS).build();
+        assertThat(diagram).isEqualTo("class Wheel" + CR + CR);
+    }
 
-        // tag::createSimple[]
-        String diagram = new PlantUmlBuilder()
-                // classes
-                .addType("Vehicule", Type.INTERFACE)
+    @Test
+    public void buildClassWithManyFields() {
+        final String diagram = new PlantUmlBuilder()
                 .addType("Car", Type.CLASS,
                         new SimpleAttribut("brand", "String"),
                         new SimpleAttribut("wheels", "Collection<Wheel>")
-                )
-                .addType("Price", Type.CLASS, new SimpleAttribut("amount", "BigDecimal"), new SimpleAttribut("devise", "Devise"))
-                .addType("Wheel", Type.CLASS)
+                ).build();
+
+        assertThat(diagram).isEqualTo("class Car {" + CR +
+                "  brand : String" + CR +
+                "  wheels : Collection<Wheel>" + CR +
+                "}" + CR + CR);
+    }
+
+    @Test
+    public void buildEnum() {
+        final String diagram = new PlantUmlBuilder()
                 .addType("Devise", Type.ENUM,
                         new SimpleAttribut("CHF", null),
                         new SimpleAttribut("EUR", null),
                         new SimpleAttribut("USD", null)
-                )
-                // associations
+                ).build();
+
+        assertThat(diagram).isEqualTo("enum Devise {" + CR +
+                "  CHF" + CR +
+                "  EUR" + CR +
+                "  USD" + CR +
+                "}" + CR + CR);
+    }
+
+    @Test
+    public void buildAssociations() throws Exception {
+        String diagram = new PlantUmlBuilder()
                 .addAssociation("Vehicule", "Car", Association.INHERITANCE)
                 .addAssociation("Car", "Price", Association.DIRECTION, "price")
                 .addAssociation("Car", "Wheel", Association.DIRECTION, "wheels", null, "*")
                 .addAssociation("Price", "Devise", Association.DIRECTION)
                 .build();
-        // end::createSimple[]
 
-        assertThat(diagram).isEqualTo(expected);
+        assertThat(diagram).isEqualTo("Vehicule <|-- Car\r\n" +
+                "Car --> Price : price\r\n" +
+                "Car --> \"*\" Wheel : wheels\r\n" +
+                "Price --> Devise" + CR);
     }
-
 }
