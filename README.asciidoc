@@ -8,11 +8,11 @@ Tools to generate plantuml diagram from java sources.
 This code :
 [source,java]
 ----
-include::src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest.java[tags=createSimple]
+include::./src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest.java[tags=createSimple]
 ----
 
 Will get :
 [plantuml]
-plantuml::src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram"]
+plantuml::./src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram"]
 
 For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
