@@ -13,6 +13,6 @@ include::src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest
 
 Will get :
 [plantuml, class-diagram, png]
-plantuml::src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram", width=300, height=200]
+plantuml::src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram"]
 
 For more methods see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes

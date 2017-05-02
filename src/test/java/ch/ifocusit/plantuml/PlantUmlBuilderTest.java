@@ -82,9 +82,9 @@ public class PlantUmlBuilderTest {
                 .addAssociation("Price", "Devise", Association.DIRECTION)
                 .build();
 
-        assertThat(diagram).isEqualTo("Vehicule <|-- Car\r\n" +
-                "Car --> Price : price\r\n" +
-                "Car --> \"*\" Wheel : wheels\r\n" +
+        assertThat(diagram).isEqualTo("Vehicule <|-- Car" + CR +
+                "Car --> Price : price" + CR +
+                "Car --> \"*\" Wheel : wheels" + CR +
                 "Price --> Devise" + CR);
     }
 }
