@@ -1,5 +1,5 @@
+image::https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
 = Plantuml builder
-image:https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
 
 Tools to generate plantuml diagram from java sources.
 
@@ -12,7 +12,7 @@ include::src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest
 ----
 
 Will get :
-[plantuml, class-diagram, png]
+[plantuml]
 plantuml::src/test/resources/class-diagram.plantuml[format=png, alt="Class diagram"]
 
-For more methods see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
+For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
