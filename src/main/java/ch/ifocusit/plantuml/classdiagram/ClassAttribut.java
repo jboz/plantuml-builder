@@ -36,6 +36,9 @@ import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
 import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+/**
+ * @author Julien Boz
+ */
 public class ClassAttribut implements Attribut {
 
     public static final String GENERICS_OPEN = "<";

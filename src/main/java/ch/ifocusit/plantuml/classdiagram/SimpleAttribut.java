@@ -24,6 +24,9 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.Attribut;
 
+/**
+ * @author Julien Boz
+ */
 public class SimpleAttribut implements Attribut {
 
     private String type;

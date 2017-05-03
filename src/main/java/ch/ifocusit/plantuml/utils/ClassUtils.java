@@ -32,6 +32,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
 
+/**
+ * @author Julien Boz
+ */
 public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
     public static final String DOLLAR = "$";
