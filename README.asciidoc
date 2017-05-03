@@ -23,8 +23,8 @@ String diagram = new ClassDiagramBuilder()
 
 Will get :
 
-[plantuml, diagram-classes, png]
-....
+[source]
+----
 @startuml
 
 interface Vehicule
@@ -62,7 +62,7 @@ Car --> "*" Wheel : wheels
 Price --> Devise : devise
 
 @enduml
-....
+----
 
 image::class-diagram.png[Asciidoctor Diagram classes diagram]
 
