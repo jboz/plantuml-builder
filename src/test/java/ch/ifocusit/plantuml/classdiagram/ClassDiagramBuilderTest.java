@@ -24,16 +24,21 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
-import ch.ifocusit.plantuml.classdiagram.ClassDiagramBuilder;
+import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.test.helper.domain.*;
+import com.google.common.base.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ClassDiagramBuilderTest {
+
+    private static final String CR = PlantUmlBuilder.NEWLINE;
 
     @Test
     public void buildShouldGenerateDiagram() throws Exception {
@@ -49,5 +54,30 @@ public class ClassDiagramBuilderTest {
         assertThat(diagram).isEqualTo(expected);
     }
 
+    @Test
+    public void buildShouldExportOnlyAnnotatedClassAndField() throws Exception {
+        String diagram = new ClassDiagramBuilder()
+                .excludes(".*\\.ignored")
+                // only annotated
+                .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                .addClasses(Car.class)
+                .build();
 
+        assertThat(diagram).isEqualTo("@startuml" + CR + CR +
+                "class Car {" + CR +
+                "  brand : String" + CR +
+                "  model : String" + CR +
+                "  wheels : Collection<Wheel>" + CR +
+                "}" + CR + CR + CR +
+                "@enduml");
+    }
+
+
+    @Test
+    public void testPredicates() {
+        Predicate<String> alwaysTrue = s -> true;
+        System.out.println(Stream.of("ab", "bc", "cd", "de")
+                .filter(alwaysTrue.and(s -> s.contains("b")))
+                .collect(Collectors.joining(", ")));
+    }
 }

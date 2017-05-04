@@ -63,14 +63,14 @@ public class PlantUmlBuilder {
     // TYPE
     //*********************************************************************************
 
-    public PlantUmlBuilder addType(String name, Type type, Attribut... attributs) {
+    public PlantUmlBuilder addType(String name, Type type, Attribute... attributes) {
         content.append(type).append(SPACE).append(name);
-        if (attributs.length > 0) {
+        if (attributes.length > 0) {
             content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
-            for (Attribut attribut : attributs) {
-                content.append(TAB).append(attribut.getName());
-                if (StringUtils.isNotBlank(attribut.getTypeString())) {
-                    content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribut.getTypeString());
+            for (Attribute attribute : attributes) {
+                content.append(TAB).append(attribute.getName());
+                if (StringUtils.isNotBlank(attribute.getTypeString())) {
+                    content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribute.getTypeString());
                 }
                 content.append(NEWLINE);
             }

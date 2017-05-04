@@ -22,5 +22,6 @@
  */
 package ch.ifocusit.plantuml.test.helper.domain;
 
+@Machine
 public interface Vehicule {
 }

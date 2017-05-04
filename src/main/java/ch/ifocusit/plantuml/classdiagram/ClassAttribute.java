@@ -22,7 +22,7 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
-import ch.ifocusit.plantuml.Attribut;
+import ch.ifocusit.plantuml.Attribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -33,13 +33,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
-import static java.util.stream.Stream.concat;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * @author Julien Boz
  */
-public class ClassAttribut implements Attribut {
+public class ClassAttribute implements Attribute {
 
     public static final String GENERICS_OPEN = "<";
     public static final String GENERICS_CLOSE = ">";
@@ -48,10 +47,10 @@ public class ClassAttribut implements Attribut {
     private Field field;
     private boolean bidirectionnal;
 
-    public static ClassAttribut of(Field field) {
-        ClassAttribut attribut = new ClassAttribut();
-        attribut.field = field;
-        return attribut;
+    public static ClassAttribute of(Field field) {
+        ClassAttribute attribute = new ClassAttribute();
+        attribute.field = field;
+        return attribute;
     }
 
     @Override
@@ -76,6 +75,9 @@ public class ClassAttribut implements Attribut {
         return field.getName();
     }
 
+    public Field getField() {
+        return field;
+    }
 
     public Class getDeclaringClass() {
         return field.getDeclaringClass();
@@ -110,4 +112,10 @@ public class ClassAttribut implements Attribut {
         Optional<Field> field = ClassUtils.getField(getType(), getDeclaringClass());
         return field.isPresent() && ClassUtils.isCollection(field.get().getType());
     }
+
+    public String toStringAttribute() {
+        return field.getDeclaringClass().getName() + "." + field.getName();
+    }
+
+
 }

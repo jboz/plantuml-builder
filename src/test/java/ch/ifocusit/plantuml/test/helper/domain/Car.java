@@ -24,12 +24,20 @@ package ch.ifocusit.plantuml.test.helper.domain;
 
 import java.util.Collection;
 
+@Machine
 public class Car implements Vehicule {
 
+    @Machine
+    // must be ignored
     private Long ignored;
+    @Machine
     private String brand;
+    @Machine
     private String model;
+
     private Driver driver;
+
     private Price price;
+    @Machine
     private Collection<Wheel> wheels;
 }

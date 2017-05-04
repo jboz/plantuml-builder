@@ -22,7 +22,7 @@
  */
 package ch.ifocusit.plantuml;
 
-import ch.ifocusit.plantuml.classdiagram.SimpleAttribut;
+import ch.ifocusit.plantuml.classdiagram.SimpleAttribute;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.*;
@@ -47,8 +47,8 @@ public class PlantUmlBuilderTest {
     public void buildClassWithManyFields() {
         final String diagram = new PlantUmlBuilder()
                 .addType("Car", Type.CLASS,
-                        new SimpleAttribut("brand", "String"),
-                        new SimpleAttribut("wheels", "Collection<Wheel>")
+                        new SimpleAttribute("brand", "String"),
+                        new SimpleAttribute("wheels", "Collection<Wheel>")
                 ).build();
 
         assertThat(diagram).isEqualTo("class Car {" + CR +
@@ -61,9 +61,9 @@ public class PlantUmlBuilderTest {
     public void buildEnum() {
         final String diagram = new PlantUmlBuilder()
                 .addType("Devise", Type.ENUM,
-                        new SimpleAttribut("CHF", null),
-                        new SimpleAttribut("EUR", null),
-                        new SimpleAttribut("USD", null)
+                        new SimpleAttribute("CHF", null),
+                        new SimpleAttribute("EUR", null),
+                        new SimpleAttribute("USD", null)
                 ).build();
 
         assertThat(diagram).isEqualTo("enum Devise {" + CR +

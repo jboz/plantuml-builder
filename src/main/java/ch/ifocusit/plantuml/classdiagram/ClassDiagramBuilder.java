@@ -23,14 +23,18 @@
 package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.Association;
-import ch.ifocusit.plantuml.Attribut;
+import ch.ifocusit.plantuml.Attribute;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.Type;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,16 +50,25 @@ import static org.apache.commons.lang3.ClassUtils.getSimpleName;
 public class ClassDiagramBuilder {
 
     private final Set<Class> classes = new LinkedHashSet<>();
-    private final Set<String> excludes = new HashSet<>();
+    private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
-    private final Set<ClassAttribut> attributs = new LinkedHashSet<>();
+    private final Set<ClassAttribute> attributs = new LinkedHashSet<>();
 
     public ClassDiagramBuilder() {
     }
 
     public ClassDiagramBuilder excludes(String... excludes) {
-        Stream.of(excludes).forEach(this.excludes::add);
+        // keep the corresponding fields
+        Predicate<ClassAttribute> notMatch = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
+
+        // new additionalFieldPredicate base on full path
+        this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatch);
+        return this;
+    }
+
+    public ClassDiagramBuilder addFieldPredicate(Predicate<ClassAttribute> predicate) {
+        this.additionalFieldPredicate = this.additionalFieldPredicate.and(predicate);
         return this;
     }
 
@@ -103,21 +116,26 @@ public class ClassDiagramBuilder {
         return Type.CLASS;
     }
 
-    protected Attribut[] readFields(Class aClass) {
+    protected Predicate<ClassAttribute> filter() {
+        return additionalFieldPredicate;
+    }
+
+    protected Attribute[] readFields(Class aClass) {
         return Stream.of(aClass.getDeclaredFields())
                 // exclude inner class
                 .filter(field -> !field.getName().startsWith(DOLLAR))
                 // exclude static fields
                 .filter(field -> field.getDeclaringClass().isEnum() || !Modifier.isStatic(field.getModifiers()))
+                .map(this::createAttribut)
                 // excludes specific fields
-                .filter(field -> excludes.stream().noneMatch(excl -> (field.getDeclaringClass().getName() + "." + field.getName()).matches(excl)))
-                .map(this::createAttribut).toArray(Attribut[]::new);
+                .filter(filter())
+                .toArray(Attribute[]::new);
     }
 
-    protected ClassAttribut createAttribut(Field field) {
-        ClassAttribut attribut = ClassAttribut.of(field);
+    protected ClassAttribute createAttribut(Field field) {
+        ClassAttribute attribut = ClassAttribute.of(field);
         // look for an existing reverse field definition
-        Optional<ClassAttribut> existing = attributs.stream()
+        Optional<ClassAttribute> existing = attributs.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
                         && attr.getConcernedTypes().collect(Collectors.toList()).contains(attribut.getDeclaringClass()))
                 .findFirst();
@@ -143,7 +161,7 @@ public class ClassDiagramBuilder {
                 // exclude not managed class
                 .filter(field -> field.isManaged(classes))
                 // excludes specific fields
-                .filter(field -> excludes.stream().noneMatch(excl -> (field.getDeclaringClass().getName() + "." + field.getName()).matches(excl)))
+                .filter(filter())
                 .forEach(attr -> {
                     // class association
                     attr.getConcernedTypes()
