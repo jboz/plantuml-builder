@@ -26,13 +26,12 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.test.helper.domain.*;
-import com.google.common.base.Predicate;
+import ch.ifocusit.plantuml.utils.ClassUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -72,12 +71,32 @@ public class ClassDiagramBuilderTest {
                 "@enduml");
     }
 
-
     @Test
-    public void testPredicates() {
-        Predicate<String> alwaysTrue = s -> true;
-        System.out.println(Stream.of("ab", "bc", "cd", "de")
-                .filter(alwaysTrue.and(s -> s.contains("b")))
-                .collect(Collectors.joining(", ")));
+    public void testOverrideNames() {
+        String diagram = new ClassDiagramBuilder()
+                .excludes(".*\\.ignored")
+                // only annotated
+                .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                .addClasses(Car.class)
+                .withNamesMapper(new NamesMapper() {
+                    @Override
+                    public String getClassNameForDiagram(Class aClass) {
+                        return "domain." + ClassUtils.getSimpleName(aClass);
+                    }
+
+                    @Override
+                    public String getAttributNameForDiagram(Field field) {
+                        return "attr." + field.getName();
+                    }
+                })
+                .build();
+
+        assertThat(diagram).isEqualTo("@startuml" + CR + CR +
+                "class domain.Car {" + CR +
+                "  attr.brand : String" + CR +
+                "  attr.model : String" + CR +
+                "  attr.wheels : Collection<Wheel>" + CR +
+                "}" + CR + CR + CR +
+                "@enduml");
     }
 }

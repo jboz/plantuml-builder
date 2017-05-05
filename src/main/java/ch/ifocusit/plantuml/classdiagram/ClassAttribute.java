@@ -44,13 +44,18 @@ public class ClassAttribute implements Attribute {
     public static final String GENERICS_CLOSE = ">";
     public static final String GENERICS_SEP = ", ";
 
-    private Field field;
+    private final Field field;
+    private final String fieldName;
+
     private boolean bidirectionnal;
 
-    public static ClassAttribute of(Field field) {
-        ClassAttribute attribute = new ClassAttribute();
-        attribute.field = field;
-        return attribute;
+    public ClassAttribute(Field field) {
+        this(field, field.getName());
+    }
+
+    public ClassAttribute(Field field, String fieldName) {
+        this.field = field;
+        this.fieldName = fieldName;
     }
 
     @Override
@@ -72,7 +77,7 @@ public class ClassAttribute implements Attribute {
 
     @Override
     public String getName() {
-        return field.getName();
+        return fieldName;
     }
 
     public Field getField() {

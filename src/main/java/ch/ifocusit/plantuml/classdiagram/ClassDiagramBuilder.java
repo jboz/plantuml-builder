@@ -40,20 +40,20 @@ import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
-import static org.apache.commons.lang3.ClassUtils.getSimpleName;
 
 /**
  * Build class diagram from Class definition.
  *
  * @author Julien Boz
  */
-public class ClassDiagramBuilder {
+public class ClassDiagramBuilder implements NamesMapper {
 
     private final Set<Class> classes = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
     private final Set<ClassAttribute> attributs = new LinkedHashSet<>();
+    private NamesMapper namesMapper = this;
 
     public ClassDiagramBuilder() {
     }
@@ -87,6 +87,11 @@ public class ClassDiagramBuilder {
         return this;
     }
 
+    public ClassDiagramBuilder withNamesMapper(NamesMapper namesMapper) {
+        this.namesMapper = namesMapper;
+        return this;
+    }
+
     public String build() {
         attributs.clear();
         // generate diagram from configuration
@@ -100,7 +105,7 @@ public class ClassDiagramBuilder {
     protected void addTypes() {
         // add all classes definition
         // readFields will manage field type definition, exclusions, ...
-        classes.forEach(aClass -> builder.addType(getSimpleName(aClass), parseType(aClass), readFields(aClass)));
+        classes.forEach(aClass -> builder.addType(namesMapper.getClassNameForDiagram(aClass), parseType(aClass), readFields(aClass)));
     }
 
     protected Type parseType(Class aClass) {
@@ -133,7 +138,7 @@ public class ClassDiagramBuilder {
     }
 
     protected ClassAttribute createAttribut(Field field) {
-        ClassAttribute attribut = ClassAttribute.of(field);
+        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getAttributNameForDiagram(field));
         // look for an existing reverse field definition
         Optional<ClassAttribute> existing = attributs.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
@@ -145,7 +150,6 @@ public class ClassDiagramBuilder {
             this.attributs.add(attribut);
         }
         return attribut;
-
     }
 
     protected void addAssociations() {
@@ -154,7 +158,10 @@ public class ClassDiagramBuilder {
             // add inheritance association
             Stream.concat(Stream.of(aClass.getSuperclass()), ClassUtils.getAllInterfaces(aClass).stream())
                     .filter(Objects::nonNull).filter(classes::contains)
-                    .forEach(parentClass -> builder.addAssociation(getSimpleName(parentClass), getSimpleName(aClass), INHERITANCE));
+                    .forEach(parentClass -> builder.addAssociation(
+                            namesMapper.getClassNameForDiagram(parentClass),
+                            namesMapper.getClassNameForDiagram(aClass),
+                            INHERITANCE));
         });
 
         attributs.stream()
@@ -169,10 +176,12 @@ public class ClassDiagramBuilder {
                             .forEach(aClass -> {
                                 String aCardinality = attr.isLeftCollection() ? "*" : null;
                                 String bCardinality = attr.isRightCollection() ? "*" : null;
-                                String name = /*attr.isBidirectionnal() ? null : */attr.getName();
+                                String name = attr.getName();
                                 Association link = attr.isBidirectionnal() ? BI_DIRECTION : DIRECTION;
 
-                                builder.addAssociation(getSimpleName(attr.getDeclaringClass()), getSimpleName(aClass),
+                                builder.addAssociation(
+                                        namesMapper.getClassNameForDiagram(attr.getDeclaringClass()),
+                                        namesMapper.getClassNameForDiagram(aClass),
                                         link, name, aCardinality, bCardinality);
                             });
 
