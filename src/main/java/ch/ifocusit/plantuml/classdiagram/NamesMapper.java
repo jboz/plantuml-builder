@@ -41,7 +41,7 @@ public interface NamesMapper {
     /**
      * @return the attribute name as shown in the diagram
      */
-    default String getAttributNameForDiagram(Field field) {
+    default String getFieldNameForDiagram(Field field) {
         return field.getName();
     }
 }

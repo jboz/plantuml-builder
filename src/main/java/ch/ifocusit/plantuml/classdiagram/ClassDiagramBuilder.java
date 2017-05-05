@@ -138,7 +138,7 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     protected ClassAttribute createAttribut(Field field) {
-        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getAttributNameForDiagram(field));
+        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldNameForDiagram(field));
         // look for an existing reverse field definition
         Optional<ClassAttribute> existing = attributs.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())

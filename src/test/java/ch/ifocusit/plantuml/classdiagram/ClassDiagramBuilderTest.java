@@ -85,7 +85,7 @@ public class ClassDiagramBuilderTest {
                     }
 
                     @Override
-                    public String getAttributNameForDiagram(Field field) {
+                    public String getFieldNameForDiagram(Field field) {
                         return "attr." + field.getName();
                     }
                 })
