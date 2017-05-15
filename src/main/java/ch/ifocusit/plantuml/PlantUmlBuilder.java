@@ -22,10 +22,13 @@
  */
 package ch.ifocusit.plantuml;
 
+import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.Clazz;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import static ch.ifocusit.plantuml.Association.DIRECTION;
+import static ch.ifocusit.plantuml.classdiagram.model.Association.DIRECTION;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
@@ -63,15 +66,18 @@ public class PlantUmlBuilder {
     // TYPE
     //*********************************************************************************
 
-    public PlantUmlBuilder addType(String name, Type type, Attribute... attributes) {
-        content.append(type).append(SPACE).append(name);
-        if (attributes.length > 0) {
-            content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
-            for (Attribute attribute : attributes) {
+    public PlantUmlBuilder addType(Clazz javaClass) {
+        content.append(javaClass.getType()).append(SPACE).append(javaClass.getName());
+        if (!javaClass.getAttributes().isEmpty()) {
+            content.append(SPACE);
+            javaClass.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
+            content.append(BRACE_OPEN).append(NEWLINE);
+            for (Attribute attribute : javaClass.getAttributes()) {
                 content.append(TAB).append(attribute.getName());
                 if (StringUtils.isNotBlank(attribute.getTypeString())) {
                     content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribute.getTypeString());
                 }
+                attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
                 content.append(NEWLINE);
             }
             content.append(BRACE_CLOSE);
@@ -101,8 +107,8 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, String aCardinality, String bCardinality) {
-        Validate.notBlank(aName, "Class a name is mandatory");
-        Validate.notBlank(bName, "Class b name is mandatory");
+        Validate.notBlank(aName, "JavaClass a name is mandatory");
+        Validate.notBlank(bName, "JavaClass b name is mandatory");
         Validate.notNull(assoc, "Association type is mandatory");
 
         content.append(aName);

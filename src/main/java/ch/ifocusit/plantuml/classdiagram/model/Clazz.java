@@ -20,13 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml;
+package ch.ifocusit.plantuml.classdiagram.model;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Julien Boz
  */
-public interface Attribute {
+public interface Clazz {
 
-    public String getTypeString();
     public String getName();
+
+    public Type getType();
+
+    public Optional<Link> getLink();
+
+    public List<Attribute> getAttributes();
 }

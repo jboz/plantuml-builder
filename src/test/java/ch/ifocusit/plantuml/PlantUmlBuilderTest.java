@@ -22,10 +22,13 @@
  */
 package ch.ifocusit.plantuml;
 
-import ch.ifocusit.plantuml.classdiagram.SimpleAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.SimpleAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.SimpleClass;
+import ch.ifocusit.plantuml.classdiagram.model.Type;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.*;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class PlantUmlBuilderTest {
 
@@ -33,23 +36,23 @@ public class PlantUmlBuilderTest {
 
     @Test
     public void buildInterface() {
-        final String diagram = new PlantUmlBuilder().addType("Vehicule", Type.INTERFACE).build();
+        final String diagram = new PlantUmlBuilder().addType(SimpleClass.create("Vehicule", Type.INTERFACE)).build();
         assertThat(diagram).isEqualTo("interface Vehicule" + CR + CR);
     }
 
     @Test
     public void buildClassNoField() {
-        final String diagram = new PlantUmlBuilder().addType("Wheel", Type.CLASS).build();
+        final String diagram = new PlantUmlBuilder().addType(SimpleClass.create("Wheel", Type.CLASS)).build();
         assertThat(diagram).isEqualTo("class Wheel" + CR + CR);
     }
 
     @Test
     public void buildClassWithManyFields() {
         final String diagram = new PlantUmlBuilder()
-                .addType("Car", Type.CLASS,
+                .addType(SimpleClass.create("Car", Type.CLASS,
                         new SimpleAttribute("brand", "String"),
-                        new SimpleAttribute("wheels", "Collection<Wheel>")
-                ).build();
+                        new SimpleAttribute("wheels", "Collection<Wheel>")))
+                .build();
 
         assertThat(diagram).isEqualTo("class Car {" + CR +
                 "  brand : String" + CR +
@@ -60,11 +63,11 @@ public class PlantUmlBuilderTest {
     @Test
     public void buildEnum() {
         final String diagram = new PlantUmlBuilder()
-                .addType("Devise", Type.ENUM,
+                .addType(SimpleClass.create("Devise", Type.ENUM,
                         new SimpleAttribute("CHF", null),
                         new SimpleAttribute("EUR", null),
-                        new SimpleAttribute("USD", null)
-                ).build();
+                        new SimpleAttribute("USD", null)))
+                .build();
 
         assertThat(diagram).isEqualTo("enum Devise {" + CR +
                 "  CHF" + CR +

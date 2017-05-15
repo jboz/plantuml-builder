@@ -22,10 +22,11 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
-import ch.ifocusit.plantuml.Association;
-import ch.ifocusit.plantuml.Attribute;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
-import ch.ifocusit.plantuml.Type;
+import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.ClassAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.JavaClass;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -38,11 +39,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.ifocusit.plantuml.Association.*;
+import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
 
 /**
- * Build class diagram from Class definition.
+ * Build class diagram from JavaClass definition.
  *
  * @author Julien Boz
  */
@@ -73,17 +74,12 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     public ClassDiagramBuilder addClasses(Iterable<Class> classes) {
-        classes.forEach(this::addClass);
+        classes.forEach(this.classes::add);
         return this;
     }
 
     public ClassDiagramBuilder addClasses(Class... classes) {
-        Stream.of(classes).forEach(this::addClass);
-        return this;
-    }
-
-    public ClassDiagramBuilder addClass(Class aClass) {
-        classes.add(aClass);
+        Stream.of(classes).forEach(this.classes::add);
         return this;
     }
 
@@ -105,20 +101,9 @@ public class ClassDiagramBuilder implements NamesMapper {
     protected void addTypes() {
         // add all classes definition
         // readFields will manage field type definition, exclusions, ...
-        classes.forEach(aClass -> builder.addType(namesMapper.getClassNameForDiagram(aClass), parseType(aClass), readFields(aClass)));
-    }
-
-    protected Type parseType(Class aClass) {
-        if (aClass.isInterface()) {
-            return Type.INTERFACE;
-        }
-        if (aClass.isEnum()) {
-            return Type.ENUM;
-        }
-        if (Modifier.isAbstract(aClass.getModifiers())) {
-            return Type.ABSTRACT;
-        }
-        return Type.CLASS;
+        classes.forEach(clazz -> builder.addType(JavaClass.from(clazz, readFields(clazz))
+                .setOverridedName(namesMapper.getClassName(clazz))
+                .setLink(namesMapper.getClassLink(clazz))));
     }
 
     protected Predicate<ClassAttribute> filter() {
@@ -138,7 +123,7 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     protected ClassAttribute createAttribut(Field field) {
-        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldNameForDiagram(field));
+        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldName(field));
         // look for an existing reverse field definition
         Optional<ClassAttribute> existing = attributs.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
@@ -149,6 +134,7 @@ public class ClassDiagramBuilder implements NamesMapper {
         } else if (!field.getDeclaringClass().isEnum()) {
             this.attributs.add(attribut);
         }
+        attribut.setLink(namesMapper.getFieldLink(field));
         return attribut;
     }
 
@@ -159,8 +145,8 @@ public class ClassDiagramBuilder implements NamesMapper {
             Stream.concat(Stream.of(aClass.getSuperclass()), ClassUtils.getAllInterfaces(aClass).stream())
                     .filter(Objects::nonNull).filter(classes::contains)
                     .forEach(parentClass -> builder.addAssociation(
-                            namesMapper.getClassNameForDiagram(parentClass),
-                            namesMapper.getClassNameForDiagram(aClass),
+                            namesMapper.getClassName(parentClass),
+                            namesMapper.getClassName(aClass),
                             INHERITANCE));
         });
 
@@ -180,8 +166,8 @@ public class ClassDiagramBuilder implements NamesMapper {
                                 Association link = attr.isBidirectionnal() ? BI_DIRECTION : DIRECTION;
 
                                 builder.addAssociation(
-                                        namesMapper.getClassNameForDiagram(attr.getDeclaringClass()),
-                                        namesMapper.getClassNameForDiagram(aClass),
+                                        namesMapper.getClassName(attr.getDeclaringClass()),
+                                        namesMapper.getClassName(aClass),
                                         link, name, aCardinality, bCardinality);
                             });
 

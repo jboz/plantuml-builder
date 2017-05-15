@@ -20,34 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram;
+package ch.ifocusit.plantuml.classdiagram.model;
 
-import ch.ifocusit.plantuml.Attribute;
+import java.util.Optional;
 
 /**
  * @author Julien Boz
  */
-public class SimpleAttribute implements Attribute {
+public interface Attribute {
 
-    private String type;
-    private String name;
-
-    public SimpleAttribute(String name, String type) {
-        this.type = type;
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    @Override
-    public String getTypeString() {
-        return getType();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
+    public String getTypeString();
+    public String getName();
+    public Optional<Link> getLink();
 }

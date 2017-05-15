@@ -20,26 +20,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml;
+package ch.ifocusit.plantuml.classdiagram.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Julien Boz
  */
-public enum Association {
+public class SimpleClass implements Clazz {
 
-    LINK("-"),
-    DIRECTION("-->"),
-    BI_DIRECTION("<->"),
-    INHERITANCE("<|--");
+    private String name;
+    private Type type;
+    private List<Attribute> attributes = new ArrayList<>();
 
-    private String symbol;
-
-    Association(String symbol) {
-        this.symbol = symbol;
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
-    public String toString() {
-        return symbol;
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public Optional<Link> getLink() {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public static SimpleClass create(String name, Type type, Attribute... attributes) {
+        SimpleClass c = new SimpleClass();
+        c.name = name;
+        c.type = type;
+        Stream.of(attributes).forEach(c.attributes::add);
+        return c;
     }
 }

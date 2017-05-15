@@ -35,7 +35,7 @@ import java.nio.charset.Charset;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ClassDiagramBuilderTest {
+public class JavaClassDiagramBuilderTest {
 
     private static final String CR = PlantUmlBuilder.NEWLINE;
 
@@ -80,12 +80,12 @@ public class ClassDiagramBuilderTest {
                 .addClasses(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
-                    public String getClassNameForDiagram(Class aClass) {
+                    public String getClassName(Class aClass) {
                         return "domain." + ClassUtils.getSimpleName(aClass);
                     }
 
                     @Override
-                    public String getFieldNameForDiagram(Field field) {
+                    public String getFieldName(Field field) {
                         return "attr." + field.getName();
                     }
                 })

@@ -20,45 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram;
-
-import ch.ifocusit.plantuml.classdiagram.model.Link;
-
-import java.lang.reflect.Field;
-import java.util.Optional;
-
-import static org.apache.commons.lang3.ClassUtils.getSimpleName;
+package ch.ifocusit.plantuml.classdiagram.model;
 
 /**
  * @author Julien Boz
  */
-public interface NamesMapper {
+public enum Association {
 
-    /**
-     * @return the class name as shown in the diagram
-     */
-    default String getClassName(Class aClass) {
-        return getSimpleName(aClass);
+    LINK("-"),
+    DIRECTION("-->"),
+    BI_DIRECTION("<->"),
+    INHERITANCE("<|--");
+
+    private String symbol;
+
+    Association(String symbol) {
+        this.symbol = symbol;
     }
 
-    /**
-     * @return the class link to use in the diagram
-     */
-    default Optional<Link> getClassLink(Class aClass) {
-        return Optional.empty();
-    }
-
-    /**
-     * @return the attribute name as shown in the diagram
-     */
-    default String getFieldName(Field field) {
-        return field.getName();
-    }
-
-    /**
-     * @return the field link to use in the diagram
-     */
-    default Optional<Link> getFieldLink(Field field) {
-        return Optional.empty();
+    @Override
+    public String toString() {
+        return symbol;
     }
 }

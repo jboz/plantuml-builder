@@ -20,9 +20,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram;
+package ch.ifocusit.plantuml.classdiagram.model;
 
-import ch.ifocusit.plantuml.Attribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -46,7 +45,7 @@ public class ClassAttribute implements Attribute {
 
     private final Field field;
     private final String fieldName;
-
+    private Optional<Link> link;
     private boolean bidirectionnal;
 
     public ClassAttribute(Field field) {
@@ -123,4 +122,12 @@ public class ClassAttribute implements Attribute {
     }
 
 
+    public Optional<Link> getLink() {
+        return link;
+    }
+
+    public ClassAttribute setLink(Optional<Link> link) {
+        this.link = link;
+        return this;
+    }
 }
