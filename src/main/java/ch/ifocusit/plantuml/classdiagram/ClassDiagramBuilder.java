@@ -101,9 +101,13 @@ public class ClassDiagramBuilder implements NamesMapper {
     protected void addTypes() {
         // add all classes definition
         // readFields will manage field type definition, exclusions, ...
-        classes.forEach(clazz -> builder.addType(JavaClass.from(clazz, readFields(clazz))
+        classes.forEach(clazz -> builder.addType(createJavaClass(clazz)));
+    }
+
+    protected JavaClass createJavaClass(Class clazz) {
+        return JavaClass.from(clazz, readFields(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
-                .setLink(namesMapper.getClassLink(clazz))));
+                .setLink(namesMapper.getClassLink(clazz));
     }
 
     protected Predicate<ClassAttribute> filter() {
@@ -116,13 +120,13 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .filter(field -> !field.getName().startsWith(DOLLAR))
                 // exclude static fields
                 .filter(field -> field.getDeclaringClass().isEnum() || !Modifier.isStatic(field.getModifiers()))
-                .map(this::createAttribut)
+                .map(this::createClassAttribute)
                 // excludes specific fields
                 .filter(filter())
                 .toArray(Attribute[]::new);
     }
 
-    protected ClassAttribute createAttribut(Field field) {
+    protected ClassAttribute createClassAttribute(Field field) {
         ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldName(field));
         // look for an existing reverse field definition
         Optional<ClassAttribute> existing = attributs.stream()

@@ -35,7 +35,7 @@ import java.nio.charset.Charset;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JavaClassDiagramBuilderTest {
+public class ClassDiagramBuilderTest {
 
     private static final String CR = PlantUmlBuilder.NEWLINE;
 

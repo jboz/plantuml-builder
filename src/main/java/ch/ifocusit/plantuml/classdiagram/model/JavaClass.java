@@ -38,6 +38,8 @@ public class JavaClass implements Clazz {
     private Optional<String> overridedName;
     private Optional<Link> link;
     private List<Attribute> attributes = new ArrayList<>();
+    private String backgroundColor;
+    private String borderColor;
 
     public JavaClass(Class<?> relatedClass) {
         this.relatedClass = relatedClass;
@@ -93,6 +95,25 @@ public class JavaClass implements Clazz {
         return Type.CLASS;
     }
 
+    @Override
+    public Optional<String> getBackgroundColor() {
+        return Optional.ofNullable(backgroundColor);
+    }
+
+    @Override
+    public Optional<String> getBorderColor() {
+        return Optional.ofNullable(borderColor);
+    }
+
+    public JavaClass setBackgroundColor(String color) {
+        this.backgroundColor = color;
+        return this;
+    }
+
+    public JavaClass setBorderColor(String color) {
+        this.borderColor = color;
+        return this;
+    }
 
     public static JavaClass from(Class aClass, Attribute... attributes) {
         JavaClass javaClass = new JavaClass(aClass);

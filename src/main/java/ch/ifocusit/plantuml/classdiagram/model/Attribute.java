@@ -29,7 +29,11 @@ import java.util.Optional;
  */
 public interface Attribute {
 
-    public String getTypeString();
+    public Optional<String> getType();
+
     public String getName();
-    public Optional<Link> getLink();
+
+    default public Optional<Link> getLink() {
+        return Optional.empty();
+    }
 }

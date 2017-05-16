@@ -58,9 +58,9 @@ public class ClassAttribute implements Attribute {
     }
 
     @Override
-    public String getTypeString() {
+    public Optional<String> getType() {
         if (field.getDeclaringClass().isEnum()) {
-            return EMPTY;
+            return Optional.empty();
         }
         String fieldClassName = getSimpleName(field.getType());
         if (field.getGenericType() instanceof ParameterizedType) {
@@ -71,7 +71,7 @@ public class ClassAttribute implements Attribute {
                     .collect(Collectors.joining(GENERICS_SEP));
             fieldClassName += GENERICS_OPEN + subtypes + GENERICS_CLOSE;
         }
-        return fieldClassName;
+        return Optional.of(fieldClassName);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ClassAttribute implements Attribute {
         return field.getDeclaringClass();
     }
 
-    public Class getType() {
+    private Class getFieldType() {
         return field.getType();
     }
 
@@ -109,11 +109,11 @@ public class ClassAttribute implements Attribute {
     }
 
     public boolean isRightCollection() {
-        return ClassUtils.isCollection(getType());
+        return ClassUtils.isCollection(getFieldType());
     }
 
     public boolean isLeftCollection() {
-        Optional<Field> field = ClassUtils.getField(getType(), getDeclaringClass());
+        Optional<Field> field = ClassUtils.getField(getFieldType(), getDeclaringClass());
         return field.isPresent() && ClassUtils.isCollection(field.get().getType());
     }
 

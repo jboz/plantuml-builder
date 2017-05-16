@@ -47,18 +47,8 @@ public class SimpleClass implements Clazz {
     }
 
     @Override
-    public Optional<Link> getLink() {
-        return Optional.empty();
-    }
-
-    @Override
     public List<Attribute> getAttributes() {
         return attributes;
-    }
-
-    @Override
-    public Optional<List<String>> getStereotypes() {
-        return Optional.empty();
     }
 
     public static SimpleClass create(String name, Type type, Attribute... attributes) {

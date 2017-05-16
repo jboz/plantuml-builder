@@ -34,9 +34,21 @@ public interface Clazz {
 
     public Type getType();
 
-    public Optional<Link> getLink();
+    default public Optional<Link> getLink() {
+        return Optional.empty();
+    }
 
     public List<Attribute> getAttributes();
 
-    public Optional<List<String>> getStereotypes();
+    default public Optional<List<String>> getStereotypes() {
+        return Optional.empty();
+    }
+
+    default public Optional<String> getBackgroundColor() {
+        return Optional.empty();
+    }
+
+    default public Optional<String> getBorderColor() {
+        return Optional.empty();
+    }
 }

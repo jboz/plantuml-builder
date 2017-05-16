@@ -74,18 +74,23 @@ public class PlantUmlBuilder {
         content.append(javaClass.getType()).append(SPACE).append(javaClass.getName());
         if (!javaClass.getAttributes().isEmpty()) {
             content.append(SPACE);
+            // class link
             javaClass.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
+            // stereotype
             javaClass.getStereotypes().ifPresent(stereotypes -> content
                     .append(STEREOTYPE_OPEN)
                     .append(stereotypes.stream().collect(Collectors.joining(", ")))
                     .append(STEREOTYPE_CLOSE)
                     .append(SPACE));
+            // class color
+            javaClass.getBackgroundColor().ifPresent(color -> content.append("#").append(color).append(SPACE));
             content.append(BRACE_OPEN).append(NEWLINE);
             for (Attribute attribute : javaClass.getAttributes()) {
+                // name
                 content.append(TAB).append(attribute.getName());
-                if (StringUtils.isNotBlank(attribute.getTypeString())) {
-                    content.append(SPACE).append(SEMICOLON).append(SPACE).append(attribute.getTypeString());
-                }
+                // type
+                attribute.getType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+                // field link
                 attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
                 content.append(NEWLINE);
             }

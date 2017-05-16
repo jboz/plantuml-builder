@@ -37,22 +37,13 @@ public class SimpleAttribute implements Attribute {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
-
     @Override
-    public String getTypeString() {
-        return getType();
+    public Optional<String> getType() {
+        return Optional.ofNullable(type);
     }
 
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public Optional<Link> getLink() {
-        return Optional.empty();
     }
 }
