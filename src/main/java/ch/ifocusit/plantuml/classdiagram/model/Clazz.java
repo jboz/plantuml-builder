@@ -37,4 +37,6 @@ public interface Clazz {
     public Optional<Link> getLink();
 
     public List<Attribute> getAttributes();
+
+    public Optional<List<String>> getStereotypes();
 }

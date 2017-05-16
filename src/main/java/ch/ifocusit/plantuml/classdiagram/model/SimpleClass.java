@@ -56,6 +56,11 @@ public class SimpleClass implements Clazz {
         return attributes;
     }
 
+    @Override
+    public Optional<List<String>> getStereotypes() {
+        return Optional.empty();
+    }
+
     public static SimpleClass create(String name, Type type, Attribute... attributes) {
         SimpleClass c = new SimpleClass();
         c.name = name;

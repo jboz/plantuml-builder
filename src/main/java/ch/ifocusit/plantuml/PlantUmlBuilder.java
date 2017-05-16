@@ -28,6 +28,8 @@ import ch.ifocusit.plantuml.classdiagram.model.Clazz;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.util.stream.Collectors;
+
 import static ch.ifocusit.plantuml.classdiagram.model.Association.DIRECTION;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
@@ -42,6 +44,8 @@ public class PlantUmlBuilder {
     public static final String SEMICOLON = ":";
     public static final String BRACE_OPEN = "{";
     public static final String BRACE_CLOSE = "}";
+    public static final String STEREOTYPE_OPEN = "<<";
+    public static final String STEREOTYPE_CLOSE = ">>";
     public static final String TAB = SPACE + SPACE;
     public static final String NEWLINE = System.getProperty("line.separator");
     public static final String QUOTE = "\"";
@@ -71,6 +75,11 @@ public class PlantUmlBuilder {
         if (!javaClass.getAttributes().isEmpty()) {
             content.append(SPACE);
             javaClass.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
+            javaClass.getStereotypes().ifPresent(stereotypes -> content
+                    .append(STEREOTYPE_OPEN)
+                    .append(stereotypes.stream().collect(Collectors.joining(", ")))
+                    .append(STEREOTYPE_CLOSE)
+                    .append(SPACE));
             content.append(BRACE_OPEN).append(NEWLINE);
             for (Attribute attribute : javaClass.getAttributes()) {
                 content.append(TAB).append(attribute.getName());

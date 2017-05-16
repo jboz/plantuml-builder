@@ -75,6 +75,11 @@ public class JavaClass implements Clazz {
         return this;
     }
 
+    @Override
+    public Optional<List<String>> getStereotypes() {
+        return Optional.empty();
+    }
+
     private Type parseType(Class aClass) {
         if (aClass.isInterface()) {
             return Type.INTERFACE;
