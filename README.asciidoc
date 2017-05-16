@@ -6,6 +6,7 @@ ifndef::imagesdir[:imagesdir: images]
 :source-language: asciidoc
 
 image::https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
+image::https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square["Make a pull request", link="http://makeapullrequest.com"]
 = Plantuml builder
 
 Tools to generate plantuml diagram from java sources.
