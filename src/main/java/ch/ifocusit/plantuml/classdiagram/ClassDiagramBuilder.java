@@ -44,7 +44,7 @@ import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
 
 /**
- * Build class diagram from JavaClazz definition.
+ * Build class diagram from Class definition.
  *
  * @author Julien Boz
  */
