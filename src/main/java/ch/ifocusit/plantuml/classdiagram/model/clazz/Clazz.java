@@ -32,7 +32,7 @@ import java.util.Optional;
 /**
  * @author Julien Boz
  */
-public interface Clazz {
+public interface Clazz extends Comparable<Clazz> {
 
     public String getName();
 
@@ -59,6 +59,11 @@ public interface Clazz {
     default public void validate() {
         Validate.notNull(getName(), "Class name must be defined !");
         Validate.notNull(getType(), String.format("Class '%s' type must be defined !", getName()));
+    }
+
+    @Override
+    default int compareTo(Clazz clazz) {
+        return getName().compareTo(clazz.getName());
     }
 
     public static enum Type {

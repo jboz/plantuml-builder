@@ -115,6 +115,7 @@ public class ClassDiagramBuilder implements NamesMapper {
                 Clazz[] classes = classPath.getTopLevelClasses(pkg.getName()).stream()
                         .map(ClassPath.ClassInfo::load)
                         .map(this::createJavaClass)
+                        .sorted()
                         .toArray(Clazz[]::new);
                 builder.addPackage(Package.from(pkg), classes);
             } catch (IOException e) {
