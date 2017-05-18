@@ -100,12 +100,16 @@ public class PlantUmlBuilder {
 
         content.append(MessageFormat.format(PACKAGE_TMPL, aPackage.getName(), aPackage.getType()));
         aPackage.getColor().ifPresent(color -> content.append(SPACE).append(color(color)));
-        content.append(SPACE).append(BRACE_OPEN);
-        Stream.of(classes).forEach(clazz -> {
-            clazz.validate();
-            append(TAB).writeClazzDefinition(clazz).append(NEWLINE);
-        });
-        content.append(BRACE_CLOSE);
+
+        if (classes.length > 0) {
+            content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
+            Stream.of(classes).forEach(clazz -> {
+                clazz.validate();
+                append(TAB).writeClazzDefinition(clazz).append(NEWLINE);
+            });
+            content.append(BRACE_CLOSE);
+        }
+        content.append(NEWLINE).append(NEWLINE);
 
         return this;
     }
@@ -120,19 +124,17 @@ public class PlantUmlBuilder {
         clazz.validate();
 
         writeClazzDefinition(clazz);
+        // stereotype
+        clazz.getStereotypes().ifPresent(stereotypes -> content
+                .append(SPACE).append(STEREOTYPE_OPEN)
+                .append(stereotypes.stream().collect(Collectors.joining(", ")))
+                .append(STEREOTYPE_CLOSE));
+        // class link
+        clazz.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+        // class color
+        clazz.getBackgroundColor().ifPresent(color -> content.append(SPACE).append(color(color)));
         if (!clazz.getAttributes().isEmpty()) {
-            content.append(SPACE);
-            // class link
-            clazz.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
-            // stereotype
-            clazz.getStereotypes().ifPresent(stereotypes -> content
-                    .append(STEREOTYPE_OPEN)
-                    .append(stereotypes.stream().collect(Collectors.joining(", ")))
-                    .append(STEREOTYPE_CLOSE)
-                    .append(SPACE));
-            // class color
-            clazz.getBackgroundColor().ifPresent(color -> content.append(color(color)).append(SPACE));
-            content.append(BRACE_OPEN).append(NEWLINE);
+            content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
             for (Attribute attribute : clazz.getAttributes()) {
                 // name
                 content.append(TAB).append(attribute.getName());

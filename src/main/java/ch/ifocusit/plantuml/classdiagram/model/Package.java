@@ -33,7 +33,7 @@ public class Package {
 
     private String name;
     private Type type = Type.Folder;
-    private Optional<String> color;
+    private Optional<String> color = Optional.empty();
 
     public String getName() {
         return name;

@@ -20,7 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.test.helper.domain;
+package ch.ifocusit.plantuml.test.helper.domain.material;
+
+import ch.ifocusit.plantuml.test.helper.domain.Driver;
+import ch.ifocusit.plantuml.test.helper.domain.Price;
 
 import java.util.Collection;
 

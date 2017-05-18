@@ -37,13 +37,13 @@ public class PlantUmlBuilderTest {
     @Test
     public void buildInterface() {
         final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Vehicule", Clazz.Type.INTERFACE)).build();
-        assertThat(diagram).isEqualTo("interface Vehicule" + CR + CR);
+        assertThat(diagram).isEqualTo("interface \"Vehicule\"" + CR + CR);
     }
 
     @Test
     public void buildClassNoField() {
         final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Wheel", Clazz.Type.CLASS)).build();
-        assertThat(diagram).isEqualTo("class Wheel" + CR + CR);
+        assertThat(diagram).isEqualTo("class \"Wheel\"" + CR + CR);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class PlantUmlBuilderTest {
                         new SimpleAttribute("wheels", "Collection<Wheel>")))
                 .build();
 
-        assertThat(diagram).isEqualTo("class Car {" + CR +
+        assertThat(diagram).isEqualTo("class \"Car\" {" + CR +
                 "  brand : String" + CR +
                 "  wheels : Collection<Wheel>" + CR +
                 "}" + CR + CR);
@@ -69,7 +69,7 @@ public class PlantUmlBuilderTest {
                         new SimpleAttribute("USD", null)))
                 .build();
 
-        assertThat(diagram).isEqualTo("enum Devise {" + CR +
+        assertThat(diagram).isEqualTo("enum \"Devise\" {" + CR +
                 "  CHF" + CR +
                 "  EUR" + CR +
                 "  USD" + CR +
@@ -85,9 +85,9 @@ public class PlantUmlBuilderTest {
                 .addAssociation("Price", "Devise", Association.DIRECTION)
                 .build();
 
-        assertThat(diagram).isEqualTo("Vehicule <|-- Car" + CR +
-                "Car --> Price : price" + CR +
-                "Car --> \"*\" Wheel : wheels" + CR +
-                "Price --> Devise" + CR);
+        assertThat(diagram).isEqualTo("\"Vehicule\" <|-- \"Car\"" + CR +
+                "\"Car\" --> \"Price\" : price" + CR +
+                "\"Car\" --> \"*\" \"Wheel\" : wheels" + CR +
+                "\"Price\" --> \"Devise\"" + CR);
     }
 }

@@ -26,6 +26,10 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.test.helper.domain.*;
+import ch.ifocusit.plantuml.test.helper.domain.material.Car;
+import ch.ifocusit.plantuml.test.helper.domain.material.Machine;
+import ch.ifocusit.plantuml.test.helper.domain.material.Vehicule;
+import ch.ifocusit.plantuml.test.helper.domain.material.Wheel;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -45,7 +49,8 @@ public class ClassDiagramBuilderTest {
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
-                .excludes(".*\\.ignored")
+                .excludes(".*\\.ignored", "Machine")
+                .addPackage(Vehicule.class.getPackage())
                 .addClasse(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
                 .build();
         // end::createSimple[]
@@ -63,7 +68,7 @@ public class ClassDiagramBuilderTest {
                 .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR +
-                "class Car {" + CR +
+                "class \"Car\" {" + CR +
                 "  brand : String" + CR +
                 "  model : String" + CR +
                 "  wheels : Collection<Wheel>" + CR +
@@ -92,7 +97,7 @@ public class ClassDiagramBuilderTest {
                 .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR +
-                "class domain.Car {" + CR +
+                "class \"domain.Car\" {" + CR +
                 "  attr.brand : String" + CR +
                 "  attr.model : String" + CR +
                 "  attr.wheels : Collection<Wheel>" + CR +

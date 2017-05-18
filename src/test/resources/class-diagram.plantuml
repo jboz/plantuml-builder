@@ -1,12 +1,15 @@
 @startuml
 
-package Test #purple {
-    class Test
+package ch.ifocusit.plantuml.test.helper.domain.material <<Folder>> {
+  class "Car"
+  interface "Machine"
+  interface "Vehicule"
+  class "Wheel"
 }
 
-interface Vehicule
+interface "Vehicule"
 
-class Car {
+class "Car" {
   brand : String
   model : String
   driver : Driver
@@ -14,28 +17,28 @@ class Car {
   wheels : Collection<Wheel>
 }
 
-class Driver {
+class "Driver" {
   name : String
   cars : List<Car>
 }
 
-class Price {
+class "Price" {
   amount : BigDecimal
   devise : Devise
 }
 
-class Wheel
+class "Wheel"
 
-enum Devise {
+enum "Devise" {
   CHF
   EUR
   USD
 }
 
-Vehicule <|-- Car
-Car "*" <-> Driver : driver
-Car --> Price : price
-Car --> "*" Wheel : wheels
-Price --> Devise : devise
+"Vehicule" <|-- "Car"
+"Car" "*" <-> "Driver" : driver
+"Car" --> "Price" : price
+"Car" --> "*" "Wheel" : wheels
+"Price" --> "Devise" : devise
 
 @enduml

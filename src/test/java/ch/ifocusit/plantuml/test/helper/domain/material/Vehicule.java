@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.test.helper.domain;
+package ch.ifocusit.plantuml.test.helper.domain.material;
 
 @Machine
 public interface Vehicule {

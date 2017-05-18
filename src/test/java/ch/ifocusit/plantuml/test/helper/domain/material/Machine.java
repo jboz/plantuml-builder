@@ -1,4 +1,4 @@
-package ch.ifocusit.plantuml.test.helper.domain;
+package ch.ifocusit.plantuml.test.helper.domain.material;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

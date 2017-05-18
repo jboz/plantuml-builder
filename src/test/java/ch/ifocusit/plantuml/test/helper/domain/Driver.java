@@ -22,6 +22,8 @@
  */
 package ch.ifocusit.plantuml.test.helper.domain;
 
+import ch.ifocusit.plantuml.test.helper.domain.material.Car;
+
 import java.util.List;
 
 public class Driver {
