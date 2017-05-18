@@ -20,7 +20,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model;
+package ch.ifocusit.plantuml.classdiagram.model.clazz;
+
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,5 +54,28 @@ public interface Clazz {
 
     default public Optional<String> getBorderColor() {
         return Optional.empty();
+    }
+
+    default public void validate() {
+        Validate.notNull(getName(), "Class name must be defined !");
+        Validate.notNull(getType(), String.format("Class '%s' type must be defined !", getName()));
+    }
+
+    public static enum Type {
+        INTERFACE("interface"),
+        ENUM("enum"),
+        CLASS("class"),
+        ABSTRACT("abstract class");
+
+        private String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

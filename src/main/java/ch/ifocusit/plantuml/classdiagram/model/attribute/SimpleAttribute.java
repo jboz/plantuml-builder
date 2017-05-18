@@ -20,25 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model;
+package ch.ifocusit.plantuml.classdiagram.model.attribute;
+
+import java.util.Optional;
 
 /**
  * @author Julien Boz
  */
-public enum Type {
-    INTERFACE("interface"),
-    ENUM("enum"),
-    CLASS("class"),
-    ABSTRACT("abstract class");
+public class SimpleAttribute implements Attribute {
 
+    private String type;
     private String name;
 
-    Type(String name) {
+    public SimpleAttribute(String name, String type) {
+        this.type = type;
         this.name = name;
     }
 
     @Override
-    public String toString() {
+    public Optional<String> getType() {
+        return Optional.ofNullable(type);
+    }
+
+    @Override
+    public String getName() {
         return name;
     }
 }

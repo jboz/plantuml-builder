@@ -1,5 +1,9 @@
 @startuml
 
+package Test #purple {
+    class Test
+}
+
 interface Vehicule
 
 class Car {

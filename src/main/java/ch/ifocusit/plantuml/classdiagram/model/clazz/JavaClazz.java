@@ -20,8 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model;
+package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Modifier;
@@ -32,7 +34,7 @@ import java.util.Optional;
 /**
  * @author Julien Boz
  */
-public class JavaClass implements Clazz {
+public class JavaClazz implements Clazz {
 
     private final Class<?> relatedClass;
     private Optional<String> overridedName;
@@ -41,7 +43,7 @@ public class JavaClass implements Clazz {
     private String backgroundColor;
     private String borderColor;
 
-    public JavaClass(Class<?> relatedClass) {
+    public JavaClazz(Class<?> relatedClass) {
         this.relatedClass = relatedClass;
     }
 
@@ -57,7 +59,7 @@ public class JavaClass implements Clazz {
         return link;
     }
 
-    public JavaClass setLink(Optional<Link> link) {
+    public JavaClazz setLink(Optional<Link> link) {
         this.link = link;
         return this;
     }
@@ -72,7 +74,7 @@ public class JavaClass implements Clazz {
         }
     }
 
-    public JavaClass setOverridedName(String overridedName) {
+    public JavaClazz setOverridedName(String overridedName) {
         this.overridedName = Optional.ofNullable(overridedName);
         return this;
     }
@@ -105,18 +107,18 @@ public class JavaClass implements Clazz {
         return Optional.ofNullable(borderColor);
     }
 
-    public JavaClass setBackgroundColor(String color) {
+    public JavaClazz setBackgroundColor(String color) {
         this.backgroundColor = color;
         return this;
     }
 
-    public JavaClass setBorderColor(String color) {
+    public JavaClazz setBorderColor(String color) {
         this.borderColor = color;
         return this;
     }
 
-    public static JavaClass from(Class aClass, Attribute... attributes) {
-        JavaClass javaClass = new JavaClass(aClass);
+    public static JavaClazz from(Class aClass, Attribute... attributes) {
+        JavaClazz javaClass = new JavaClazz(aClass);
         javaClass.addAttributes(attributes);
         return javaClass;
     }

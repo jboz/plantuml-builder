@@ -23,9 +23,9 @@
 package ch.ifocusit.plantuml;
 
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.SimpleAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.SimpleClass;
-import ch.ifocusit.plantuml.classdiagram.model.Type;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.SimpleAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.SimpleClazz;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -36,20 +36,20 @@ public class PlantUmlBuilderTest {
 
     @Test
     public void buildInterface() {
-        final String diagram = new PlantUmlBuilder().addType(SimpleClass.create("Vehicule", Type.INTERFACE)).build();
+        final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Vehicule", Clazz.Type.INTERFACE)).build();
         assertThat(diagram).isEqualTo("interface Vehicule" + CR + CR);
     }
 
     @Test
     public void buildClassNoField() {
-        final String diagram = new PlantUmlBuilder().addType(SimpleClass.create("Wheel", Type.CLASS)).build();
+        final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Wheel", Clazz.Type.CLASS)).build();
         assertThat(diagram).isEqualTo("class Wheel" + CR + CR);
     }
 
     @Test
     public void buildClassWithManyFields() {
         final String diagram = new PlantUmlBuilder()
-                .addType(SimpleClass.create("Car", Type.CLASS,
+                .addType(SimpleClazz.create("Car", Clazz.Type.CLASS,
                         new SimpleAttribute("brand", "String"),
                         new SimpleAttribute("wheels", "Collection<Wheel>")))
                 .build();
@@ -63,7 +63,7 @@ public class PlantUmlBuilderTest {
     @Test
     public void buildEnum() {
         final String diagram = new PlantUmlBuilder()
-                .addType(SimpleClass.create("Devise", Type.ENUM,
+                .addType(SimpleClazz.create("Devise", Clazz.Type.ENUM,
                         new SimpleAttribute("CHF", null),
                         new SimpleAttribute("EUR", null),
                         new SimpleAttribute("USD", null)))

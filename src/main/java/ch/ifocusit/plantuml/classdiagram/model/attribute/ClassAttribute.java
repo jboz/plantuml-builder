@@ -20,8 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model;
+package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
+import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -32,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * @author Julien Boz

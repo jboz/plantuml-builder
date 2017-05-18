@@ -20,17 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model;
+package ch.ifocusit.plantuml.classdiagram.model.clazz;
+
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
  * @author Julien Boz
  */
-public class SimpleClass implements Clazz {
+public class SimpleClazz implements Clazz {
 
     private String name;
     private Type type;
@@ -51,8 +52,8 @@ public class SimpleClass implements Clazz {
         return attributes;
     }
 
-    public static SimpleClass create(String name, Type type, Attribute... attributes) {
-        SimpleClass c = new SimpleClass();
+    public static SimpleClazz create(String name, Type type, Attribute... attributes) {
+        SimpleClazz c = new SimpleClazz();
         c.name = name;
         c.type = type;
         Stream.of(attributes).forEach(c.attributes::add);

@@ -46,7 +46,7 @@ public class ClassDiagramBuilderTest {
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
                 .excludes(".*\\.ignored")
-                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
+                .addClasse(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
                 .build();
         // end::createSimple[]
 
@@ -59,7 +59,7 @@ public class ClassDiagramBuilderTest {
                 .excludes(".*\\.ignored")
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
-                .addClasses(Car.class)
+                .addClasse(Car.class)
                 .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR +
@@ -77,7 +77,7 @@ public class ClassDiagramBuilderTest {
                 .excludes(".*\\.ignored")
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
-                .addClasses(Car.class)
+                .addClasse(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
                     public String getClassName(Class aClass) {

@@ -22,18 +22,44 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.Optional;
 
 /**
  * @author Julien Boz
  */
-public interface Attribute {
+public class Package {
 
-    public Optional<String> getType();
+    private String name;
+    private Type type = Type.Folder;
+    private Optional<String> color;
 
-    public String getName();
-
-    default public Optional<Link> getLink() {
-        return Optional.empty();
+    public String getName() {
+        return name;
     }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Optional<String> getColor() {
+        return color;
+    }
+
+    public void validate() {
+        Validate.notNull(getName(), "Package name must be defined !");
+        Validate.notNull(getType(), String.format("Package '%s' tpye must be defined !", getName()));
+    }
+
+    public static Package from(java.lang.Package javaPkg) {
+        Package p = new Package();
+        p.name = javaPkg.getName();
+        return p;
+    }
+
+    public static enum Type {
+        Node, Rectangle, Folder, Frame, Cloud, Database;
+    }
+
 }

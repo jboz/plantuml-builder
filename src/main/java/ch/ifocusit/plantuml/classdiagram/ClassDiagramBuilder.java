@@ -24,17 +24,18 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.Attribute;
-import ch.ifocusit.plantuml.classdiagram.model.ClassAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.JavaClass;
+import ch.ifocusit.plantuml.classdiagram.model.Package;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.utils.ClassUtils;
+import com.google.common.reflect.ClassPath;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,18 +44,21 @@ import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
 
 /**
- * Build class diagram from JavaClass definition.
+ * Build class diagram from JavaClazz definition.
  *
  * @author Julien Boz
  */
 public class ClassDiagramBuilder implements NamesMapper {
 
+    private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classes = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
     private final Set<ClassAttribute> attributs = new LinkedHashSet<>();
     private NamesMapper namesMapper = this;
+
+    private final Map<Class, JavaClazz> cache = new HashMap<>();
 
     public ClassDiagramBuilder() {
     }
@@ -73,13 +77,18 @@ public class ClassDiagramBuilder implements NamesMapper {
         return this;
     }
 
-    public ClassDiagramBuilder addClasses(Iterable<Class> classes) {
+    public ClassDiagramBuilder addClasse(Iterable<Class> classes) {
         classes.forEach(this.classes::add);
         return this;
     }
 
-    public ClassDiagramBuilder addClasses(Class... classes) {
+    public ClassDiagramBuilder addClasse(Class... classes) {
         Stream.of(classes).forEach(this.classes::add);
+        return this;
+    }
+
+    public ClassDiagramBuilder addPackage(java.lang.Package... packages) {
+        Stream.of(packages).forEach(this.packages::add);
         return this;
     }
 
@@ -92,10 +101,27 @@ public class ClassDiagramBuilder implements NamesMapper {
         attributs.clear();
         // generate diagram from configuration
         builder.start();
-        addTypes(); // first add types definition
+        addPackages(); // add package definition
+        addTypes(); // add types definition
         addAssociations(); // then add their associations
         builder.end();
         return builder.build();
+    }
+
+    protected void addPackages() {
+        packages.stream().forEach(pkg -> {
+            try {
+                ClassPath classPath = ClassPath.from(Thread.currentThread().getContextClassLoader());
+                Clazz[] classes = classPath.getTopLevelClasses(pkg.getName()).stream()
+                        .map(ClassPath.ClassInfo::load)
+                        .map(this::createJavaClass)
+                        .toArray(Clazz[]::new);
+                builder.addPackage(Package.from(pkg), classes);
+            } catch (IOException e) {
+                throw new IllegalStateException("Cannot load classes from package " + pkg, e);
+            }
+
+        });
     }
 
     protected void addTypes() {
@@ -104,10 +130,11 @@ public class ClassDiagramBuilder implements NamesMapper {
         classes.forEach(clazz -> builder.addType(createJavaClass(clazz)));
     }
 
-    protected JavaClass createJavaClass(Class clazz) {
-        return JavaClass.from(clazz, readFields(clazz))
+    protected JavaClazz createJavaClass(Class aClass) {
+        return cache.computeIfAbsent(aClass, clazz -> JavaClazz.from(clazz, readFields(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
-                .setLink(namesMapper.getClassLink(clazz));
+                .setLink(namesMapper.getClassLink(clazz))
+        );
     }
 
     protected Predicate<ClassAttribute> filter() {

@@ -23,12 +23,15 @@
 package ch.ifocusit.plantuml;
 
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.Attribute;
-import ch.ifocusit.plantuml.classdiagram.model.Clazz;
+import ch.ifocusit.plantuml.classdiagram.model.Package;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.text.MessageFormat;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.classdiagram.model.Association.DIRECTION;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -49,6 +52,8 @@ public class PlantUmlBuilder {
     public static final String TAB = SPACE + SPACE;
     public static final String NEWLINE = System.getProperty("line.separator");
     public static final String QUOTE = "\"";
+    public static final String HASHTAG = "#";
+    public static final String PACKAGE_TMPL = "package {0} <<{1}>>";
 
     private final StringBuilder content = new StringBuilder();
 
@@ -66,26 +71,69 @@ public class PlantUmlBuilder {
         return content.toString();
     }
 
+    private String escape(String value) {
+        return QUOTE + value + QUOTE;
+    }
+
+    private String color(String color) {
+        return HASHTAG + color;
+    }
+
+    private PlantUmlBuilder writeClazzDefinition(Clazz clazz) {
+        content.append(clazz.getType()).append(SPACE).append(escape(clazz.getName()));
+        return this;
+    }
+
+    private PlantUmlBuilder append(String s) {
+        content.append(s);
+        return this;
+    }
+
+    //*********************************************************************************
+    // PACKAGE
+    //*********************************************************************************
+
+    public PlantUmlBuilder addPackage(Package aPackage, Clazz... classes) {
+        Validate.notNull(aPackage, "no package defined !");
+        aPackage.validate();
+        Validate.notEmpty(classes, String.format("Package '%s' must not be empty !", aPackage.getName()));
+
+        content.append(MessageFormat.format(PACKAGE_TMPL, aPackage.getName(), aPackage.getType()));
+        aPackage.getColor().ifPresent(color -> content.append(SPACE).append(color(color)));
+        content.append(SPACE).append(BRACE_OPEN);
+        Stream.of(classes).forEach(clazz -> {
+            clazz.validate();
+            append(TAB).writeClazzDefinition(clazz).append(NEWLINE);
+        });
+        content.append(BRACE_CLOSE);
+
+        return this;
+    }
+
+
     //*********************************************************************************
     // TYPE
     //*********************************************************************************
 
-    public PlantUmlBuilder addType(Clazz javaClass) {
-        content.append(javaClass.getType()).append(SPACE).append(javaClass.getName());
-        if (!javaClass.getAttributes().isEmpty()) {
+    public PlantUmlBuilder addType(Clazz clazz) {
+        Validate.notNull(clazz, "No class defined !");
+        clazz.validate();
+
+        writeClazzDefinition(clazz);
+        if (!clazz.getAttributes().isEmpty()) {
             content.append(SPACE);
             // class link
-            javaClass.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
+            clazz.getLink().ifPresent(link -> content.append(link.toString()).append(SPACE));
             // stereotype
-            javaClass.getStereotypes().ifPresent(stereotypes -> content
+            clazz.getStereotypes().ifPresent(stereotypes -> content
                     .append(STEREOTYPE_OPEN)
                     .append(stereotypes.stream().collect(Collectors.joining(", ")))
                     .append(STEREOTYPE_CLOSE)
                     .append(SPACE));
             // class color
-            javaClass.getBackgroundColor().ifPresent(color -> content.append("#").append(color).append(SPACE));
+            clazz.getBackgroundColor().ifPresent(color -> content.append(color(color)).append(SPACE));
             content.append(BRACE_OPEN).append(NEWLINE);
-            for (Attribute attribute : javaClass.getAttributes()) {
+            for (Attribute attribute : clazz.getAttributes()) {
                 // name
                 content.append(TAB).append(attribute.getName());
                 // type
@@ -121,11 +169,11 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, String aCardinality, String bCardinality) {
-        Validate.notBlank(aName, "JavaClass a name is mandatory");
-        Validate.notBlank(bName, "JavaClass b name is mandatory");
+        Validate.notBlank(aName, "Class a name is mandatory");
+        Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(assoc, "Association type is mandatory");
 
-        content.append(aName);
+        content.append(escape(aName));
         if (StringUtils.isNotBlank(aCardinality)) {
             content.append(SPACE).append(QUOTE).append(aCardinality).append(QUOTE);
         }
@@ -133,7 +181,7 @@ public class PlantUmlBuilder {
         if (StringUtils.isNotBlank(bCardinality)) {
             content.append(QUOTE).append(bCardinality).append(QUOTE).append(SPACE);
         }
-        content.append(bName);
+        content.append(escape(bName));
         if (StringUtils.isNotBlank(label)) {
             content.append(SPACE).append(SEMICOLON).append(SPACE).append(label);
 
