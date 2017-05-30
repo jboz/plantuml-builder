@@ -85,9 +85,23 @@ public class PlantUmlBuilder {
     }
 
     private PlantUmlBuilder append(String s) {
-        content.append(s);
+        if (s != null) {
+            content.append(s);
+        }
         return this;
     }
+
+    //*********************************************************************************
+    // HEADER/FOOTER
+    //*********************************************************************************
+
+    public PlantUmlBuilder appendPart(String part) {
+        if (part != null) {
+            content.append(NEWLINE).append(NEWLINE).append(part).append(NEWLINE).append(NEWLINE);
+        }
+        return this;
+    }
+
 
     //*********************************************************************************
     // PACKAGE

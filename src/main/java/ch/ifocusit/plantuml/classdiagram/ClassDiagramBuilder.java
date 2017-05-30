@@ -58,9 +58,22 @@ public class ClassDiagramBuilder implements NamesMapper {
     private final Set<ClassAttribute> attributs = new LinkedHashSet<>();
     private NamesMapper namesMapper = this;
 
+    private String header;
+    private String footer;
+
     private final Map<Class, JavaClazz> cache = new HashMap<>();
 
     public ClassDiagramBuilder() {
+    }
+
+    public ClassDiagramBuilder setHeader(String header) {
+        this.header = header;
+        return this;
+    }
+
+    public ClassDiagramBuilder setFooter(String footer) {
+        this.footer = footer;
+        return this;
     }
 
     public ClassDiagramBuilder excludes(String... excludes) {
@@ -101,9 +114,11 @@ public class ClassDiagramBuilder implements NamesMapper {
         attributs.clear();
         // generate diagram from configuration
         builder.start();
+        builder.appendPart(header);
         addPackages(); // add package definition
         addTypes(); // add types definition
         addAssociations(); // then add their associations
+        builder.appendPart(footer);
         builder.end();
         return builder.build();
     }
