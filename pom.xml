@@ -30,6 +30,7 @@
         <url>https://github.com/jboz/plantuml-builder</url>
         <connection>scm:git:git://github.com/jboz/plantuml-builder.git</connection>
         <developerConnection>scm:git:git@github.com:jboz/plantuml-builder.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>

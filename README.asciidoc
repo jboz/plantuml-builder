@@ -5,8 +5,10 @@ ifndef::imagesdir[:imagesdir: images]
 :source-highlighter: coderay
 :source-language: asciidoc
 
-image::https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
-image::https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square["Make a pull request", link="http://makeapullrequest.com"]
+image:https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
+image:https://img.shields.io/badge/PRs-welcome-brightgreen.svg["Make a pull request", link="http://makeapullrequest.com"]
+image:https://img.shields.io/github/license/spotify/dockerfile-maven.svg[License]
+
 = Plantuml builder
 
 Tools to generate plantuml diagram from java sources.
@@ -17,7 +19,6 @@ This code :
 [source,java]
 ----
 String diagram = new ClassDiagramBuilder()
-        .excludes(".*\\.ignored")
         .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
         .build();
 ----
