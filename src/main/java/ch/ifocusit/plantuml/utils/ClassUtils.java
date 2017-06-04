@@ -40,7 +40,7 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
     public static final String DOLLAR = "$";
 
     public static String getSimpleName(java.lang.reflect.Type type) {
-        return getSimpleName((Class) type);
+        return Class.class.isInstance(type) ? getSimpleName(Class.class.cast(type)) : type.getTypeName();
     }
 
     public static String getSimpleName(Class aClass) {
@@ -74,7 +74,7 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         if (field.getGenericType() instanceof ParameterizedType) {
             // manage generics
             ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-            return Stream.of(genericType.getActualTypeArguments()).map(type -> (Class) type);
+            return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
         }
         return Stream.empty();
     }
