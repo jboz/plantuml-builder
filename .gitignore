@@ -2,3 +2,7 @@
 .idea
 target
 *.log
+.classpath
+.project
+.settings
+.vscode
