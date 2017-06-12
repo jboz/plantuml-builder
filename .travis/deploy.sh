@@ -1,7 +1,7 @@
 
 TO_RELEASE=false
 
-if [ $TRAVIS_COMMIT_MESSAGE =~ ^make release .*$ ] then
+if [ $TRAVIS_COMMIT_MESSAGE =~ ^make release .*$ ]; then
     echo "commit message indicate that de release must be create"
     TO_RELEASE=true
 fi
