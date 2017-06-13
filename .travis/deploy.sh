@@ -19,7 +19,7 @@ echo "will generate release ? $MAKE_RELEASE"
 
 if [ "$MAKE_RELEASE" = "true" ]; then
     echo "create release from actual SNAPSHOT"
-    mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion} help:evaluate -DPROJECT_VERSION=project.version
+    mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}
 else
     echo "keep snapshot version in pom.xml"
 fi
@@ -40,13 +40,14 @@ if [ "$MAKE_RELEASE" = "true" ]; then
     git config user.email "$COMMIT_AUTHOR_EMAIL"
     #c8a1526c7ec595d2fca457de79893f9b8d631276
     PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }'`
-    export GIT_TAG=v$PROJECT_VERSION
-    echo "git tag $GIT_TAG -a -m 'Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER'"
-    echo "git push -q $SSH_REPO --tags"
+    GIT_TAG=v$PROJECT_VERSION
+    echo "create git tag $GIT_TAG"
+    git tag $GIT_TAG -a -m 'Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER'
+    git push -q $SSH_REPO --tags
 
     echo "after release, set next development version"
     mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT help:evaluate -DPROJECT_VERSION=project.version
-    echo "git add -A ."
-    echo "git commit -m 'next dev version: $PROJECT_VERSION'"
-    echo "git push $SSH_REPO master"
+    git add -A .
+    git commit -m 'next dev version: $PROJECT_VERSION'
+    git push $SSH_REPO master
 fi
