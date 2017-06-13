@@ -8,7 +8,7 @@ MAKE_RELEASE='false'
 
 echo "commit message: $TRAVIS_COMMIT_MESSAGE"
 
-if [[ "$TRAVIS_COMMIT_MESSAGE" =~ '/^make release .*$/' ]]
+if [ "$TRAVIS_COMMIT_MESSAGE" =~ '/^make release .*$/' ]    
 then
     echo "commit message indicate that de release must be create"
     MAKE_RELEASE='true'
@@ -16,7 +16,7 @@ fi
 
 echo "will generate release ? $MAKE_RELEASE"
 
-if [ $MAKE_RELEASE == 'true' ]
+if [ "$MAKE_RELEASE" = "true" ]
 then
     echo "create release from actual SNAPSHOT"
     #mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion} help:evaluate -DPROJECT_VERSION=project.version
@@ -24,14 +24,14 @@ else
     echo "keep snapshot version in pom.xml"
 fi
 
-if [ "$TRAVIS_BRANCH" = 'master' ] && [ $TRAVIS_PULL_REQUEST == 'false' ]
+if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]
 then
     echo "deploy version"
     #mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
     exit $?
 fi
 
-if [ "$MAKE_RELEASE" == 'true' ]
+if [ "$MAKE_RELEASE" = "true" ]
 then
     # Save some useful information
     REPO='git config remote.origin.url'
