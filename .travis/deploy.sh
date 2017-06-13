@@ -17,9 +17,9 @@ fi
 
 echo "will generate release ? $MAKE_RELEASE"
 
-if [ "$MAKE_RELEASE" = "true" ]; then
+if [ "$MAKE_RELEASE" = 'true' ]; then
     echo "create release from actual SNAPSHOT"
-    mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}
+    mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit
 else
     echo "keep snapshot version in pom.xml"
 fi
@@ -30,24 +30,18 @@ if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
     exit $?
 fi
 
-if [ "$MAKE_RELEASE" = "true" ]; then
-    # Save some useful information
-    REPO='git config remote.origin.url'
-    SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}
-    COMMIT_AUTHOR_EMAIL='julienboz@gmail.com'
-
+if [ "$MAKE_RELEASE" = 'true' ]; then
     git config user.name "Travis CI"
-    git config user.email "$COMMIT_AUTHOR_EMAIL"
+    git config user.email "travis-ci@ifocusit.ch"
     #c8a1526c7ec595d2fca457de79893f9b8d631276
-    PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }'`
+    PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v "^\[")
     GIT_TAG=v$PROJECT_VERSION
     echo "create git tag $GIT_TAG"
-    git tag $GIT_TAG -a -m 'Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER'
-    git push -q $SSH_REPO --tags
+    git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"   
 
-    echo "after release, set next development version"
-    mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT help:evaluate -DPROJECT_VERSION=project.version
-    git add -A .
-    git commit -m 'next dev version: $PROJECT_VERSION'
-    git push $SSH_REPO master
+    echo "set next development version"
+    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+    
+    # push new version
+    git push --quiet --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG" > /dev/null 2>&1
 fi
