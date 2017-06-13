@@ -15,14 +15,20 @@ fi
 
 if [ "$MAKE_RELEASE" = 'true' ]; then
     echo "create release from actual SNAPSHOT"
-    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit
+    if ! mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit; then
+        err "set release version failed"
+        exit 1
+    fi
 else
     echo "keep snapshot version in pom.xml"
 fi
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
     echo "deploy version to maven centrale"
-    mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
+    if ! mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U; then
+        err "maven deploy failed"
+        exit 1
+    fi
 fi
 
 if [ "$MAKE_RELEASE" = 'true' ]; then
@@ -32,11 +38,20 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v "^\[")
     GIT_TAG=v$PROJECT_VERSION
     echo "create git tag $GIT_TAG"
-    git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"   
+    if ! git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"; then
+        err "failed to create git tag: $git_tag"
+        exit 1
+    fi
 
     echo "set next development version"
-    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+    if ! mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit; then
+        err "set next dev version failed"
+        exit 1
+    fi
     
     # push new version
-    git push --quiet --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG" > /dev/null 2>&1
+    if ! git push --quiet --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG" > /dev/null 2>&1; then
+        err "failed to push git tags"
+        exit 1
+    fi
 fi
