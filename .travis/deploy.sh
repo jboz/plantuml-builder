@@ -10,7 +10,7 @@ MAKE_RELEASE='false'
 
 echo "commit message: $TRAVIS_COMMIT_MESSAGE"
 
-if [[ $TRAVIS_COMMIT_MESSAGE =~ ^make release.*$ ]]; then
+if [[ "{$TRAVIS_COMMIT_MESSAGE}" =~ ^make release.*$ ]]; then
     echo "commit message indicate that a release must be create"
     MAKE_RELEASE='true'
 fi
@@ -39,6 +39,7 @@ if [ "$MAKE_RELEASE" = "true" ]; then
     git config user.name "Travis CI"
     git config user.email "$COMMIT_AUTHOR_EMAIL"
     #c8a1526c7ec595d2fca457de79893f9b8d631276
+    PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | sed -n -e '/^\[.*\]/ !{ /^[0-9]/ { p; q } }'`
     export GIT_TAG=v$PROJECT_VERSION
     echo "git tag $GIT_TAG -a -m 'Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER'"
     echo "git push -q $SSH_REPO --tags"
