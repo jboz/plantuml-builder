@@ -1,25 +1,38 @@
-
-TO_RELEASE=false
-
-if [ $TRAVIS_COMMIT_MESSAGE =~ ^make release .*$ ]; then
-    echo "commit message indicate that de release must be create"
-    TO_RELEASE=true
+# Pull requests and commits to other branches shouldn't try to deploy, just build to verify
+if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" ]; then
+    echo "Skipping deploy; just doing a build."
+    exit 0
 fi
 
-if [ "$TO_RELEASE" == 'true' ]; then
+MAKE_RELEASE='false'
+
+echo "commit message: $TRAVIS_COMMIT_MESSAGE"
+
+if [[ "$TRAVIS_COMMIT_MESSAGE" =~ '/^make release .*$/' ]]
+then
+    echo "commit message indicate that de release must be create"
+    MAKE_RELEASE='true'
+fi
+
+echo "will generate release ? $MAKE_RELEASE"
+
+if [ $MAKE_RELEASE == 'true' ]
+then
     echo "create release from actual SNAPSHOT"
     #mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion} help:evaluate -DPROJECT_VERSION=project.version
 else
     echo "keep snapshot version in pom.xml"
 fi
 
-if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" == 'false' ]; then
+if [ "$TRAVIS_BRANCH" = 'master' ] && [ $TRAVIS_PULL_REQUEST == 'false' ]
+then
     echo "deploy version"
     #mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
     exit $?
 fi
 
-if [ "$TO_RELEASE" == 'true' ]; then
+if [ "$MAKE_RELEASE" == 'true' ]
+then
     # Save some useful information
     REPO='git config remote.origin.url'
     SSH_REPO=${REPO/https:\/\/github.com\//git@github.com:}

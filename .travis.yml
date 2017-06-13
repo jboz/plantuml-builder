@@ -7,8 +7,6 @@ jdk:
 
 install: mvn verify -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
 
-script: mvn test -B
-
 branches:
   only:
   - master
