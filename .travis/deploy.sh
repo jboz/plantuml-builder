@@ -10,7 +10,7 @@ MAKE_RELEASE='false'
 
 echo "commit message: $TRAVIS_COMMIT_MESSAGE"
 
-if [[ "{$TRAVIS_COMMIT_MESSAGE}" =~ ^make release.*$ ]]; then
+if [[ "${TRAVIS_COMMIT_MESSAGE}" =~ '^make release.*$' ]]; then
     echo "commit message indicate that a release must be create"
     MAKE_RELEASE='true'
 fi
