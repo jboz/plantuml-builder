@@ -8,8 +8,7 @@ MAKE_RELEASE='false'
 
 echo "commit message: $TRAVIS_COMMIT_MESSAGE"
 
-if [ "$TRAVIS_COMMIT_MESSAGE" = 'make release*' ]
-then
+if [[ "$TRAVIS_COMMIT_MESSAGE" =~ ^make release.* ]];   then
     echo "commit message indicate that de release must be create"
     MAKE_RELEASE='true'
 fi
@@ -26,7 +25,7 @@ fi
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]
 then
-    echo "deploy version to maven centrale"
+    echo "deploy a version to maven centrale"
     mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
     exit $?
 fi
