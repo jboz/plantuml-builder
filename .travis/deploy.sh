@@ -19,15 +19,15 @@ echo "will generate release ? $MAKE_RELEASE"
 if [ "$MAKE_RELEASE" = "true" ]
 then
     echo "create release from actual SNAPSHOT"
-    #mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion} help:evaluate -DPROJECT_VERSION=project.version
+    mvn --settings .travis/settings.xml build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion} help:evaluate -DPROJECT_VERSION=project.version
 else
     echo "keep snapshot version in pom.xml"
 fi
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]
 then
-    echo "deploy version"
-    #mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
+    echo "deploy version to maven centrale"
+    mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U
     exit $?
 fi
 
