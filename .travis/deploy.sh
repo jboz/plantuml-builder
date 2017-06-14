@@ -55,7 +55,10 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     fi
     NEXT_VERSION=`mvn -q exec:exec -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive`
     echo "next development version will be $NEXT_VERSION"
+
+    git commit -m "set next development version to $NEXT_VERSION"
     
-    echo "pushing new development version..."
+    REPO=`git config remote.origin.url`
+    echo "pushing new development version to $TRAVIS_REPO_SLUG ($REPO)..."
     git push --tags "https://jboz:$OAUTH_TOKEN@github.com/jboz/plantuml-builder.git"
 fi

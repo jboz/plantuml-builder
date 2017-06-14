@@ -58,35 +58,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.4</version>
-                <configuration>
-                    <skipDeploy>true</skipDeploy>
-                </configuration>
-            </plugin>
-            <plugin><!-- invoke with mvn site-deploy -->
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.12</version>
-                <executions>
-                    <execution>
-                        <id>github-site</id>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site-deploy</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <message>Building site for ${project.artifactId} v${project.version}</message>
-                    <server>github</server>
-                    <merge>true</merge>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <dependencies>
