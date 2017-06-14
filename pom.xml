@@ -15,7 +15,7 @@
 
     <organization>
         <name>Focus IT</name>
-        <url>http://ifocusit.ch</url>
+        <url>http://www.ifocusit.ch</url>
     </organization>
 
     <licenses>
@@ -40,6 +40,12 @@
             <email>julienboz@gmail.com</email>
         </developer>
     </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <build>
         <resources>
@@ -82,12 +88,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
 
     <dependencies>
         <dependency>
