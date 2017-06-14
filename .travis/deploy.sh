@@ -23,6 +23,7 @@ else
     echo "keep snapshot version in pom.xml"
 fi
 
+echo "reading project version..."
 PROJECT_VERSION=`mvn -q exec:exec -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive`
 if [[ $? != 0 || ! $PROJECT_VERSION ]]; then
     echo "failed to parse project version"
@@ -40,7 +41,6 @@ fi
 if [ "$MAKE_RELEASE" = 'true' ]; then
     git config user.name "Travis CI"
     git config user.email "travis-ci@ifocusit.ch"
-    echo "reading project version..."
     GIT_TAG=v$PROJECT_VERSION
     echo "create git tag $GIT_TAG"
     if ! git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"; then
@@ -54,8 +54,8 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
         exit 1
     fi
     NEXT_VERSION=`mvn -q exec:exec -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive`
-    echo "set next development version to $NEXT_VERSION"
+    echo "next development version will be $NEXT_VERSION"
     
-    # push new version
+    echo "pushing new development verion to https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG..."
     git push --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG"
 fi
