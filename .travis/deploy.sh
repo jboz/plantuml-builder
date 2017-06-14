@@ -6,6 +6,9 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "master" ]; then
     exit 0
 fi
 
+# reconnect master to origin
+git checkout master
+
 MAKE_RELEASE='false'
 
 if [[ "${TRAVIS_COMMIT_MESSAGE}" =~ ^make\ release ]]; then 
@@ -54,4 +57,6 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     REPO=`git config remote.origin.url`
     echo "pushing new development version..."
     git push --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
+
+    ls target
 fi
