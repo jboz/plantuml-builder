@@ -32,7 +32,7 @@ fi
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
     echo "deploying version to maven centrale..."
-    if ! mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U; then
+    if ! mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U -X; then
         echo "maven deploy failed"
         exit 1
     fi
