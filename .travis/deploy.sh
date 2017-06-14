@@ -57,5 +57,5 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     echo "next development version will be $NEXT_VERSION"
     
     echo "pushing new development version..."
-    git push --tags "https://jboz:${env.OAUTH_TOKEN}@github.com/jboz/plantuml-builder"
+    git push --tags "https://jboz:$OAUTH_TOKEN@github.com/jboz/plantuml-builder"
 fi
