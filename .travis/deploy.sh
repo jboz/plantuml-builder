@@ -56,6 +56,6 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     NEXT_VERSION=`mvn -q exec:exec -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive`
     echo "next development version will be $NEXT_VERSION"
     
-    echo "pushing new development verion to https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG..."
+    echo "pushing new development version to https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG..."
     git push --tags "https://$GITHUB_TOKEN@github.com/jboz/plantuml-builder"
 fi
