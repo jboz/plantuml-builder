@@ -57,5 +57,5 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     echo "next development version will be $NEXT_VERSION"
     
     echo "pushing new development verion to https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG..."
-    git push --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG"
+    git push --tags "https://$GITHUB_TOKEN@github.com/jboz/plantuml-builder"
 fi
