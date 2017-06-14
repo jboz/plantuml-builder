@@ -36,6 +36,10 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     git config user.email "travis-ci@ifocusit.ch"
     #c8a1526c7ec595d2fca457de79893f9b8d631276
     PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version | grep -v "^\[")
+    if [[ $? != 0 || ! $PROJECT_VERSION ]]; then
+        err "failed to parse project version"
+        return 1
+    fi
     GIT_TAG=v$PROJECT_VERSION
     echo "create git tag $GIT_TAG"
     if ! git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"; then
