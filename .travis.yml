@@ -5,9 +5,9 @@ sudo: false
 jdk:
 - oraclejdk8
 
-install: mvn verify -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
+install: mvn verify -Dgpg.skip -Dmaven.javadoc.skip=true -B -V -U
 
-script: echo -e "\nplantuml-builder\n"
+script: echo -e "\nplantuml-builder project\n"
 
 branches:
   only:
@@ -34,6 +34,8 @@ env:
 notifications:
   email:
   - julienboz@gmail.com
+  on_success: change
+  on_failure: always
 
 deploy:
   provider: script
