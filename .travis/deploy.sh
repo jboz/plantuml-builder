@@ -31,7 +31,7 @@ PROJECT_VERSION=`mvn -q exec:exec -Dexec.executable="echo" -Dexec.args='${projec
 
 if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
     echo "deploying version to maven centrale..."
-    if ! mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U -X; then
+    if ! mvn deploy --settings .travis/settings.xml -DperformRelease=true -DskipTests=true -B -U gpg:sign; then
         echo "maven deploy failed"
         exit 1
     fi
