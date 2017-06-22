@@ -18,13 +18,12 @@ cache:
   - "$HOME/.m2"
 
 after_success:
-  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/pubring.gpg.enc -out $GPG_DIR/pubring.gpg -d
-  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in $GPG_DIR/secring.gpg.enc -out $GPG_DIR/secring.gpg -d
+  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in .travis/pubring.gpg.enc -out .travis/pubring.gpg -d
+  - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in .travis/secring.gpg.enc -out .travis/secring.gpg -d
   - chmod +x .travis/deploy.sh
 
 env:
   global:
-  # sona user, sona pass, encrypt pass, sign user sign pass, github commit
   - secure: La72bzH4G3IeH2o9D5q4O33xTpbYYtQhZlEqWnSphiwqKwROpXRumXuhWIvpgGOrTPEJIl9DHavOiXJk9QQU3MUUY+sLn6XZzZEopu8mSWOxS0ZeBCjbJJYsr9TtLu/qNtk6xn+d0Rbm+PcCBbOw6utE4yfd8zgvLeP9Jo189EMdqlAHJzSLursXMPQVKRttn/9Igkqgc/e4K1UKJpO+ZjQFPS+LxWNQiA2gkzbUR05ckBg4DDJrcXEkX5Kqa5+/T4o8mAwr7BrraPuy1DiwC1BnhxBEb+o1VVW1IO8ZX9lsuBP72o741xTzsibqAB65p3clhN6cl+RiFV0gJQY+JdjxP2jGBmT8Yz21tV9gufevJydwxPq233q2866AO0mx0NrCBszEiB+4Agzx4Y0oVd5CovPCTs29ciAwznTQWp/EB5v8UaDuLAwJKM787elgx9d1Loh0bGhpmMNyDk5Eatz4qodfQ9kPX924z3xgpjmo4x34doKNbEdCvaZ2l+Inq+aRMW72mXu36OEfUyZYtQ/OIxlrAO4RxTYoXoBFhoXhxD0lGtCBmcEDOn03IGvN1/3wsm7vq/Pf82s6kwzbUzn6UBGE4EEP4jRXEh210n/1gxnXKFpJgCYOi+2XY6xSbWCS1+j9n3+Cl4g6bsaeI/LQuzIICNVsRSJK36LpvNM=
   - secure: JwOjZwYFXJvIrt9vPzZ+6sX8g3z5iBRPe2sDx7eKGpYRVwV+OQ7Z72ful3ouFoSYenBXSRkXRTpI2U+d3AEKO6dAT4YDn/NlJSuvnSPU3v1LHGI7UJ/bFzX2Sn4JMZwu4zX64jsHvyC1Ch1FoiCf5UVpeVK3+EsYAuGXN0zNy9H1taZCuq4V8j+GIA6JObaFv+GiZPGp7YEjH9Rjx2HsI1OMvbNj5yZcydj5xSrCQ/kZJZlpntu8wfLcPN/qOUzjRLAD8U/C0bk0enGLTYjH/eAuL2Vti93YC0QIykhK/+jNx4DGLhj59vd2qwkvyENfkxxVy3t+pmB7AMJjuZ7JclfPMdhQkd80TLVHxjP36ZSCZqkKSRb0jZJBBZie+WiUrjHfESmOERFaxE98PryLDiOjoWSH/GDHB6k1+1SVN5n5WE5heirQzRULbG9SLYXJXtvF6IZYK7+Eff2NMChUhE/VAMadCbcXZrxaZhJ2Lb/Ne7veNQgLvjJiBnv0s3koN90RXC8cvsdywpdbmj+FQY7Uo8476gNm5XEvnt8VPLWVMiRVgTSDJm99TTG4Gxc6hoqFMlBCQjR6l8j+77Id7ynPvrsb3Py0CO1rGk6wCNeaIRkJ+EPoIRmOVLM6PR7fQEupDmBp8yAcngGHvYTVoaK1YvPdeuMNRyxx6tWUoMU=
   - secure: Y7x9EuBJ+iJHl0UJZuXU8oFpSSPj3kc0MN9rshOUNy3p5oZdy/6u72sRQxZqClG3MXD+6w08UbEy0CG8hc56j6w8pai5YGSQaDFMmT+CkjtGzfc1tDOQrCQ7EzN+AsRiOhl/6k93DJ6r/nXlRZRARX5Cc87DwQU+lfgHlF3rzwdoiXrxdlwpP7aycyc7Bkiskb3D40p9T6mHUIQxaT9CbyNFWpfxv/AtiCH2NqSL6OCk+Qhs3JagiWGhZb+dB0pAVBTLD4vbz4FAWYN8RcarDYO9S5Cwpff1PVNGquHw4J9PPRyQfJM6zpexWrd2lVlPWrR/ZDMZ7CF/RtkbbuO01fl1ZC3bCjt2keiosHV0VOrw4q0EaoMtwb/WM7Orb2Qooz3dcHk5hdF7B3m1daMsUlsZmvSL7IXsBMkvnW4PY7sfGsTHVCVOIorzP1roXMULtt9s0MHi23VJBjd7vKgf2U917daVWMrVou9SyTYBLQXBmdqmBSAMaScChhQooUHvpsV4SMWbcopw44yIi0aoVoCmanuNAJQIbOn0UiSInESfz/S1Dnx1KsYTIrIEG9dkXs58nLBVVYEGHvkjj8UtD8s9xNzI74h/0DHzZZtZR8I1YaFhdFNpKEAYaWT8BIG6WL7r9Vq2VUo3X8QvXRAml/rlk/0Bri0nfWRquZWzVOI=
