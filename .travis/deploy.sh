@@ -11,7 +11,7 @@ git checkout master
 
 MAKE_RELEASE='false'
 
-if [[ "${TRAVIS_COMMIT_MESSAGE}" =~ ^make\ release ]]; then 
+if [[ "${TRAVIS_COMMIT_MESSAGE}" =~ ^make\ release ]]; then
     echo "commit message indicate that a release must be create"
     MAKE_RELEASE='true'
 fi
@@ -44,6 +44,8 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     echo "create git tag $GIT_TAG"
     git tag "$GIT_TAG" -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
 
+    git config --global push.followTags true # push commit and tag
+
     echo "preparing next version..."
     mvn -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
 
@@ -56,7 +58,7 @@ if [ "$MAKE_RELEASE" = 'true' ]; then
     
     REPO=`git config remote.origin.url`
     echo "pushing new development version..."
-    git push --tags "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
+    git push "https://$GITHUB_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" --follow-tags
 
-    ls target
+    echo "release $PROJECT_VERSION done, tag $GIT_TAG pushed, next development version $NEXT_VERSION setted"
 fi
