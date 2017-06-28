@@ -37,7 +37,7 @@ import static ch.ifocusit.plantuml.classdiagram.model.Association.DIRECTION;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
- * Diagram helper.
+ * Plantuml diagram helper for java classes.
  *
  * @author Julien Boz
  */
