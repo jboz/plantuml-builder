@@ -34,6 +34,7 @@ import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.utils.ClassUtils;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 
 import java.io.IOException;
@@ -57,7 +58,12 @@ public class ClassDiagramBuilder implements NamesMapper {
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classes = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
-    private Predicate<ClassMethod> additionalMethodPredicate = a -> true; // always true by default
+
+    private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
+
+    // by default java Object methods and getter/setter will be ignored
+    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName())
+            && ClassUtils.isNotGetterSetter(m.getMethod());
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
     private final Set<ClassAttribute> associations = new LinkedHashSet<>();
@@ -175,8 +181,8 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     protected Method[] readMethods(Class aClass) {
         return Stream.of(aClass.getDeclaredMethods())
-                // exclude static methods
-                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                // only public and non static methods
+                .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers()))
                 .map(this::createClassMethod)
                 // excludes specific fields
                 .filter(filterMethods())
@@ -213,7 +219,7 @@ public class ClassDiagramBuilder implements NamesMapper {
             // mark attribute as bidirectional
             existing.get().setBidirectional(true);
             // do not add the second attribut to the association collection
-        } else  if (!field.getDeclaringClass().isEnum()) {
+        } else if (!field.getDeclaringClass().isEnum()) {
             this.associations.add(attribut);
         }
         attribut.setLink(namesMapper.getFieldLink(field));

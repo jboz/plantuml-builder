@@ -35,4 +35,20 @@ public class Driver {
     public void buy(Car car) {
         cars.add(car);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public List<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(final List<Car> cars) {
+        this.cars = cars;
+    }
 }

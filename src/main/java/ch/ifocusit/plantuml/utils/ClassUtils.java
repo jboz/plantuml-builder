@@ -24,11 +24,14 @@ package ch.ifocusit.plantuml.utils;
 
 import com.google.common.base.CharMatcher;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -114,5 +117,31 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
             return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
         }
         return Stream.empty();
+    }
+
+    public static boolean isGetter(Method method) {
+        try {
+            return Stream.of(Introspector.getBeanInfo(method.getDeclaringClass()).getPropertyDescriptors())
+                    .map(desc -> desc.getReadMethod())
+                    .filter(Objects::nonNull)
+                    .anyMatch(getter -> getter.equals(method));
+        } catch (IntrospectionException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static boolean isSetter(Method method) {
+        try {
+            return Stream.of(Introspector.getBeanInfo(method.getDeclaringClass()).getPropertyDescriptors())
+                    .map(desc -> desc.getWriteMethod())
+                    .filter(Objects::nonNull)
+                    .anyMatch(setter -> setter.equals(method));
+        } catch (IntrospectionException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static boolean isNotGetterSetter(Method method) {
+        return !isGetter(method) && !isSetter(method);
     }
 }
