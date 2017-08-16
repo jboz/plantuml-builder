@@ -8,6 +8,7 @@ ifndef::imagesdir[:imagesdir: images]
 image:https://travis-ci.org/jboz/plantuml-builder.svg?branch=master["Build Status", link="https://travis-ci.org/jboz/plantuml-builder"]
 image:https://img.shields.io/badge/PRs-welcome-brightgreen.svg["Make a pull request", link="http://makeapullrequest.com"]
 image:https://img.shields.io/github/license/spotify/dockerfile-maven.svg[License]
+image:https://maven-badges.herokuapp.com/maven-central/ch.ifocusit/plantuml-builder/badge.svg?style=flat["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/ch.ifocusit/plantuml-builder"]
 
 = Plantuml builder
 
