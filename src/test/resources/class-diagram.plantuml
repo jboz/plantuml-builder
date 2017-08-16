@@ -15,11 +15,13 @@ class "Car" {
   driver : Driver
   price : Price
   wheels : Collection<Wheel>
+  buyBy(Driver, Price) : Driver
 }
 
 class "Driver" {
   name : String
   cars : List<Car>
+  buy(Car)
 }
 
 class "Price" {

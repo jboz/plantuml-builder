@@ -24,10 +24,15 @@ package ch.ifocusit.plantuml.test.helper.domain;
 
 import ch.ifocusit.plantuml.test.helper.domain.material.Car;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Driver {
     private String name;
     private Long ignored;
-    private List<Car> cars;
+    private List<Car> cars = new ArrayList<>();
+
+    public void buy(Car car) {
+        cars.add(car);
+    }
 }

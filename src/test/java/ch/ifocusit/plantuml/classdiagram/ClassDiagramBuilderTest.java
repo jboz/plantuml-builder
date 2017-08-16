@@ -64,6 +64,8 @@ public class ClassDiagramBuilderTest {
                 .excludes(".*\\.ignored")
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                // no method
+                .addMethodPredicate(classMethod -> false)
                 .addClasse(Car.class)
                 .build();
 
@@ -82,6 +84,8 @@ public class ClassDiagramBuilderTest {
                 .excludes(".*\\.ignored")
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                // no method
+                .addMethodPredicate(classMethod -> false)
                 .addClasse(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
