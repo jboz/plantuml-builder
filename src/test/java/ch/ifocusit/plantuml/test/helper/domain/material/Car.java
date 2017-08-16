@@ -24,6 +24,8 @@ package ch.ifocusit.plantuml.test.helper.domain.material;
 
 import ch.ifocusit.plantuml.test.helper.domain.Driver;
 import ch.ifocusit.plantuml.test.helper.domain.Price;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Collection;
 
@@ -50,5 +52,24 @@ public class Car implements Vehicule {
         driver.buy(this);
         this.price = price;
         return driver;
+    }
+
+    @Override
+    public String toString() {
+        return showMeTheCarInfo();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    private String showMeTheCarInfo() {
+        return brand + "/" + model;
     }
 }
