@@ -13,6 +13,8 @@ image:https://img.shields.io/github/license/spotify/dockerfile-maven.svg[License
 
 Tools to generate plantuml diagram from java sources.
 
+This generated diagrams are an important part of the https://github.com/jboz/living-documentation[Living Documentation tool]
+
 == class diagram
 
 This code :
