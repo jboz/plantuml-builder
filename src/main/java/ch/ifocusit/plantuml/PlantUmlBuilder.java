@@ -23,6 +23,7 @@
 package ch.ifocusit.plantuml;
 
 import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
@@ -45,6 +46,7 @@ public class PlantUmlBuilder {
     private static final String STARTUML = "@startuml";
     private static final String ENDUML = "@enduml";
     public static final String SEMICOLON = ":";
+    public static final String COMMA = ",";
     public static final String BRACE_OPEN = "{";
     public static final String BRACE_CLOSE = "}";
     public static final String STEREOTYPE_OPEN = "<<";
@@ -54,6 +56,8 @@ public class PlantUmlBuilder {
     public static final String QUOTE = "\"";
     public static final String HASHTAG = "#";
     public static final String PACKAGE_TMPL = "package {0} <<{1}>>";
+    public static final String BRACKET_OPEN = "(";
+    public static final String BRACKET_CLOSE = ")";
 
     private final StringBuilder content = new StringBuilder();
 
@@ -102,7 +106,6 @@ public class PlantUmlBuilder {
         return this;
     }
 
-
     //*********************************************************************************
     // PACKAGE
     //*********************************************************************************
@@ -128,7 +131,6 @@ public class PlantUmlBuilder {
         return this;
     }
 
-
     //*********************************************************************************
     // TYPE
     //*********************************************************************************
@@ -147,18 +149,43 @@ public class PlantUmlBuilder {
         clazz.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
         // class color
         clazz.getBackgroundColor().ifPresent(color -> content.append(SPACE).append(color(color)));
-        if (!clazz.getAttributes().isEmpty()) {
+
+        if (clazz.hasContent()) {
             content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
-            for (Attribute attribute : clazz.getAttributes()) {
-                // name
-                content.append(TAB).append(attribute.getName());
-                // type
-                attribute.getType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
-                // field link
-                attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
-                content.append(NEWLINE);
-            }
+        }
+        // add attributes
+        for (Attribute attribute : clazz.getAttributes()) {
+            // name
+            content.append(TAB).append(attribute.getName());
+            // type
+            attribute.getType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            // field link
+            attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+            content.append(NEWLINE);
+        }
+        // add methods
+        clazz.getMethods().stream().forEach(method -> {
+            // name
+            content.append(TAB).append(method.getName());
+            // parameters
+            method.getParameters().ifPresent(params -> {
+                content.append(BRACKET_OPEN);
+                content.append(Stream.of(params)
+                        .map(param -> param.getType().orElse(param.getName()))
+                        .collect(Collectors.joining(COMMA + SPACE)));
+                content.append(BRACKET_CLOSE);
+            });
+            // type
+            method.getReturnType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            // method link
+            method.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+            content.append(NEWLINE);
+        });
+        if (clazz.hasContent()) {
             content.append(BRACE_CLOSE);
+        }
+        if (!clazz.getAttributes().isEmpty()) {
+
         }
         content.append(NEWLINE).append(NEWLINE);
         return this;
@@ -181,20 +208,22 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label) {
-        return addAssociation(aName, bName, assoc, label, null, null);
+        return addAssociation(aName, bName, assoc, label, Cardinality.NONE, Cardinality.NONE);
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, String aCardinality, String bCardinality) {
+    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, Cardinality aCardinality, Cardinality bCardinality) {
         Validate.notBlank(aName, "Class a name is mandatory");
         Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(assoc, "Association type is mandatory");
+        Validate.notNull(aCardinality, "Cardinality a name is mandatory");
+        Validate.notNull(bCardinality, "Cardinality b name is mandatory");
 
         content.append(escape(aName));
-        if (StringUtils.isNotBlank(aCardinality)) {
+        if (!Cardinality.NONE.equals(aCardinality)) {
             content.append(SPACE).append(QUOTE).append(aCardinality).append(QUOTE);
         }
         content.append(SPACE).append(assoc).append(SPACE);
-        if (StringUtils.isNotBlank(bCardinality)) {
+        if (!Cardinality.NONE.equals(bCardinality)) {
             content.append(QUOTE).append(bCardinality).append(QUOTE).append(SPACE);
         }
         content.append(escape(bName));

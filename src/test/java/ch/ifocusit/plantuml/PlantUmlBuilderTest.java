@@ -23,12 +23,13 @@
 package ch.ifocusit.plantuml;
 
 import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.SimpleAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.SimpleClazz;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Assertions.*;
 
 public class PlantUmlBuilderTest {
 
@@ -81,7 +82,7 @@ public class PlantUmlBuilderTest {
         String diagram = new PlantUmlBuilder()
                 .addAssociation("Vehicule", "Car", Association.INHERITANCE)
                 .addAssociation("Car", "Price", Association.DIRECTION, "price")
-                .addAssociation("Car", "Wheel", Association.DIRECTION, "wheels", null, "*")
+                .addAssociation("Car", "Wheel", Association.DIRECTION, "wheels", Cardinality.NONE, Cardinality.MANY)
                 .addAssociation("Price", "Devise", Association.DIRECTION)
                 .build();
 

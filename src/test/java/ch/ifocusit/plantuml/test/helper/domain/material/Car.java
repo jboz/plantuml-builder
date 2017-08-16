@@ -41,6 +41,14 @@ public class Car implements Vehicule {
     private Driver driver;
 
     private Price price;
+
     @Machine
     private Collection<Wheel> wheels;
+
+    public Driver buyBy(Driver driver, Price price) {
+        this.driver = driver;
+        driver.buy(this);
+        this.price = price;
+        return driver;
+    }
 }

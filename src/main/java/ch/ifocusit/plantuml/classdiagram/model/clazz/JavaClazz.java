@@ -23,6 +23,7 @@
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
@@ -40,6 +41,7 @@ public class JavaClazz implements Clazz {
     private Optional<String> overridedName;
     private Optional<Link> link;
     private List<Attribute> attributes = new ArrayList<>();
+    private List<Method> methods = new ArrayList<>();
     private String backgroundColor;
     private String borderColor;
 
@@ -71,6 +73,16 @@ public class JavaClazz implements Clazz {
     public void addAttributes(Attribute... attributes) {
         for (Attribute attribute : attributes) {
             this.attributes.add(attribute);
+        }
+    }
+
+    public List<Method> getMethods() {
+        return methods;
+    }
+
+    public void addMethods(Method... methods) {
+        for (Method method : methods) {
+            this.methods.add(method);
         }
     }
 
@@ -117,9 +129,10 @@ public class JavaClazz implements Clazz {
         return this;
     }
 
-    public static JavaClazz from(Class aClass, Attribute... attributes) {
+    public static JavaClazz from(Class aClass, Attribute[] attributes, Method[] methods) {
         JavaClazz javaClass = new JavaClazz(aClass);
         javaClass.addAttributes(attributes);
+        javaClass.addMethods(methods);
         return javaClass;
     }
 }

@@ -23,9 +23,11 @@
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import org.apache.commons.lang3.Validate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +45,10 @@ public interface Clazz extends Comparable<Clazz> {
     }
 
     public List<Attribute> getAttributes();
+
+    default public List<Method> getMethods() {
+        return new ArrayList<>();
+    }
 
     default public Optional<List<String>> getStereotypes() {
         return Optional.empty();
@@ -66,7 +72,11 @@ public interface Clazz extends Comparable<Clazz> {
         return getName().compareTo(clazz.getName());
     }
 
-    public static enum Type {
+    default boolean hasContent() {
+        return !getAttributes().isEmpty() || !getMethods().isEmpty();
+    }
+
+    enum Type {
         INTERFACE("interface"),
         ENUM("enum"),
         CLASS("class"),

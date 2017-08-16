@@ -25,9 +25,12 @@ package ch.ifocusit.plantuml.utils;
 import com.google.common.base.CharMatcher;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
@@ -37,13 +40,16 @@ import static java.util.stream.Stream.concat;
  */
 public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
+    public static final String GENERICS_OPEN = "<";
+    public static final String GENERICS_CLOSE = ">";
+    public static final String GENERICS_SEP = ", ";
     public static final String DOLLAR = "$";
 
-    public static String getSimpleName(java.lang.reflect.Type type) {
-        return Class.class.isInstance(type) ? getSimpleName(Class.class.cast(type)) : type.getTypeName();
+    public static String getSimpleName(Class aClass) {
+        return _getSimpleName(aClass);
     }
 
-    public static String getSimpleName(Class aClass) {
+    public static String _getSimpleName(Class aClass) {
         String className = aClass.getSimpleName();
         int lastDollarSign = className.lastIndexOf(DOLLAR);
         if (lastDollarSign != -1) {
@@ -55,6 +61,24 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         return className;
     }
 
+    public static String getSimpleName(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType genericType = (ParameterizedType) type;
+            return getSimpleName(genericType.getRawType()) + getParameterizedTypeName(genericType);
+        }
+        if (type instanceof Class) {
+            return _getSimpleName((Class) type);
+        }
+        return type.getTypeName();
+    }
+
+    public static String getParameterizedTypeName(ParameterizedType genericType) {
+        // manage generics
+        String subtypes = Stream.of(genericType.getActualTypeArguments())
+                .map(ClassUtils::getSimpleName)
+                .collect(Collectors.joining(GENERICS_SEP));
+        return GENERICS_OPEN + subtypes + GENERICS_CLOSE;
+    }
 
     public static boolean isCollection(Class aClass) {
         return Collection.class.isAssignableFrom(aClass);
@@ -74,6 +98,19 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         if (field.getGenericType() instanceof ParameterizedType) {
             // manage generics
             ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+            return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
+        }
+        return Stream.empty();
+    }
+
+    public static Stream<Class> getConcernedTypes(Method method) {
+        return concat(Stream.of(method.getReturnType()), getGenericTypes(method));
+    }
+
+    public static Stream<Class> getGenericTypes(Method method) {
+        if (method.getGenericReturnType() instanceof ParameterizedType) {
+            // manage generics
+            ParameterizedType genericType = (ParameterizedType) method.getGenericReturnType();
             return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
         }
         return Stream.empty();

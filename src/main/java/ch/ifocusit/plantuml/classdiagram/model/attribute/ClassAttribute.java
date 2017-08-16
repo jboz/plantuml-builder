@@ -22,31 +22,24 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
+import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
 
 /**
  * @author Julien Boz
  */
-public class ClassAttribute implements Attribute {
-
-    public static final String GENERICS_OPEN = "<";
-    public static final String GENERICS_CLOSE = ">";
-    public static final String GENERICS_SEP = ", ";
+public class ClassAttribute implements Attribute, DiagramMember {
 
     private final Field field;
     private final String fieldName;
     private Optional<Link> link;
-    private boolean bidirectionnal;
+    private boolean bidirectional;
 
     public ClassAttribute(Field field) {
         this(field, field.getName());
@@ -62,16 +55,7 @@ public class ClassAttribute implements Attribute {
         if (field.getDeclaringClass().isEnum()) {
             return Optional.empty();
         }
-        String fieldClassName = getSimpleName(field.getType());
-        if (field.getGenericType() instanceof ParameterizedType) {
-            // manage generics
-            ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-            String subtypes = Stream.of(genericType.getActualTypeArguments())
-                    .map(ClassUtils::getSimpleName)
-                    .collect(Collectors.joining(GENERICS_SEP));
-            fieldClassName += GENERICS_OPEN + subtypes + GENERICS_CLOSE;
-        }
-        return Optional.of(fieldClassName);
+        return Optional.of(ClassUtils.getSimpleName(field.getGenericType()));
     }
 
     @Override
@@ -99,13 +83,12 @@ public class ClassAttribute implements Attribute {
         return getConcernedTypes().anyMatch(classes::contains);
     }
 
-
-    public void setBidirectionnal(boolean bidirectionnal) {
-        this.bidirectionnal = bidirectionnal;
+    public void setBidirectional(boolean bidirectional) {
+        this.bidirectional = bidirectional;
     }
 
-    public boolean isBidirectionnal() {
-        return bidirectionnal;
+    public boolean isBidirectional() {
+        return bidirectional;
     }
 
     public boolean isRightCollection() {
@@ -120,7 +103,6 @@ public class ClassAttribute implements Attribute {
     public String toStringAttribute() {
         return field.getDeclaringClass().getName() + "." + field.getName();
     }
-
 
     public Optional<Link> getLink() {
         return link;

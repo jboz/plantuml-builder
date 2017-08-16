@@ -24,6 +24,10 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
+import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
+import ch.ifocusit.plantuml.classdiagram.model.Method.ClassMethod;
+import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
@@ -53,9 +57,10 @@ public class ClassDiagramBuilder implements NamesMapper {
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classes = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
+    private Predicate<ClassMethod> additionalMethodPredicate = a -> true; // always true by default
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
-    private final Set<ClassAttribute> attributs = new LinkedHashSet<>();
+    private final Set<ClassAttribute> associations = new LinkedHashSet<>();
     private NamesMapper namesMapper = this;
 
     private String header;
@@ -78,15 +83,22 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     public ClassDiagramBuilder excludes(String... excludes) {
         // keep the corresponding fields
-        Predicate<ClassAttribute> notMatch = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
+        Predicate<ClassAttribute> notMatchField = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
+        this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatchField);
 
-        // new additionalFieldPredicate base on full path
-        this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatch);
+        // keep the corresponding fields
+        Predicate<ClassMethod> notMatchMethod = field -> Stream.of(excludes).noneMatch(excl -> field.toStringMethod().matches(excl));
+        this.additionalMethodPredicate = this.additionalMethodPredicate.and(notMatchMethod);
         return this;
     }
 
     public ClassDiagramBuilder addFieldPredicate(Predicate<ClassAttribute> predicate) {
         this.additionalFieldPredicate = this.additionalFieldPredicate.and(predicate);
+        return this;
+    }
+
+    public ClassDiagramBuilder addMethodPredicate(Predicate<ClassMethod> predicate) {
+        this.additionalMethodPredicate = this.additionalMethodPredicate.and(predicate);
         return this;
     }
 
@@ -96,12 +108,12 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     public ClassDiagramBuilder addClasse(Class... classes) {
-        Stream.of(classes).forEach(this.classes::add);
+        this.classes.addAll(Arrays.asList(classes));
         return this;
     }
 
     public ClassDiagramBuilder addPackage(java.lang.Package... packages) {
-        Stream.of(packages).forEach(this.packages::add);
+        this.packages.addAll(Arrays.asList(packages));
         return this;
     }
 
@@ -111,7 +123,7 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     public String build() {
-        attributs.clear();
+        associations.clear();
         // generate diagram from configuration
         builder.start();
         builder.appendPart(header);
@@ -147,14 +159,34 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     protected JavaClazz createJavaClass(Class aClass) {
-        return cache.computeIfAbsent(aClass, clazz -> JavaClazz.from(clazz, readFields(clazz))
+        return cache.computeIfAbsent(aClass, clazz -> JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
                 .setLink(namesMapper.getClassLink(clazz))
         );
     }
 
-    protected Predicate<ClassAttribute> filter() {
+    protected Predicate<ClassAttribute> filterFields() {
         return additionalFieldPredicate;
+    }
+
+    protected Predicate<ClassMethod> filterMethods() {
+        return additionalMethodPredicate;
+    }
+
+    protected Method[] readMethods(Class aClass) {
+        return Stream.of(aClass.getDeclaredMethods())
+                // exclude static methods
+                .filter(method -> !Modifier.isStatic(method.getModifiers()))
+                .map(this::createClassMethod)
+                // excludes specific fields
+                .filter(filterMethods())
+                .toArray(Method[]::new);
+    }
+
+    protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
+        ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
+        classMethod.setLink(namesMapper.getMethodLink(method));
+        return classMethod;
     }
 
     protected Attribute[] readFields(Class aClass) {
@@ -165,21 +197,24 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .filter(field -> field.getDeclaringClass().isEnum() || !Modifier.isStatic(field.getModifiers()))
                 .map(this::createClassAttribute)
                 // excludes specific fields
-                .filter(filter())
+                .filter(filterFields())
                 .toArray(Attribute[]::new);
     }
 
     protected ClassAttribute createClassAttribute(Field field) {
         ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldName(field));
         // look for an existing reverse field definition
-        Optional<ClassAttribute> existing = attributs.stream()
+        Optional<ClassAttribute> existing = associations.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
                         && attr.getConcernedTypes().collect(Collectors.toList()).contains(attribut.getDeclaringClass()))
                 .findFirst();
+
         if (existing.isPresent()) {
-            existing.get().setBidirectionnal(true);
-        } else if (!field.getDeclaringClass().isEnum()) {
-            this.attributs.add(attribut);
+            // mark attribute as bidirectional
+            existing.get().setBidirectional(true);
+            // do not add the second attribut to the association collection
+        } else  if (!field.getDeclaringClass().isEnum()) {
+            this.associations.add(attribut);
         }
         attribut.setLink(namesMapper.getFieldLink(field));
         return attribut;
@@ -197,27 +232,29 @@ public class ClassDiagramBuilder implements NamesMapper {
                             INHERITANCE));
         });
 
-        attributs.stream()
+        associations.stream()
                 // exclude not managed class
                 .filter(field -> field.isManaged(classes))
                 // excludes specific fields
-                .filter(filter())
-                .forEach(attr -> {
-                    // class association
-                    attr.getConcernedTypes()
-                            .filter(classes::contains)
-                            .forEach(aClass -> {
-                                String aCardinality = attr.isLeftCollection() ? "*" : null;
-                                String bCardinality = attr.isRightCollection() ? "*" : null;
-                                String name = attr.getName();
-                                Association link = attr.isBidirectionnal() ? BI_DIRECTION : DIRECTION;
+                .filter(filterFields())
+                .forEach(this::addAssociation);
+    }
 
-                                builder.addAssociation(
-                                        namesMapper.getClassName(attr.getDeclaringClass()),
-                                        namesMapper.getClassName(aClass),
-                                        link, name, aCardinality, bCardinality);
-                            });
+    private void addAssociation(DiagramMember member) {
+        // class association
+        member.getConcernedTypes()
+                .filter(classes::contains)
+                .forEach(aClass -> {
+                    Cardinality aCardinality = member.isLeftCollection() ? Cardinality.MANY : Cardinality.NONE;
+                    Cardinality bCardinality = member.isRightCollection() ? Cardinality.MANY : Cardinality.NONE;
+                    String name = member.getName();
+                    Association type = member instanceof ClassMethod ? LINK :
+                            member.isBidirectional() ? BI_DIRECTION : DIRECTION;
 
+                    builder.addAssociation(
+                            namesMapper.getClassName(member.getDeclaringClass()),
+                            namesMapper.getClassName(aClass),
+                            type, name, aCardinality, bCardinality);
                 });
     }
 }

@@ -20,22 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.test.helper.domain;
+package ch.ifocusit.plantuml.classdiagram.model;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
+/**
+ * @author Julien Boz
+ */
+public enum Cardinality {
 
-public class Price implements Serializable {
-    public static final long serialVersionUID = 42L;
-    static final String CONST = "aConstant";
+    NONE(""),
+    MANY("*"),
+    ONE("1");
 
-    private BigDecimal amount;
-    private Devise devise;
+    private String symbol;
 
-    public static Price of(final BigDecimal amount, final Devise devise) {
-        final Price price = new Price();
-        price.amount = amount;
-        price.devise = devise;
-        return price;
+    Cardinality(String symbol) {
+        this.symbol = symbol;
+    }
+
+    @Override
+    public String toString() {
+        return symbol;
     }
 }

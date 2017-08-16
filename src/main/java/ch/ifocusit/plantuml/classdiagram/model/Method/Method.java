@@ -20,22 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.test.helper.domain;
+package ch.ifocusit.plantuml.classdiagram.model.Method;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 
-public class Price implements Serializable {
-    public static final long serialVersionUID = 42L;
-    static final String CONST = "aConstant";
+import java.util.Optional;
 
-    private BigDecimal amount;
-    private Devise devise;
+/**
+ * @author Julien Boz
+ */
+public interface Method {
 
-    public static Price of(final BigDecimal amount, final Devise devise) {
-        final Price price = new Price();
-        price.amount = amount;
-        price.devise = devise;
-        return price;
+    public Optional<String> getReturnType();
+
+    public String getName();
+
+    public Optional<Attribute[]> getParameters();
+
+    default public Optional<Link> getLink() {
+        return Optional.empty();
     }
 }
