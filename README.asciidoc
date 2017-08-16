@@ -71,4 +71,4 @@ Price --> Devise : devise
 
 image::class-diagram.png[Asciidoctor Diagram classes diagram]
 
-=== For more uses cases see **ClassDiagramBuilderTest** or **PlantUmlBuilderTest** classes
+=== For more uses cases see https://github.com/jboz/plantuml-builder/blob/master/src/test/java/ch/ifocusit/plantuml/classdiagram/ClassDiagramBuilderTest.java[**ClassDiagramBuilderTest**] or https://github.com/jboz/plantuml-builder/blob/master/src/test/java/ch/ifocusit/plantuml/PlantUmlBuilderTest.java[**PlantUmlBuilderTest**] classes
