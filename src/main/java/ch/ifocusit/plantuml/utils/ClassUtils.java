@@ -100,9 +100,9 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
     public static Stream<Class> getConcernedTypes(Parameter parameter) {
         Stream<Class> classes = concat(Stream.of(parameter.getType()), getGenericTypes(parameter));
-        if (parameter.getDeclaringExecutable() instanceof Method) {
-            classes = concat(classes, getConcernedTypes((Method) parameter.getDeclaringExecutable()));
-        }
+//        if (parameter.getDeclaringExecutable() instanceof Method) {
+//            classes = concat(classes, getConcernedTypes((Method) parameter.getDeclaringExecutable()));
+//        }
         return classes;
     }
 

@@ -24,6 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.Method;
 
 import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
@@ -38,7 +39,7 @@ import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
 /**
  * @author Julien Boz
  */
-public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Method.Method, DiagramMember {
+public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Method.Method, DiagramMember, Comparable<ClassMethod> {
 
     private final Method method;
     private final String methodName;
@@ -117,5 +118,10 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Meth
     public ClassMethod setLink(Optional<Link> link) {
         this.link = link;
         return this;
+    }
+
+    @Override
+    public int compareTo(ClassMethod o) {
+        return getName().compareTo(o.getName());
     }
 }

@@ -1,4 +1,4 @@
-/*-
+/*
  * Plantuml builder
  *
  * Copyright (C) 2017 Focus IT

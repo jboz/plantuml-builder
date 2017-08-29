@@ -15,8 +15,8 @@ class "Car" {
   driver : Driver
   price : Price
   wheels : Collection<Wheel>
-  buyBy(Driver, BigDecimal, Devise) : Driver
   addWheel(Wheel)
+  buyBy(Driver, BigDecimal, Devise) : Driver
 }
 
 class "Driver" {

@@ -37,6 +37,7 @@ import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -48,7 +49,6 @@ import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
-import static ch.ifocusit.plantuml.utils.StreamUtils.isIntersectionEmpty;
 
 /**
  * Build class diagram from Class definition.
@@ -67,8 +67,13 @@ public class ClassDiagramBuilder implements NamesMapper {
     private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName()) && ClassUtils.isNotGetterSetter(m.getMethod());
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
+    // potential association
     private final Set<ClassAttribute> associations = new LinkedHashSet<>();
+    // potential use definition
     private final Set<MethodAttribute> uses = new LinkedHashSet<>();
+    // effective associations, really add to the diagram
+    private final List<Pair<Class, Class>> effectiveAssociations = new ArrayList<>();
+
     private NamesMapper namesMapper = this;
 
     private String header;
@@ -188,16 +193,14 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .map(this::createClassMethod)
                 // excludes specific fields
                 .filter(filterMethods())
+                .map(this::registerUse)
+                .sorted()
                 .toArray(Method[]::new);
     }
 
     protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
         ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
         classMethod.setLink(namesMapper.getMethodLink(method));
-
-        // prepare to mark methods parameters as a uses in diagram
-        classMethod.getParameters().ifPresent(params -> Stream.of(params)
-                .forEach(param -> uses.add(param)));
 
         return classMethod;
     }
@@ -211,11 +214,24 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .map(this::createClassAttribute)
                 // excludes specific fields
                 .filter(filterFields())
+                // need an association
+                .map(this::registerAssociation)
                 .toArray(Attribute[]::new);
     }
 
     protected ClassAttribute createClassAttribute(Field field) {
-        ClassAttribute attribut = new ClassAttribute(field, namesMapper.getFieldName(field));
+        ClassAttribute attribute = new ClassAttribute(field, namesMapper.getFieldName(field));
+        attribute.setLink(namesMapper.getFieldLink(field));
+        return attribute;
+    }
+
+    private ClassMethod registerUse(ClassMethod classMethod) {
+        // prepare to mark methods parameters as a uses in diagram
+        classMethod.getParameters().ifPresent(params -> uses.addAll(Arrays.asList(params)));
+        return classMethod;
+    }
+
+    private ClassAttribute registerAssociation(ClassAttribute attribut) {
         // look for an existing reverse field definition
         Optional<ClassAttribute> existing = associations.stream()
                 .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
@@ -226,10 +242,10 @@ public class ClassDiagramBuilder implements NamesMapper {
             // mark attribute as bidirectional
             existing.get().setBidirectional(true);
             // do not add the second attribut to the association collection
-        } else if (!field.getDeclaringClass().isEnum()) {
+        } else if (!attribut.getField().getDeclaringClass().isEnum()) {
             this.associations.add(attribut);
         }
-        attribut.setLink(namesMapper.getFieldLink(field));
+
         return attribut;
     }
 
@@ -252,21 +268,31 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .filter(filterFields())
                 .forEach(this::addAssociation);
 
+        // after adding objects' associations, mark other objects' dependencies as "use"
         uses.stream()
                 // exclude not managed class
                 .filter(attribute -> attribute.isManaged(classes))
-                // not same as it's class owner
+                // not same as it's declaring class
                 .filter(MethodAttribute::isParameterNotTheSameAsItsOwner)
                 // already in association
-                .filter(methodAttribute -> associations.stream()
-                        .filter(classAttribute -> classAttribute.getDeclaringClass().equals(methodAttribute.getDeclaringClass()))
-                        .noneMatch(classAttribute -> isIntersectionEmpty(classAttribute.getConcernedTypes(), methodAttribute.getConcernedTypes())))
+                .filter(methodAttribute -> methodAttribute.getConcernedTypes()
+                        .noneMatch(methodParam -> effectiveAssociation(methodParam, methodAttribute.getDeclaringClass())))
                 .forEach(this::addAssociation);
     }
 
+    /**
+     * @return true if this dependency is already an association
+     */
+    private boolean effectiveAssociation(Class methodParam, Class classAttribute) {
+        // look for 2 ways associations
+        return effectiveAssociations.contains(Pair.of(methodParam, classAttribute))
+                || effectiveAssociations.contains(Pair.of(classAttribute, methodParam));
+    }
+
     private void addAssociation(DiagramMember member) {
-        // class association
+        // class association must take care of generics
         member.getConcernedTypes()
+                // maintain only class in the scope of the diagram
                 .filter(classes::contains)
                 .forEach(aClass -> {
                     Cardinality aCardinality = member.isLeftCollection() ? Cardinality.MANY : Cardinality.NONE;
@@ -279,6 +305,9 @@ public class ClassDiagramBuilder implements NamesMapper {
                             namesMapper.getClassName(member.getDeclaringClass()),
                             namesMapper.getClassName(aClass),
                             type, name, aCardinality, bCardinality);
+
+                    // remember which association have been added
+                    effectiveAssociations.add(Pair.of(member.getDeclaringClass(), aClass));
                 });
     }
 }

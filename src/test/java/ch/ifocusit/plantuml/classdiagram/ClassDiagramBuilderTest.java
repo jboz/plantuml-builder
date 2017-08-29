@@ -1,9 +1,8 @@
-/*-
- * #%L
+/*
  * Plantuml builder
- * %%
+ *
  * Copyright (C) 2017 Focus IT
- * %%
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -20,12 +19,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- * #L%
  */
 package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
-import ch.ifocusit.plantuml.test.helper.domain.*;
+import ch.ifocusit.plantuml.test.helper.domain.Devise;
+import ch.ifocusit.plantuml.test.helper.domain.Driver;
+import ch.ifocusit.plantuml.test.helper.domain.Price;
 import ch.ifocusit.plantuml.test.helper.domain.material.Car;
 import ch.ifocusit.plantuml.test.helper.domain.material.Machine;
 import ch.ifocusit.plantuml.test.helper.domain.material.Vehicule;
@@ -39,6 +39,9 @@ import java.nio.charset.Charset;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+/**
+ * @author Julien Boz
+ */
 public class ClassDiagramBuilderTest {
 
     private static final String CR = PlantUmlBuilder.NEWLINE;
