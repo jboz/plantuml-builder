@@ -31,6 +31,7 @@ import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.utils.ClassUtils;
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
 
 import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
+import static ch.ifocusit.plantuml.utils.StreamUtils.isIntersectionEmpty;
 
 /**
  * Build class diagram from Class definition.
@@ -62,11 +64,11 @@ public class ClassDiagramBuilder implements NamesMapper {
     private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
 
     // by default java Object methods and getter/setter will be ignored
-    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName())
-            && ClassUtils.isNotGetterSetter(m.getMethod());
+    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName()) && ClassUtils.isNotGetterSetter(m.getMethod());
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
     private final Set<ClassAttribute> associations = new LinkedHashSet<>();
+    private final Set<MethodAttribute> uses = new LinkedHashSet<>();
     private NamesMapper namesMapper = this;
 
     private String header;
@@ -192,6 +194,11 @@ public class ClassDiagramBuilder implements NamesMapper {
     protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
         ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
         classMethod.setLink(namesMapper.getMethodLink(method));
+
+        // prepare to mark methods parameters as a uses in diagram
+        classMethod.getParameters().ifPresent(params -> Stream.of(params)
+                .forEach(param -> uses.add(param)));
+
         return classMethod;
     }
 
@@ -244,6 +251,17 @@ public class ClassDiagramBuilder implements NamesMapper {
                 // excludes specific fields
                 .filter(filterFields())
                 .forEach(this::addAssociation);
+
+        uses.stream()
+                // exclude not managed class
+                .filter(attribute -> attribute.isManaged(classes))
+                // not same as it's class owner
+                .filter(MethodAttribute::isParameterNotTheSameAsItsOwner)
+                // already in association
+                .filter(methodAttribute -> associations.stream()
+                        .filter(classAttribute -> classAttribute.getDeclaringClass().equals(methodAttribute.getDeclaringClass()))
+                        .noneMatch(classAttribute -> isIntersectionEmpty(classAttribute.getConcernedTypes(), methodAttribute.getConcernedTypes())))
+                .forEach(this::addAssociation);
     }
 
     private void addAssociation(DiagramMember member) {
@@ -253,7 +271,7 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .forEach(aClass -> {
                     Cardinality aCardinality = member.isLeftCollection() ? Cardinality.MANY : Cardinality.NONE;
                     Cardinality bCardinality = member.isRightCollection() ? Cardinality.MANY : Cardinality.NONE;
-                    String name = member.getName();
+                    String name = member instanceof MethodAttribute ? "use" : member.getName();
                     Association type = member instanceof ClassMethod ? LINK :
                             member.isBidirectional() ? BI_DIRECTION : DIRECTION;
 

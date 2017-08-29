@@ -28,7 +28,6 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -71,16 +70,12 @@ public class ClassAttribute implements Attribute, DiagramMember {
         return field.getDeclaringClass();
     }
 
-    private Class getFieldType() {
+    public Class getFieldType() {
         return field.getType();
     }
 
     public Stream<Class> getConcernedTypes() {
         return ClassUtils.getConcernedTypes(this.field);
-    }
-
-    public boolean isManaged(Set<Class> classes) {
-        return getConcernedTypes().anyMatch(classes::contains);
     }
 
     public void setBidirectional(boolean bidirectional) {

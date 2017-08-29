@@ -24,8 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.Method;
 
 import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.SimpleAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -66,10 +65,8 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Meth
     }
 
     @Override
-    public Optional<Attribute[]> getParameters() {
-        return Optional.of(Stream.of(method.getParameters())
-                .map(param -> new SimpleAttribute(param.getName(), ClassUtils.getSimpleName(param.getParameterizedType())))
-                .toArray(Attribute[]::new));
+    public Optional<MethodAttribute[]> getParameters() {
+        return Optional.of(Stream.of(method.getParameters()).map(param -> new MethodAttribute(param)).toArray(MethodAttribute[]::new));
     }
 
     public Method getMethod() {

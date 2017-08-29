@@ -22,11 +22,13 @@
  */
 package ch.ifocusit.plantuml.test.helper.domain.material;
 
+import ch.ifocusit.plantuml.test.helper.domain.Devise;
 import ch.ifocusit.plantuml.test.helper.domain.Driver;
 import ch.ifocusit.plantuml.test.helper.domain.Price;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 @Machine
@@ -47,11 +49,19 @@ public class Car implements Vehicule {
     @Machine
     private Collection<Wheel> wheels;
 
-    public Driver buyBy(Driver driver, Price price) {
+    public Driver buyBy(Driver driver, BigDecimal amount, Devise devise) {
         this.driver = driver;
         driver.buy(this);
-        this.price = price;
+        this.price = Price.of(amount, devise);
         return driver;
+    }
+
+    public Collection<Wheel> getWheels() {
+        return wheels;
+    }
+
+    public void addWheel(Wheel wheel) {
+        wheels.add(wheel);
     }
 
     @Override

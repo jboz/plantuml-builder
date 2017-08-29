@@ -15,7 +15,8 @@ class "Car" {
   driver : Driver
   price : Price
   wheels : Collection<Wheel>
-  buyBy(Driver, Price) : Driver
+  buyBy(Driver, BigDecimal, Devise) : Driver
+  addWheel(Wheel)
 }
 
 class "Driver" {
@@ -42,5 +43,6 @@ enum "Devise" {
 "Car" --> "Price" : price
 "Car" --> "*" "Wheel" : wheels
 "Price" --> "Devise" : devise
+"Car" --> "Devise" : use
 
 @enduml

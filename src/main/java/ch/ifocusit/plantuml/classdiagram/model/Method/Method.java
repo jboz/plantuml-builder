@@ -24,6 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.Method;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public interface Method {
 
     public String getName();
 
-    public Optional<Attribute[]> getParameters();
+    public Optional<MethodAttribute[]> getParameters();
 
     default public Optional<Link> getLink() {
         return Optional.empty();

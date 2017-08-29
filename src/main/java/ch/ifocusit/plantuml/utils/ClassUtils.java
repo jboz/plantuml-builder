@@ -26,10 +26,7 @@ import com.google.common.base.CharMatcher;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
@@ -97,24 +94,42 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         return concat(Stream.of(field.getType()), getGenericTypes(field));
     }
 
+    public static Stream<Class> getConcernedTypes(Method method) {
+        return concat(Stream.of(method.getReturnType()), getGenericTypes(method));
+    }
+
+    public static Stream<Class> getConcernedTypes(Parameter parameter) {
+        Stream<Class> classes = concat(Stream.of(parameter.getType()), getGenericTypes(parameter));
+        if (parameter.getDeclaringExecutable() instanceof Method) {
+            classes = concat(classes, getConcernedTypes((Method) parameter.getDeclaringExecutable()));
+        }
+        return classes;
+    }
+
+    public static Stream<Class> getGenericTypes(ParameterizedType type) {
+        return Stream.of(type.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
+    }
+
     public static Stream<Class> getGenericTypes(Field field) {
         if (field.getGenericType() instanceof ParameterizedType) {
             // manage generics
-            ParameterizedType genericType = (ParameterizedType) field.getGenericType();
-            return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
+            return getGenericTypes((ParameterizedType) field.getGenericType());
         }
         return Stream.empty();
-    }
-
-    public static Stream<Class> getConcernedTypes(Method method) {
-        return concat(Stream.of(method.getReturnType()), getGenericTypes(method));
     }
 
     public static Stream<Class> getGenericTypes(Method method) {
         if (method.getGenericReturnType() instanceof ParameterizedType) {
             // manage generics
-            ParameterizedType genericType = (ParameterizedType) method.getGenericReturnType();
-            return Stream.of(genericType.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
+            return getGenericTypes((ParameterizedType) method.getGenericReturnType());
+        }
+        return Stream.empty();
+    }
+
+    public static Stream<Class> getGenericTypes(Parameter parameter) {
+        if (parameter.getParameterizedType() instanceof ParameterizedType) {
+            // manage generics
+            return getGenericTypes((ParameterizedType) parameter.getParameterizedType());
         }
         return Stream.empty();
     }

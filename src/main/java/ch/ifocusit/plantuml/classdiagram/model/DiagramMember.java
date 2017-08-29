@@ -1,5 +1,6 @@
 package ch.ifocusit.plantuml.classdiagram.model;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 public interface DiagramMember {
@@ -15,4 +16,8 @@ public interface DiagramMember {
     boolean isBidirectional();
 
     Class getDeclaringClass();
+
+    default boolean isManaged(Set<Class> classes) {
+        return getConcernedTypes().anyMatch(classes::contains);
+    }
 }
