@@ -20,31 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model.Method;
+package ch.ifocusit.plantuml.classdiagram.model.method;
 
-import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static ch.ifocusit.plantuml.utils.ClassUtils.getGenericTypes;
 import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
 
 /**
  * @author Julien Boz
  */
-public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Method.Method, DiagramMember, Comparable<ClassMethod> {
+public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.method.Method, ClassMember {
 
     private final Method method;
     private final String methodName;
     private Optional<Link> link;
-    private boolean bidirectionnal;
 
     public ClassMethod(Method method) {
         this(method, method.getName());
@@ -56,8 +55,13 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Meth
     }
 
     @Override
-    public Optional<String> getReturnType() {
+    public Optional<String> getReturnTypeName() {
         return Optional.ofNullable(method.getReturnType().equals(Void.TYPE) ? null : getSimpleName(method.getGenericReturnType()));
+    }
+
+    @Override
+    public Class getType() {
+        return getMethod().getReturnType();
     }
 
     @Override
@@ -82,29 +86,16 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Meth
         return method.getReturnType();
     }
 
-    public Stream<Class> getConcernedTypes() {
+    public Set<Class> getConcernedTypes() {
         return ClassUtils.getConcernedTypes(this.method);
     }
 
-    public boolean isManaged(Set<Class> classes) {
-        return getConcernedTypes().anyMatch(classes::contains);
-    }
-
-    public void setBidirectionnal(boolean bidirectionnal) {
-        this.bidirectionnal = bidirectionnal;
-    }
-
-    public boolean isBidirectional() {
-        return bidirectionnal;
-    }
-
-    public boolean isRightCollection() {
-        return ClassUtils.isCollection(getMethodReturnType());
-    }
-
-    public boolean isLeftCollection() {
-        Optional<Field> field = ClassUtils.getField(getMethodReturnType(), getDeclaringClass());
-        return field.isPresent() && ClassUtils.isCollection(field.get().getType());
+    public Set<Class> getConcernedReturnedTypes() {
+        Set<Class> classes = new HashSet<>();
+        // manage returned types
+        classes.add(method.getReturnType());
+        classes.addAll(getGenericTypes(method));
+        return classes;
     }
 
     public String toStringMethod() {
@@ -118,10 +109,5 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.Meth
     public ClassMethod setLink(Optional<Link> link) {
         this.link = link;
         return this;
-    }
-
-    @Override
-    public int compareTo(ClassMethod o) {
-        return getName().compareTo(o.getName());
     }
 }

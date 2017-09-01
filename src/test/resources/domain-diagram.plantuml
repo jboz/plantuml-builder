@@ -7,16 +7,20 @@ package ch.ifocusit.plantuml.test.helper.domain.material <<Folder>> {
   class "Wheel"
 }
 
-interface "Vehicule"
-
 class "Car" {
   brand : String
   model : String
-  driver : Driver
+  drivers : Set<Driver>
   price : Price
   wheels : Collection<Wheel>
   addWheel(Wheel)
   buyBy(Driver, BigDecimal, Devise) : Driver
+}
+
+enum "Devise" {
+  CHF
+  EUR
+  USD
 }
 
 class "Driver" {
@@ -30,19 +34,15 @@ class "Price" {
   devise : Devise
 }
 
+interface "Vehicule"
+
 class "Wheel"
 
-enum "Devise" {
-  CHF
-  EUR
-  USD
-}
-
-"Vehicule" <|-- "Car"
-"Car" "*" <-> "Driver" : driver
+"Car" --> "Devise" : use
+"Car" "*" <-> "*" "Driver" : drivers/cars
 "Car" --> "Price" : price
 "Car" --> "*" "Wheel" : wheels
 "Price" --> "Devise" : devise
-"Car" --> "Devise" : use
+"Vehicule" <|-- "Car"
 
 @enduml

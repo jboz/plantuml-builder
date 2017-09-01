@@ -22,7 +22,7 @@
  */
 package ch.ifocusit.plantuml;
 
-import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType;
 import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.SimpleAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
@@ -80,10 +80,10 @@ public class PlantUmlBuilderTest {
     @Test
     public void buildAssociations() throws Exception {
         String diagram = new PlantUmlBuilder()
-                .addAssociation("Vehicule", "Car", Association.INHERITANCE)
-                .addAssociation("Car", "Price", Association.DIRECTION, "price")
-                .addAssociation("Car", "Wheel", Association.DIRECTION, "wheels", Cardinality.NONE, Cardinality.MANY)
-                .addAssociation("Price", "Devise", Association.DIRECTION)
+                .addAssociation("Vehicule", "Car", AssociationType.INHERITANCE)
+                .addAssociation("Car", "Price", AssociationType.DIRECTION, "price")
+                .addAssociation("Car", "Wheel", AssociationType.DIRECTION, "wheels", Cardinality.NONE, Cardinality.MANY)
+                .addAssociation("Price", "Devise", AssociationType.DIRECTION)
                 .build();
 
         assertThat(diagram).isEqualTo("\"Vehicule\" <|-- \"Car\"" + CR +

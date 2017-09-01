@@ -22,23 +22,22 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
-import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
 /**
  * @author Julien Boz
  */
-public class ClassAttribute implements Attribute, DiagramMember {
+public class ClassAttribute implements Attribute, ClassMember {
 
     private final Field field;
     private final String fieldName;
     private Optional<Link> link;
-    private boolean bidirectional;
 
     public ClassAttribute(Field field) {
         this(field, field.getName());
@@ -50,11 +49,16 @@ public class ClassAttribute implements Attribute, DiagramMember {
     }
 
     @Override
-    public Optional<String> getType() {
+    public Optional<String> getTypeName() {
         if (field.getDeclaringClass().isEnum()) {
             return Optional.empty();
         }
         return Optional.of(ClassUtils.getSimpleName(field.getGenericType()));
+    }
+
+    @Override
+    public Class getType() {
+        return getFieldType();
     }
 
     @Override
@@ -74,25 +78,8 @@ public class ClassAttribute implements Attribute, DiagramMember {
         return field.getType();
     }
 
-    public Stream<Class> getConcernedTypes() {
+    public Set<Class> getConcernedTypes() {
         return ClassUtils.getConcernedTypes(this.field);
-    }
-
-    public void setBidirectional(boolean bidirectional) {
-        this.bidirectional = bidirectional;
-    }
-
-    public boolean isBidirectional() {
-        return bidirectional;
-    }
-
-    public boolean isRightCollection() {
-        return ClassUtils.isCollection(getFieldType());
-    }
-
-    public boolean isLeftCollection() {
-        Optional<Field> field = ClassUtils.getField(getFieldType(), getDeclaringClass());
-        return field.isPresent() && ClassUtils.isCollection(field.get().getType());
     }
 
     public String toStringAttribute() {

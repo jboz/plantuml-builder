@@ -1,0 +1,10 @@
+@startuml
+
+interface "AccessDataService" {
+  whoDrive(Car, Instant) : Driver
+}
+
+"AccessDataService" --> "Car" : use
+"AccessDataService" --> "Driver" : use
+
+@enduml

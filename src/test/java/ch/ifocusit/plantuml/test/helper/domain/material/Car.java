@@ -30,6 +30,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Machine
 public class Car implements Vehicule {
@@ -42,7 +44,7 @@ public class Car implements Vehicule {
     @Machine
     private String model;
 
-    private Driver driver;
+    private Set<Driver> drivers = new HashSet<>();
 
     private Price price;
 
@@ -50,7 +52,7 @@ public class Car implements Vehicule {
     private Collection<Wheel> wheels;
 
     public Driver buyBy(Driver driver, BigDecimal amount, Devise devise) {
-        this.driver = driver;
+        this.drivers.add(driver);
         driver.buy(this);
         this.price = Price.of(amount, devise);
         return driver;

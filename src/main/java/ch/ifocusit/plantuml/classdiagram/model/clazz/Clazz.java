@@ -23,7 +23,7 @@
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
+import ch.ifocusit.plantuml.classdiagram.model.method.Method;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import org.apache.commons.lang3.Validate;
 
@@ -44,9 +44,9 @@ public interface Clazz extends Comparable<Clazz> {
         return Optional.empty();
     }
 
-    public List<Attribute> getAttributes();
+    public List<? extends Attribute> getAttributes();
 
-    default public List<Method> getMethods() {
+    default public List<? extends Method> getMethods() {
         return new ArrayList<>();
     }
 

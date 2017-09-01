@@ -24,31 +24,32 @@ package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
-import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
-import ch.ifocusit.plantuml.classdiagram.model.Method.ClassMethod;
-import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
+import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
+import ch.ifocusit.plantuml.utils.PlantUmlUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.ifocusit.plantuml.classdiagram.model.Association.*;
+import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.*;
+import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.MANY;
+import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.NONE;
 import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
+import static org.apache.commons.lang3.ClassUtils.getAllInterfaces;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Build class diagram from Class definition.
@@ -58,7 +59,7 @@ import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
 public class ClassDiagramBuilder implements NamesMapper {
 
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
-    private final Set<Class> classes = new LinkedHashSet<>();
+    private final Set<Class> classesRepository = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
@@ -67,12 +68,9 @@ public class ClassDiagramBuilder implements NamesMapper {
     private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName()) && ClassUtils.isNotGetterSetter(m.getMethod());
 
     private final PlantUmlBuilder builder = new PlantUmlBuilder();
-    // potential association
-    private final Set<ClassAttribute> associations = new LinkedHashSet<>();
-    // potential use definition
-    private final Set<MethodAttribute> uses = new LinkedHashSet<>();
-    // effective associations, really add to the diagram
-    private final List<Pair<Class, Class>> effectiveAssociations = new ArrayList<>();
+
+    private final Set<JavaClazz> clazzes = new TreeSet<>();
+    private final Set<ClassAssociation> detectedAssociations = new HashSet<>();
 
     private NamesMapper namesMapper = this;
 
@@ -80,6 +78,11 @@ public class ClassDiagramBuilder implements NamesMapper {
     private String footer;
 
     private final Map<Class, JavaClazz> cache = new HashMap<>();
+
+    /**
+     * Add not specified Object.
+     */
+    private boolean withDependencies = false;
 
     public ClassDiagramBuilder() {
     }
@@ -116,12 +119,12 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     public ClassDiagramBuilder addClasse(Iterable<Class> classes) {
-        classes.forEach(this.classes::add);
+        classes.forEach(this.classesRepository::add);
         return this;
     }
 
     public ClassDiagramBuilder addClasse(Class... classes) {
-        this.classes.addAll(Arrays.asList(classes));
+        this.classesRepository.addAll(Arrays.asList(classes));
         return this;
     }
 
@@ -136,7 +139,11 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     public String build() {
-        associations.clear();
+        // parse classes repository
+        // extract java classes definitions
+        readClasses();
+        // from java classes, detect associations
+        detectAssociations();
         // generate diagram from configuration
         builder.start();
         builder.appendPart(header);
@@ -159,16 +166,131 @@ public class ClassDiagramBuilder implements NamesMapper {
                         .toArray(Clazz[]::new);
                 builder.addPackage(Package.from(pkg), classes);
             } catch (IOException e) {
-                throw new IllegalStateException("Cannot load classes from package " + pkg, e);
+                throw new IllegalStateException("Cannot load classesRepository from package " + pkg, e);
             }
 
         });
     }
 
-    protected void addTypes() {
-        // add all classes definition
+    protected boolean canAppearsInDiagram(Class aClass) {
+        return !"void".equals(aClass.getName()) && !aClass.getName().startsWith("java.") && (withDependencies || classesRepository.contains(aClass));
+    }
+
+    protected void detectAssociations() {
+        // browse each defined classesRepository
+        clazzes.forEach(javaClazz -> {
+            // add inheritance associations
+            Stream.concat(Stream.of(javaClazz.getRelatedClass().getSuperclass()), getAllInterfaces(javaClazz.getRelatedClass()).stream())
+                    .filter(Objects::nonNull)
+                    // exclude class if not in repository
+                    .filter(this::canAppearsInDiagram)
+                    // create an association between current class and it's parent
+                    .forEach(hierarchicalClass -> {
+                        ClassAssociation assoc = new ClassAssociation();
+                        assoc.classB = javaClazz.getRelatedClass();
+                        assoc.classA = hierarchicalClass;
+                        assoc.setbName(namesMapper.getClassName(assoc.classB));
+                        assoc.setbCardinality(NONE);
+                        assoc.setaName(namesMapper.getClassName(assoc.classA));
+                        assoc.setaCardinality(NONE);
+                        assoc.setLabel(EMPTY);
+                        assoc.setType(INHERITANCE);
+
+                        detectedAssociations.add(assoc);
+                    });
+
+            // no field association if fields are hidden
+            if (!hideFields(javaClazz)) {
+                javaClazz.getAttributes().stream()
+                        .filter(attribute -> !attribute.getField().isEnumConstant())
+                        .forEach(classAttribute -> {
+                            classAttribute.getConcernedTypes().stream()
+                                    .filter(this::canAppearsInDiagram)
+                                    .forEach(classToLinkWith -> {
+                                        addOrUpdateAssociation(javaClazz.getRelatedClass(), classToLinkWith, classAttribute);
+                                    });
+                        });
+            }
+
+            // no method association if methods are hidden
+            if (!hideMethods(javaClazz)) {
+                javaClazz.getMethods().forEach(classMethod -> {
+                    classMethod.getParameters().ifPresent(methodAttributes -> {
+                        Stream.of(methodAttributes).forEach(methodAttribute -> {
+                            methodAttribute.getConcernedTypes().stream()
+                                    .filter(this::canAppearsInDiagram)
+                                    .forEach(classToLinkWith -> {
+                                        addOrUpdateAssociation(javaClazz.getRelatedClass(), classToLinkWith, methodAttribute);
+                                    });
+                        });
+                    });
+                    classMethod.getConcernedReturnedTypes().stream()
+                            .filter(this::canAppearsInDiagram)
+                            .forEach(classToLinkWith -> {
+                                addOrUpdateAssociation(javaClazz.getRelatedClass(), classToLinkWith, classMethod);
+                            });
+                });
+            }
+        });
+    }
+
+    private boolean hideFields(JavaClazz javaClazz) {
+        return PlantUmlUtils.hideFields(javaClazz, header) || PlantUmlUtils.hideFields(javaClazz, footer);
+    }
+
+    private boolean hideMethods(JavaClazz javaClazz) {
+        return PlantUmlUtils.hideMethods(javaClazz, header) || PlantUmlUtils.hideMethods(javaClazz, footer);
+    }
+
+    private void addOrUpdateAssociation(Class originClass, Class classToLinkWith, ClassMember classMember) {
+        // look for an existing association
+        Optional<ClassAssociation> existing = detectedAssociations.stream()
+                .filter(assoc -> assoc.concern(originClass, classToLinkWith))
+                .findFirst();
+
+        Class typeWithGeneric = classMember.getType();
+
+        String label = "use";
+        if (classMember instanceof MethodAttribute) {
+            label += classMember.getName().startsWith("arg") ? EMPTY : " as " + classMember.getName();
+        } else if (classMember instanceof ClassAttribute) {
+            label = ((ClassAttribute) classMember).getName();
+        }
+
+        if (existing.isPresent()) {
+            if (existing.get().isNoSameOrigin(originClass))
+            // do not add the second attribut to the association collection
+            // mark attribute as bidirectional
+            existing.get().setBidirectional();
+            if (classMember instanceof ClassAttribute) {
+                // update cardinality
+                existing.get().setaCardinality(ClassUtils.isCollection(typeWithGeneric) ? MANY : NONE);
+                // change name
+                existing.get().setLabel(existing.get().getLabel() + "/" + label);
+            }
+        } else {
+            // add association with this class
+            ClassAssociation assoc = new ClassAssociation();
+            assoc.classA = originClass;
+            assoc.setaName(namesMapper.getClassName(assoc.classA));
+            assoc.setaCardinality(ClassUtils.isCollection(assoc.classA) ? MANY : NONE);
+            assoc.classB = classToLinkWith;
+            assoc.setbName(namesMapper.getClassName(assoc.classB));
+            assoc.setbCardinality(ClassUtils.isCollection(typeWithGeneric) ? MANY : NONE);
+            assoc.setLabel(label);
+            assoc.setType(DIRECTION);
+            detectedAssociations.add(assoc);
+        }
+    }
+
+    protected void readClasses() {
+        // add all classesRepository definition
         // readFields will manage field type definition, exclusions, ...
-        classes.forEach(clazz -> builder.addType(createJavaClass(clazz)));
+        classesRepository.forEach(clazz -> clazzes.add(createJavaClass(clazz)));
+    }
+
+    protected void addTypes() {
+        clazzes.forEach(builder::addType);
     }
 
     protected JavaClazz createJavaClass(Class aClass) {
@@ -186,16 +308,15 @@ public class ClassDiagramBuilder implements NamesMapper {
         return additionalMethodPredicate;
     }
 
-    protected Method[] readMethods(Class aClass) {
+    protected ClassMethod[] readMethods(Class aClass) {
         return Stream.of(aClass.getDeclaredMethods())
                 // only public and non static methods
                 .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers()))
                 .map(this::createClassMethod)
                 // excludes specific fields
                 .filter(filterMethods())
-                .map(this::registerUse)
                 .sorted()
-                .toArray(Method[]::new);
+                .toArray(ClassMethod[]::new);
     }
 
     protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
@@ -205,7 +326,7 @@ public class ClassDiagramBuilder implements NamesMapper {
         return classMethod;
     }
 
-    protected Attribute[] readFields(Class aClass) {
+    protected ClassAttribute[] readFields(Class aClass) {
         return Stream.of(aClass.getDeclaredFields())
                 // exclude inner class
                 .filter(field -> !field.getName().startsWith(DOLLAR))
@@ -214,9 +335,7 @@ public class ClassDiagramBuilder implements NamesMapper {
                 .map(this::createClassAttribute)
                 // excludes specific fields
                 .filter(filterFields())
-                // need an association
-                .map(this::registerAssociation)
-                .toArray(Attribute[]::new);
+                .toArray(ClassAttribute[]::new);
     }
 
     protected ClassAttribute createClassAttribute(Field field) {
@@ -225,89 +344,42 @@ public class ClassDiagramBuilder implements NamesMapper {
         return attribute;
     }
 
-    private ClassMethod registerUse(ClassMethod classMethod) {
-        // prepare to mark methods parameters as a uses in diagram
-        classMethod.getParameters().ifPresent(params -> uses.addAll(Arrays.asList(params)));
-        return classMethod;
+    protected void addAssociations() {
+        detectedAssociations.stream().sorted().forEach(builder::addAssociation);
     }
 
-    private ClassAttribute registerAssociation(ClassAttribute attribut) {
-        // look for an existing reverse field definition
-        Optional<ClassAttribute> existing = associations.stream()
-                .filter(attr -> attribut.getConcernedTypes().collect(Collectors.toList()).contains(attr.getDeclaringClass())
-                        && attr.getConcernedTypes().collect(Collectors.toList()).contains(attribut.getDeclaringClass()))
-                .findFirst();
+    public ClassDiagramBuilder withDependencies(boolean flag) {
+        withDependencies = flag;
+        return this;
+    }
 
-        if (existing.isPresent()) {
-            // mark attribute as bidirectional
-            existing.get().setBidirectional(true);
-            // do not add the second attribut to the association collection
-        } else if (!attribut.getField().getDeclaringClass().isEnum()) {
-            this.associations.add(attribut);
+    public ClassDiagramBuilder withDependencies() {
+        return withDependencies(true);
+    }
+
+    private static class ClassAssociation extends Association implements Comparable<ClassAssociation> {
+        private Class classA;
+        private Class classB;
+
+        public void setBidirectional() {
+            type = BI_DIRECTION;
         }
 
-        return attribut;
-    }
+        public boolean concern(Class otherA, Class otherB) {
+            return Sets.intersection(Sets.newHashSet(classA, classB), Sets.newHashSet(otherA, otherB)).size() == 2;
+        }
 
-    protected void addAssociations() {
-        // browse each defined classes
-        classes.forEach(aClass -> {
-            // add inheritance association
-            Stream.concat(Stream.of(aClass.getSuperclass()), ClassUtils.getAllInterfaces(aClass).stream())
-                    .filter(Objects::nonNull).filter(classes::contains)
-                    .forEach(parentClass -> builder.addAssociation(
-                            namesMapper.getClassName(parentClass),
-                            namesMapper.getClassName(aClass),
-                            INHERITANCE));
-        });
+        @Override
+        public int compareTo(final ClassAssociation o) {
+            return getKey().compareTo(o.getKey());
+        }
 
-        associations.stream()
-                // exclude not managed class
-                .filter(field -> field.isManaged(classes))
-                // excludes specific fields
-                .filter(filterFields())
-                .forEach(this::addAssociation);
+        private String getKey() {
+            return aName + bName;
+        }
 
-        // after adding objects' associations, mark other objects' dependencies as "use"
-        uses.stream()
-                // exclude not managed class
-                .filter(attribute -> attribute.isManaged(classes))
-                // not same as it's declaring class
-                .filter(MethodAttribute::isParameterNotTheSameAsItsOwner)
-                // already in association
-                .filter(methodAttribute -> methodAttribute.getConcernedTypes()
-                        .noneMatch(methodParam -> effectiveAssociation(methodParam, methodAttribute.getDeclaringClass())))
-                .forEach(this::addAssociation);
-    }
-
-    /**
-     * @return true if this dependency is already an association
-     */
-    private boolean effectiveAssociation(Class methodParam, Class classAttribute) {
-        // look for 2 ways associations
-        return effectiveAssociations.contains(Pair.of(methodParam, classAttribute))
-                || effectiveAssociations.contains(Pair.of(classAttribute, methodParam));
-    }
-
-    private void addAssociation(DiagramMember member) {
-        // class association must take care of generics
-        member.getConcernedTypes()
-                // maintain only class in the scope of the diagram
-                .filter(classes::contains)
-                .forEach(aClass -> {
-                    Cardinality aCardinality = member.isLeftCollection() ? Cardinality.MANY : Cardinality.NONE;
-                    Cardinality bCardinality = member.isRightCollection() ? Cardinality.MANY : Cardinality.NONE;
-                    String name = member instanceof MethodAttribute ? "use" : member.getName();
-                    Association type = member instanceof ClassMethod ? LINK :
-                            member.isBidirectional() ? BI_DIRECTION : DIRECTION;
-
-                    builder.addAssociation(
-                            namesMapper.getClassName(member.getDeclaringClass()),
-                            namesMapper.getClassName(aClass),
-                            type, name, aCardinality, bCardinality);
-
-                    // remember which association have been added
-                    effectiveAssociations.add(Pair.of(member.getDeclaringClass(), aClass));
-                });
+        public boolean isNoSameOrigin(final Class initialClass) {
+            return !classA.equals(initialClass);
+        }
     }
 }

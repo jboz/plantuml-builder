@@ -38,7 +38,7 @@ public class SimpleAttribute implements Attribute {
     }
 
     @Override
-    public Optional<String> getType() {
+    public Optional<String> getTypeName() {
         return Optional.ofNullable(type);
     }
 

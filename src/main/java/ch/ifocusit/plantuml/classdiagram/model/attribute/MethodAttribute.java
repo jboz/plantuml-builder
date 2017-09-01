@@ -1,13 +1,13 @@
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
-import ch.ifocusit.plantuml.classdiagram.model.DiagramMember;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Parameter;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
-public class MethodAttribute implements Attribute, DiagramMember {
+public class MethodAttribute implements Attribute, ClassMember {
 
     private final Parameter methodParameter;
 
@@ -20,23 +20,17 @@ public class MethodAttribute implements Attribute, DiagramMember {
     }
 
     @Override
-    public Stream<Class> getConcernedTypes() {
+    public Set<Class> getConcernedTypes() {
         return ClassUtils.getConcernedTypes(methodParameter);
     }
 
-    @Override
-    public boolean isLeftCollection() {
-        return false;
+    public Class getParameterType() {
+        return methodParameter.getType();
     }
 
     @Override
-    public boolean isRightCollection() {
-        return false;
-    }
-
-    @Override
-    public boolean isBidirectional() {
-        return false;
+    public Class getType() {
+        return getParameterType();
     }
 
     @Override
@@ -45,7 +39,7 @@ public class MethodAttribute implements Attribute, DiagramMember {
     }
 
     @Override
-    public Optional<String> getType() {
+    public Optional<String> getTypeName() {
         return Optional.of(ClassUtils.getSimpleName(methodParameter.getParameterizedType()));
     }
 

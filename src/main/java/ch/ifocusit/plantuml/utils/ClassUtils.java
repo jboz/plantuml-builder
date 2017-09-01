@@ -27,13 +27,9 @@ import com.google.common.base.CharMatcher;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.lang.reflect.*;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Stream.concat;
 
 /**
  * @author Julien Boz
@@ -86,52 +82,62 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
     public static Optional<Field> getField(Class container, Class aClass) {
         return Stream.of(container.getDeclaredFields())
-                .filter(attr -> getConcernedTypes(attr).anyMatch(fieldType -> fieldType.equals(aClass)))
+                .filter(attr -> getConcernedTypes(attr).stream().anyMatch(fieldType -> fieldType.equals(aClass)))
                 .findFirst();
     }
 
-    public static Stream<Class> getConcernedTypes(Field field) {
-        return concat(Stream.of(field.getType()), getGenericTypes(field));
-    }
-
-    public static Stream<Class> getConcernedTypes(Method method) {
-        return concat(Stream.of(method.getReturnType()), getGenericTypes(method));
-    }
-
-    public static Stream<Class> getConcernedTypes(Parameter parameter) {
-        Stream<Class> classes = concat(Stream.of(parameter.getType()), getGenericTypes(parameter));
-//        if (parameter.getDeclaringExecutable() instanceof Method) {
-//            classes = concat(classes, getConcernedTypes((Method) parameter.getDeclaringExecutable()));
-//        }
+    public static Set<Class> getConcernedTypes(Field field) {
+        Set<Class> classes = new HashSet<>();
+        classes.add(field.getType());
+        classes.addAll(getGenericTypes(field));
         return classes;
     }
 
-    public static Stream<Class> getGenericTypes(ParameterizedType type) {
-        return Stream.of(type.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast);
+    public static Set<Class> getConcernedTypes(Method method) {
+        Set<Class> classes = new HashSet<>();
+        // manage returned types
+        classes.add(method.getReturnType());
+        classes.addAll(getGenericTypes(method));
+        // manage parameters types
+        for (Parameter parameter : method.getParameters()) {
+            classes.addAll(getConcernedTypes(parameter));
+        }
+        return classes;
     }
 
-    public static Stream<Class> getGenericTypes(Field field) {
+    public static Set<Class> getConcernedTypes(Parameter parameter) {
+        Set<Class> classes = new HashSet<>();
+        classes.add(parameter.getType());
+        classes.addAll(getGenericTypes(parameter));
+        return classes;
+    }
+
+    public static Set<Class> getGenericTypes(ParameterizedType type) {
+        return Stream.of(type.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast).collect(Collectors.toSet());
+    }
+
+    public static Set<Class> getGenericTypes(Field field) {
         if (field.getGenericType() instanceof ParameterizedType) {
             // manage generics
             return getGenericTypes((ParameterizedType) field.getGenericType());
         }
-        return Stream.empty();
+        return new HashSet<>();
     }
 
-    public static Stream<Class> getGenericTypes(Method method) {
+    public static Set<Class> getGenericTypes(Method method) {
         if (method.getGenericReturnType() instanceof ParameterizedType) {
             // manage generics
             return getGenericTypes((ParameterizedType) method.getGenericReturnType());
         }
-        return Stream.empty();
+        return new HashSet<>();
     }
 
-    public static Stream<Class> getGenericTypes(Parameter parameter) {
+    public static Set<Class> getGenericTypes(Parameter parameter) {
         if (parameter.getParameterizedType() instanceof ParameterizedType) {
             // manage generics
             return getGenericTypes((ParameterizedType) parameter.getParameterizedType());
         }
-        return Stream.empty();
+        return new HashSet<>();
     }
 
     public static boolean isGetter(Method method) {

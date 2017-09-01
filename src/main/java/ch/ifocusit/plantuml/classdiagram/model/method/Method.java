@@ -20,10 +20,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package ch.ifocusit.plantuml.classdiagram.model.Method;
+package ch.ifocusit.plantuml.classdiagram.model.method;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
 
 import java.util.Optional;
@@ -33,7 +32,7 @@ import java.util.Optional;
  */
 public interface Method {
 
-    public Optional<String> getReturnType();
+    public Optional<String> getReturnTypeName();
 
     public String getName();
 

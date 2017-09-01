@@ -23,6 +23,7 @@
 package ch.ifocusit.plantuml;
 
 import ch.ifocusit.plantuml.classdiagram.model.Association;
+import ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType;
 import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
@@ -34,7 +35,7 @@ import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.ifocusit.plantuml.classdiagram.model.Association.DIRECTION;
+import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.DIRECTION;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
@@ -158,7 +159,7 @@ public class PlantUmlBuilder {
             // name
             content.append(TAB).append(attribute.getName());
             // type
-            attribute.getType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            attribute.getTypeName().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // field link
             attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
             content.append(NEWLINE);
@@ -171,12 +172,12 @@ public class PlantUmlBuilder {
             method.getParameters().ifPresent(params -> {
                 content.append(BRACKET_OPEN);
                 content.append(Stream.of(params)
-                        .map(param -> param.getType().orElse(param.getName()))
+                        .map(param -> param.getTypeName().orElse(param.getName()))
                         .collect(Collectors.joining(COMMA + SPACE)));
                 content.append(BRACKET_CLOSE);
             });
             // type
-            method.getReturnType().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            method.getReturnTypeName().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // method link
             method.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
             content.append(NEWLINE);
@@ -199,22 +200,26 @@ public class PlantUmlBuilder {
         return addAssociation(aName, bName, DIRECTION, null);
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc) {
-        return addAssociation(aName, bName, assoc, null);
+    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type) {
+        return addAssociation(aName, bName, type, null);
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, String label) {
         return addAssociation(aName, bName, DIRECTION, label);
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label) {
-        return addAssociation(aName, bName, assoc, label, Cardinality.NONE, Cardinality.NONE);
+    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type, String label) {
+        return addAssociation(aName, bName, type, label, Cardinality.NONE, Cardinality.NONE);
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, Association assoc, String label, Cardinality aCardinality, Cardinality bCardinality) {
+    public PlantUmlBuilder addAssociation(Association association) {
+        return addAssociation(association.getaName(), association.getbName(), association.getType(), association.getLabel(), association.getaCardinality(), association.getbCardinality());
+    }
+
+    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type, String label, Cardinality aCardinality, Cardinality bCardinality) {
         Validate.notBlank(aName, "Class a name is mandatory");
         Validate.notBlank(bName, "Class b name is mandatory");
-        Validate.notNull(assoc, "Association type is mandatory");
+        Validate.notNull(type, "Association type is mandatory");
         Validate.notNull(aCardinality, "Cardinality a name is mandatory");
         Validate.notNull(bCardinality, "Cardinality b name is mandatory");
 
@@ -222,7 +227,7 @@ public class PlantUmlBuilder {
         if (!Cardinality.NONE.equals(aCardinality)) {
             content.append(SPACE).append(QUOTE).append(aCardinality).append(QUOTE);
         }
-        content.append(SPACE).append(assoc).append(SPACE);
+        content.append(SPACE).append(type).append(SPACE);
         if (!Cardinality.NONE.equals(bCardinality)) {
             content.append(QUOTE).append(bCardinality).append(QUOTE).append(SPACE);
         }

@@ -23,8 +23,8 @@
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.Method.Method;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Modifier;
@@ -40,8 +40,8 @@ public class JavaClazz implements Clazz {
     private final Class<?> relatedClass;
     private Optional<String> overridedName;
     private Optional<Link> link;
-    private List<Attribute> attributes = new ArrayList<>();
-    private List<Method> methods = new ArrayList<>();
+    private List<ClassAttribute> attributes = new ArrayList<>();
+    private List<ClassMethod> methods = new ArrayList<>();
     private String backgroundColor;
     private String borderColor;
 
@@ -66,22 +66,26 @@ public class JavaClazz implements Clazz {
         return this;
     }
 
-    public List<Attribute> getAttributes() {
+    public Class<?> getRelatedClass() {
+        return relatedClass;
+    }
+
+    public List<ClassAttribute> getAttributes() {
         return attributes;
     }
 
-    public void addAttributes(Attribute... attributes) {
-        for (Attribute attribute : attributes) {
+    public void addAttributes(ClassAttribute... attributes) {
+        for (ClassAttribute attribute : attributes) {
             this.attributes.add(attribute);
         }
     }
 
-    public List<Method> getMethods() {
+    public List<ClassMethod> getMethods() {
         return methods;
     }
 
-    public void addMethods(Method... methods) {
-        for (Method method : methods) {
+    public void addMethods(ClassMethod... methods) {
+        for (ClassMethod method : methods) {
             this.methods.add(method);
         }
     }
@@ -129,7 +133,7 @@ public class JavaClazz implements Clazz {
         return this;
     }
 
-    public static JavaClazz from(Class aClass, Attribute[] attributes, Method[] methods) {
+    public static JavaClazz from(Class aClass, ClassAttribute[] attributes, ClassMethod[] methods) {
         JavaClazz javaClass = new JavaClazz(aClass);
         javaClass.addAttributes(attributes);
         javaClass.addMethods(methods);

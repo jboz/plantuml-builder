@@ -30,6 +30,7 @@ import ch.ifocusit.plantuml.test.helper.domain.material.Car;
 import ch.ifocusit.plantuml.test.helper.domain.material.Machine;
 import ch.ifocusit.plantuml.test.helper.domain.material.Vehicule;
 import ch.ifocusit.plantuml.test.helper.domain.material.Wheel;
+import ch.ifocusit.plantuml.test.helper.service.AccessDataService;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagram() throws Exception {
-        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/class-diagram.plantuml"), Charset.defaultCharset());
+        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/domain-diagram.plantuml"), Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
@@ -57,6 +58,35 @@ public class ClassDiagramBuilderTest {
                 .addClasse(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
                 .build();
         // end::createSimple[]
+
+        assertThat(diagram).isEqualTo(expected);
+    }
+
+    @Test
+    public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
+        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml"), Charset.defaultCharset());
+
+        // tag::createSimple[]
+        String diagram = new ClassDiagramBuilder()
+                .excludes(".*\\.ignored")
+                .addClasse(Car.class)
+                .withDependencies()
+                .build();
+        // end::createSimple[]
+
+        assertThat(diagram).isEqualTo(expected);
+    }
+
+    @Test
+    public void buildShouldGenerateDiagramWithDepth() throws Exception {
+        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/service-diagram.plantuml"), Charset.defaultCharset());
+
+        // tag::createFromOneClassWithDependencies[]
+        String diagram = new ClassDiagramBuilder()
+                .addClasse(AccessDataService.class)
+                .withDependencies()
+                .build();
+        // end::createFromOneClassWithDependencies[]
 
         assertThat(diagram).isEqualTo(expected);
     }

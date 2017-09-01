@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 public interface Attribute {
 
-    public Optional<String> getType();
+    public Optional<String> getTypeName();
 
     public String getName();
 
