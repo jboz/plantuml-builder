@@ -42,12 +42,6 @@ public interface NamesMapper {
         return getSimpleName(aClass);
     }
 
-    /**
-     * @return the class link to use in the diagram
-     */
-    default Optional<Link> getClassLink(Class aClass) {
-        return Optional.empty();
-    }
 
     /**
      * @return the attribute name as shown in the diagram
@@ -56,12 +50,6 @@ public interface NamesMapper {
         return field.getName();
     }
 
-    /**
-     * @return the field link to use in the diagram
-     */
-    default Optional<Link> getFieldLink(Field field) {
-        return Optional.empty();
-    }
 
     /**
      * @return the method name as shown in the diagram
@@ -70,10 +58,4 @@ public interface NamesMapper {
         return method.getName();
     }
 
-    /**
-     * @return the method link to use in the diagram
-     */
-    default Optional<Link> getMethodLink(Method method) {
-        return Optional.empty();
-    }
 }
