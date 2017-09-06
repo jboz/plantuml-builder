@@ -16,4 +16,6 @@ public class PlantUmlUtils {
     public static boolean hideMethods(JavaClazz javaClazz, String part) {
         return isHide(javaClazz, part, "methods");
     }
+
+
 }

@@ -24,4 +24,6 @@ public class Link {
     public String toString() {
         return String.format("[[%s{%s}]]", url, label);
     }
+
+
 }

@@ -56,7 +56,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *
  * @author Julien Boz
  */
-public class ClassDiagramBuilder implements NamesMapper {
+public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
 
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classesRepository = new LinkedHashSet<>();
@@ -73,6 +73,8 @@ public class ClassDiagramBuilder implements NamesMapper {
     private final Set<ClassAssociation> detectedAssociations = new HashSet<>();
 
     private NamesMapper namesMapper = this;
+
+    private LinkMaker linkMaker = this;
 
     private String header;
     private String footer;
@@ -137,6 +139,11 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     public ClassDiagramBuilder withNamesMapper(NamesMapper namesMapper) {
         this.namesMapper = namesMapper;
+        return this;
+    }
+
+    public ClassDiagramBuilder withLinkMaker(LinkMaker linkMaker) {
+        this.linkMaker = linkMaker;
         return this;
     }
 
@@ -305,7 +312,7 @@ public class ClassDiagramBuilder implements NamesMapper {
     protected JavaClazz createJavaClass(Class aClass) {
         return cache.computeIfAbsent(aClass, clazz -> JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
-                .setLink(namesMapper.getClassLink(clazz))
+                .setLink(linkMaker.getClassLink(clazz))
         );
     }
 
@@ -330,7 +337,7 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
         ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
-        classMethod.setLink(namesMapper.getMethodLink(method));
+        classMethod.setLink(linkMaker.getMethodLink(method));
 
         return classMethod;
     }
@@ -349,7 +356,7 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     protected ClassAttribute createClassAttribute(Field field) {
         ClassAttribute attribute = new ClassAttribute(field, namesMapper.getFieldName(field));
-        attribute.setLink(namesMapper.getFieldLink(field));
+        attribute.setLink(linkMaker.getFieldLink(field));
         return attribute;
     }
 
