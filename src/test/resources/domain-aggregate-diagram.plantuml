@@ -6,6 +6,7 @@ class "Car" {
   drivers : Set<Driver>
   price : Price
   wheels : Collection<Wheel>
+  addDriver(Driver) : Car
   addWheel(Wheel)
   buyBy(Driver, BigDecimal, Devise) : Driver
 }

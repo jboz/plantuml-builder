@@ -58,6 +58,12 @@ public class Car implements Vehicule {
         return driver;
     }
 
+    public Car addDriver(Driver anotherDriver) {
+        drivers.add(anotherDriver);
+        anotherDriver.addCar(this);
+        return this;
+    }
+
     public Collection<Wheel> getWheels() {
         return wheels;
     }

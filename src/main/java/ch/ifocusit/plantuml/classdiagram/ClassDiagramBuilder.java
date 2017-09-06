@@ -84,6 +84,8 @@ public class ClassDiagramBuilder implements NamesMapper {
      */
     private boolean withDependencies = false;
 
+    private boolean hideSelfLink = true;
+
     public ClassDiagramBuilder() {
     }
 
@@ -216,13 +218,14 @@ public class ClassDiagramBuilder implements NamesMapper {
             if (!hideMethods(javaClazz)) {
                 javaClazz.getMethods().forEach(classMethod -> {
                     classMethod.getParameters().ifPresent(methodAttributes -> {
-                        Stream.of(methodAttributes).forEach(methodAttribute -> {
-                            methodAttribute.getConcernedTypes().stream()
-                                    .filter(this::canAppearsInDiagram)
-                                    .forEach(classToLinkWith -> {
-                                        addOrUpdateAssociation(javaClazz.getRelatedClass(), classToLinkWith, methodAttribute);
-                                    });
-                        });
+                        Stream.of(methodAttributes)
+                                .forEach(methodAttribute -> {
+                                    methodAttribute.getConcernedTypes().stream()
+                                            .filter(this::canAppearsInDiagram)
+                                            .forEach(classToLinkWith -> {
+                                                addOrUpdateAssociation(javaClazz.getRelatedClass(), classToLinkWith, methodAttribute);
+                                            });
+                                });
                     });
                     classMethod.getConcernedReturnedTypes().stream()
                             .filter(this::canAppearsInDiagram)
@@ -243,6 +246,12 @@ public class ClassDiagramBuilder implements NamesMapper {
     }
 
     private void addOrUpdateAssociation(Class originClass, Class classToLinkWith, ClassMember classMember) {
+
+        // hide inner link
+        if (hideSelfLink && originClass.equals(classToLinkWith)) {
+            return; // do not add this link
+        }
+
         // look for an existing association
         Optional<ClassAssociation> existing = detectedAssociations.stream()
                 .filter(assoc -> assoc.concern(originClass, classToLinkWith))
@@ -259,9 +268,9 @@ public class ClassDiagramBuilder implements NamesMapper {
 
         if (existing.isPresent()) {
             if (existing.get().isNoSameOrigin(originClass))
-            // do not add the second attribut to the association collection
-            // mark attribute as bidirectional
-            existing.get().setBidirectional();
+                // do not add the second attribut to the association collection
+                // mark attribute as bidirectional
+                existing.get().setBidirectional();
             if (classMember instanceof ClassAttribute) {
                 // update cardinality
                 existing.get().setaCardinality(ClassUtils.isCollection(typeWithGeneric) ? MANY : NONE);
@@ -350,6 +359,16 @@ public class ClassDiagramBuilder implements NamesMapper {
 
     public ClassDiagramBuilder withDependencies(boolean flag) {
         withDependencies = flag;
+        return this;
+    }
+
+    public ClassDiagramBuilder hideSelfLink() {
+        hideSelfLink = true;
+        return this;
+    }
+
+    public ClassDiagramBuilder showSelfLink() {
+        hideSelfLink = false;
         return this;
     }
 

@@ -15,10 +15,6 @@ public class MethodAttribute implements Attribute, ClassMember {
         this.methodParameter = methodParameter;
     }
 
-    public boolean isParameterNotTheSameAsItsOwner() {
-        return !getDeclaringClass().equals(methodParameter.getType());
-    }
-
     @Override
     public Set<Class> getConcernedTypes() {
         return ClassUtils.getConcernedTypes(methodParameter);

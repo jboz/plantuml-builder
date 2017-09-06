@@ -51,4 +51,8 @@ public class Driver {
     public void setCars(final List<Car> cars) {
         this.cars = cars;
     }
+
+    public void addCar(Car car) {
+        cars.add(car);
+    }
 }
