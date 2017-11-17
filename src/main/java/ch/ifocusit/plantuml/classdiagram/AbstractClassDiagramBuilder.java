@@ -88,17 +88,17 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
     public AbstractClassDiagramBuilder() {
     }
 
-    public AbstractClassDiagramBuilder setHeader(String header) {
+    public <B extends AbstractClassDiagramBuilder> B setHeader(String header) {
         this.header = header;
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder setFooter(String footer) {
+    public <B extends AbstractClassDiagramBuilder> B  setFooter(String footer) {
         this.footer = footer;
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder excludes(String... excludes) {
+    public <B extends AbstractClassDiagramBuilder> B  excludes(String... excludes) {
         // keep the corresponding fields
         Predicate<ClassAttribute> notMatchField = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
         this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatchField);
@@ -106,22 +106,22 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         // keep the corresponding fields
         Predicate<ClassMethod> notMatchMethod = field -> Stream.of(excludes).noneMatch(excl -> field.toStringMethod().matches(excl));
         this.additionalMethodPredicate = this.additionalMethodPredicate.and(notMatchMethod);
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder addFieldPredicate(Predicate<ClassAttribute> predicate) {
+    public <B extends AbstractClassDiagramBuilder> B  addFieldPredicate(Predicate<ClassAttribute> predicate) {
         this.additionalFieldPredicate = this.additionalFieldPredicate.and(predicate);
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder addMethodPredicate(Predicate<ClassMethod> predicate) {
+    public <B extends AbstractClassDiagramBuilder> B  addMethodPredicate(Predicate<ClassMethod> predicate) {
         this.additionalMethodPredicate = this.additionalMethodPredicate.and(predicate);
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder withLinkMaker(LinkMaker linkMaker) {
+    public <B extends AbstractClassDiagramBuilder> B  withLinkMaker(LinkMaker linkMaker) {
         this.linkMaker = linkMaker;
-        return this;
+        return (B) this;
     }
 
     public String build() {
@@ -141,52 +141,52 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         return builder.build();
     }
 
-    protected abstract void addPackages();
+    public abstract void addPackages();
 
-    protected abstract void detectAssociations();
+    public abstract void detectAssociations();
 
-    protected boolean hideFields(JavaClazz javaClazz) {
+    public boolean hideFields(JavaClazz javaClazz) {
         return PlantUmlUtils.hideFields(javaClazz, header) || PlantUmlUtils.hideFields(javaClazz, footer);
     }
 
-    protected boolean hideMethods(JavaClazz javaClazz) {
+    public boolean hideMethods(JavaClazz javaClazz) {
         return PlantUmlUtils.hideMethods(javaClazz, header) || PlantUmlUtils.hideMethods(javaClazz, footer);
     }
 
-    protected abstract void readClasses();
+    public abstract void readClasses();
 
-    protected void addTypes() {
+    public void addTypes() {
         clazzes.forEach(builder::addType);
     }
 
-    protected Predicate<ClassAttribute> filterFields() {
+    public Predicate<ClassAttribute> filterFields() {
         return additionalFieldPredicate;
     }
 
-    protected Predicate<ClassMethod> filterMethods() {
+    public Predicate<ClassMethod> filterMethods() {
         return additionalMethodPredicate;
     }
 
-    protected void addAssociations() {
+    public void addAssociations() {
         detectedAssociations.stream().sorted().forEach(builder::addAssociation);
     }
 
-    public AbstractClassDiagramBuilder withDependencies(boolean flag) {
+    public <B extends AbstractClassDiagramBuilder> B  withDependencies(boolean flag) {
         withDependencies = flag;
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder hideSelfLink() {
+    public <B extends AbstractClassDiagramBuilder> B  hideSelfLink() {
         hideSelfLink = true;
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder showSelfLink() {
+    public <B extends AbstractClassDiagramBuilder> B  showSelfLink() {
         hideSelfLink = false;
-        return this;
+        return (B) this;
     }
 
-    public AbstractClassDiagramBuilder withDependencies() {
+    public <B extends AbstractClassDiagramBuilder> B  withDependencies() {
         return withDependencies(true);
     }
 

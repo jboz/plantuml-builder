@@ -22,7 +22,6 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
-import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
 import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
@@ -32,8 +31,6 @@ import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
-import ch.ifocusit.plantuml.utils.PlantUmlUtils;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
@@ -87,7 +84,7 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         return this;
     }
 
-    protected void addPackages() {
+    public void addPackages() {
         packages.stream().forEach(pkg -> {
             try {
                 ClassPath classPath = ClassPath.from(Thread.currentThread().getContextClassLoader());
@@ -104,11 +101,11 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         });
     }
 
-    protected boolean canAppearsInDiagram(Class aClass) {
+    public boolean canAppearsInDiagram(Class aClass) {
         return !"void".equals(aClass.getName()) && !aClass.getName().startsWith("java.") && (withDependencies || classesRepository.contains(aClass));
     }
 
-    protected void detectAssociations() {
+    public void detectAssociations() {
         // browse each defined classesRepository
         clazzes.forEach(javaClazz -> {
             // add inheritance associations
@@ -175,8 +172,8 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         }
 
         // look for an existing association
-        Optional<ClassAssociation> existing = detectedAssociations.stream()
-                .filter(assoc -> assoc.concern(originClass, classToLinkWith))
+        Optional<Association> existing = detectedAssociations.stream()
+                .filter(assoc -> ((ClassAssociation) assoc).concern(originClass, classToLinkWith))
                 .findFirst();
 
         Class typeWithGeneric = classMember.getType();
@@ -185,14 +182,14 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         if (classMember instanceof MethodAttribute) {
             label += classMember.getName().startsWith("arg") ? EMPTY : " as " + classMember.getName();
         } else if (classMember instanceof ClassAttribute) {
-            label = ((ClassAttribute) classMember).getName();
+            label = classMember.getName();
         }
 
         if (existing.isPresent()) {
-            if (existing.get().isNoSameOrigin(originClass))
+            if (((ClassAssociation) existing.get()).isNoSameOrigin(originClass))
                 // do not add the second attribut to the association collection
                 // mark attribute as bidirectional
-                existing.get().setBidirectional();
+                ((ClassAssociation) existing.get()).setBidirectional();
             if (classMember instanceof ClassAttribute) {
                 // update cardinality
                 existing.get().setaCardinality(ClassUtils.isCollection(typeWithGeneric) ? MANY : NONE);
@@ -214,23 +211,23 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         }
     }
 
-    protected void readClasses() {
+    public void readClasses() {
         // add all classesRepository definition
         // readFields will manage field type definition, exclusions, ...
         classesRepository.forEach(clazz -> clazzes.add(createJavaClass(clazz)));
     }
 
-    protected void addTypes() {
+    public void addTypes() {
         clazzes.forEach(builder::addType);
     }
 
-    protected JavaClazz createJavaClass(Class clazz) {
+    public JavaClazz createJavaClass(Class clazz) {
         return JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
                 .setLink(linkMaker.getClassLink(clazz));
     }
 
-    protected ClassMethod[] readMethods(Class aClass) {
+    public ClassMethod[] readMethods(Class aClass) {
         return Stream.of(aClass.getDeclaredMethods())
                 // only public and non static methods
                 .filter(method -> !Modifier.isStatic(method.getModifiers()) && Modifier.isPublic(method.getModifiers()))
@@ -241,14 +238,14 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
                 .toArray(ClassMethod[]::new);
     }
 
-    protected ClassMethod createClassMethod(java.lang.reflect.Method method) {
+    public ClassMethod createClassMethod(java.lang.reflect.Method method) {
         ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
         classMethod.setLink(linkMaker.getMethodLink(method));
 
         return classMethod;
     }
 
-    protected ClassAttribute[] readFields(Class aClass) {
+    public ClassAttribute[] readFields(Class aClass) {
         return Stream.of(aClass.getDeclaredFields())
                 // exclude inner class
                 .filter(field -> !field.getName().startsWith(DOLLAR))
@@ -260,7 +257,7 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
                 .toArray(ClassAttribute[]::new);
     }
 
-    protected ClassAttribute createClassAttribute(Field field) {
+    public ClassAttribute createClassAttribute(Field field) {
         ClassAttribute attribute = new ClassAttribute(field, namesMapper.getFieldName(field));
         attribute.setLink(linkMaker.getFieldLink(field));
         return attribute;

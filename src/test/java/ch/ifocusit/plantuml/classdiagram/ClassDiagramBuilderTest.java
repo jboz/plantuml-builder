@@ -53,7 +53,7 @@ public class ClassDiagramBuilderTest {
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
-                .excludes(".*\\.ignored", "Machine")
+                .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
                 .addPackage(Vehicule.class.getPackage())
                 .addClasse(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
                 .build();
@@ -68,7 +68,7 @@ public class ClassDiagramBuilderTest {
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
-                .excludes(".*\\.ignored")
+                .<ClassDiagramBuilder>excludes(".*\\.ignored")
                 .addClasse(Car.class)
                 .withDependencies()
                 .build();
@@ -98,7 +98,7 @@ public class ClassDiagramBuilderTest {
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
-                .addMethodPredicate(classMethod -> false)
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
                 .addClasse(Car.class)
                 .build();
 
@@ -118,7 +118,7 @@ public class ClassDiagramBuilderTest {
                 // only annotated
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
-                .addMethodPredicate(classMethod -> false)
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
                 .addClasse(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
