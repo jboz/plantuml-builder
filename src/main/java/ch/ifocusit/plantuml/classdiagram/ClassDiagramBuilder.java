@@ -56,70 +56,15 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *
  * @author Julien Boz
  */
-public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
+public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements NamesMapper {
 
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classesRepository = new LinkedHashSet<>();
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
-    private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
-
-    // by default java Object methods and getter/setter will be ignored
-    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName()) && ClassUtils.isNotGetterSetter(m.getMethod());
-
-    private final PlantUmlBuilder builder = new PlantUmlBuilder();
-
-    private final Set<JavaClazz> clazzes = new TreeSet<>();
-    private final Set<ClassAssociation> detectedAssociations = new HashSet<>();
-
     private NamesMapper namesMapper = this;
 
-    private LinkMaker linkMaker = this;
-
-    private String header;
-    private String footer;
-
-    private final Map<Class, JavaClazz> cache = new HashMap<>();
-
-    /**
-     * Add not specified Object.
-     */
-    private boolean withDependencies = false;
-
-    private boolean hideSelfLink = true;
-
     public ClassDiagramBuilder() {
-    }
-
-    public ClassDiagramBuilder setHeader(String header) {
-        this.header = header;
-        return this;
-    }
-
-    public ClassDiagramBuilder setFooter(String footer) {
-        this.footer = footer;
-        return this;
-    }
-
-    public ClassDiagramBuilder excludes(String... excludes) {
-        // keep the corresponding fields
-        Predicate<ClassAttribute> notMatchField = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
-        this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatchField);
-
-        // keep the corresponding fields
-        Predicate<ClassMethod> notMatchMethod = field -> Stream.of(excludes).noneMatch(excl -> field.toStringMethod().matches(excl));
-        this.additionalMethodPredicate = this.additionalMethodPredicate.and(notMatchMethod);
-        return this;
-    }
-
-    public ClassDiagramBuilder addFieldPredicate(Predicate<ClassAttribute> predicate) {
-        this.additionalFieldPredicate = this.additionalFieldPredicate.and(predicate);
-        return this;
-    }
-
-    public ClassDiagramBuilder addMethodPredicate(Predicate<ClassMethod> predicate) {
-        this.additionalMethodPredicate = this.additionalMethodPredicate.and(predicate);
-        return this;
     }
 
     public ClassDiagramBuilder addClasse(Iterable<Class> classes) {
@@ -140,28 +85,6 @@ public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
     public ClassDiagramBuilder withNamesMapper(NamesMapper namesMapper) {
         this.namesMapper = namesMapper;
         return this;
-    }
-
-    public ClassDiagramBuilder withLinkMaker(LinkMaker linkMaker) {
-        this.linkMaker = linkMaker;
-        return this;
-    }
-
-    public String build() {
-        // parse classes repository
-        // extract java classes definitions
-        readClasses();
-        // from java classes, detect associations
-        detectAssociations();
-        // generate diagram from configuration
-        builder.start();
-        builder.appendPart(header);
-        addPackages(); // add package definition
-        addTypes(); // add types definition
-        addAssociations(); // then add their associations
-        builder.appendPart(footer);
-        builder.end();
-        return builder.build();
     }
 
     protected void addPackages() {
@@ -244,14 +167,6 @@ public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
         });
     }
 
-    private boolean hideFields(JavaClazz javaClazz) {
-        return PlantUmlUtils.hideFields(javaClazz, header) || PlantUmlUtils.hideFields(javaClazz, footer);
-    }
-
-    private boolean hideMethods(JavaClazz javaClazz) {
-        return PlantUmlUtils.hideMethods(javaClazz, header) || PlantUmlUtils.hideMethods(javaClazz, footer);
-    }
-
     private void addOrUpdateAssociation(Class originClass, Class classToLinkWith, ClassMember classMember) {
 
         // hide inner link
@@ -309,19 +224,10 @@ public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
         clazzes.forEach(builder::addType);
     }
 
-    protected JavaClazz createJavaClass(Class aClass) {
-        return cache.computeIfAbsent(aClass, clazz -> JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
+    protected JavaClazz createJavaClass(Class clazz) {
+        return JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
-                .setLink(linkMaker.getClassLink(clazz))
-        );
-    }
-
-    protected Predicate<ClassAttribute> filterFields() {
-        return additionalFieldPredicate;
-    }
-
-    protected Predicate<ClassMethod> filterMethods() {
-        return additionalMethodPredicate;
+                .setLink(linkMaker.getClassLink(clazz));
     }
 
     protected ClassMethod[] readMethods(Class aClass) {
@@ -358,29 +264,6 @@ public class ClassDiagramBuilder implements NamesMapper, LinkMaker {
         ClassAttribute attribute = new ClassAttribute(field, namesMapper.getFieldName(field));
         attribute.setLink(linkMaker.getFieldLink(field));
         return attribute;
-    }
-
-    protected void addAssociations() {
-        detectedAssociations.stream().sorted().forEach(builder::addAssociation);
-    }
-
-    public ClassDiagramBuilder withDependencies(boolean flag) {
-        withDependencies = flag;
-        return this;
-    }
-
-    public ClassDiagramBuilder hideSelfLink() {
-        hideSelfLink = true;
-        return this;
-    }
-
-    public ClassDiagramBuilder showSelfLink() {
-        hideSelfLink = false;
-        return this;
-    }
-
-    public ClassDiagramBuilder withDependencies() {
-        return withDependencies(true);
     }
 
     private static class ClassAssociation extends Association implements Comparable<ClassAssociation> {
