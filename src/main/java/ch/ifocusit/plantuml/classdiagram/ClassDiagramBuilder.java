@@ -34,9 +34,14 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -60,6 +65,22 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private NamesMapper namesMapper = this;
+
+    public static void writeDiagramToFile(String filename, Class<?>... classes) throws IOException {
+        writeDiagramToFile(new File(filename), classes);
+    }
+
+    public static void writeDiagramToFile(File file, Class<?>... classes) throws IOException {
+        String diagram = new ClassDiagramBuilder().addClasses(classes).build();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(diagram);
+        }
+    }
+
+    public static void writeDiagramToFile(Path path, Class<?>... classes) throws IOException {
+        String diagram = new ClassDiagramBuilder().addClasses(classes).build();
+        Files.write(path, diagram.getBytes());
+    }
 
     public ClassDiagramBuilder() {
     }
