@@ -64,12 +64,12 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
     public ClassDiagramBuilder() {
     }
 
-    public ClassDiagramBuilder addClasse(Iterable<Class> classes) {
+    public ClassDiagramBuilder addClasses(Iterable<Class> classes) {
         classes.forEach(this.classesRepository::add);
         return this;
     }
 
-    public ClassDiagramBuilder addClasse(Class... classes) {
+    public ClassDiagramBuilder addClasses(Class... classes) {
         this.classesRepository.addAll(Arrays.asList(classes));
         return this;
     }
