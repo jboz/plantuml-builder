@@ -1,7 +1,7 @@
 #!/bin/bash
 
 hasChange() {
-    local check_path=$1'/'
+    local check_path=$1
 
     echo "Checking changes since ${TRAVIS_COMMIT_RANGE} against ${check_path}"
     GITDIFF=$(git diff --name-only ${TRAVIS_COMMIT_RANGE} | grep ${check_path} | tr -d '[:space:]')
