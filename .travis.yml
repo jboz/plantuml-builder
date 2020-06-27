@@ -12,7 +12,7 @@ jobs:
             - graphviz
       before_install:
         - chmod +x $GPG_DIR/check_changes.sh
-        - check_changes.sh src pom.xml || travis_terminate 0;
+        - check_changes.sh src/ pom.xml || travis_terminate 0;
         - chmod +x $GPG_DIR/deploy_maven.sh
       install: skip
       script: mvn install -Dgpg.skip -Dmaven.javadoc.skip=true -B -V -U

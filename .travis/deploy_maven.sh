@@ -43,7 +43,7 @@ deploy() {
 }
 
 hasChange() {
-    local check_path=$1'/'
+    local check_path=$1
 
     echo "Checking changes since ${TRAVIS_COMMIT_RANGE} against ${check_path}"
     GITDIFF=$(git diff --name-only ${TRAVIS_COMMIT_RANGE} | grep ${check_path} | tr -d '[:space:]')
@@ -63,31 +63,9 @@ hasForceMessage() {
     fi
 }
 
-needRelease() {
-    if [[ `hasForceMessage` = 1 ]]; then
-        echo "Force release"
-        return 1
-    fi
-
-    hasChange pom.xml
-    if [[ $? = 1 ]]; then
-        return 1
-    fi
-    hasChange src
-    if [[ $? = 1 ]]; then
-        return 1
-    fi
-    return 0
-}
-
-needRelease
-MAKE_RELEASE=$?
-
-if [[ MAKE_RELEASE = 1 ]]; then
-    fixReleaseVersion
-fi
-
-# deploy release or snapshot
+# create a release version
+fixReleaseVersion
+# deploy release
 deploy
 
 if [[ MAKE_RELEASE = 1 ]]; then
