@@ -26,9 +26,11 @@ jobs:
         provider: script
         script: deploy_maven.sh
         skip_cleanup: true
-        branches:
-          only:
-            - master
+
+branches:
+  only:
+    - master
+
 env:
   global:
     - GPG_DIR="`pwd`/.travis"
@@ -39,3 +41,10 @@ env:
     - secure: i/47U4CkR2xH4/MRoHxMpMbR+Rf730Wr376gkapFeMVohghT0QiUfpgA6lVuBEdBLHujtAojUZx7Tb0McRhKmJpiuswPJZyZW6+HeffFdc8TglcUCmjnHh4riodRC31evr7Pj0L+ERrFz46oFzydOxEurnSM8CGcYP9IJMabGWNdi+utYXAsMgXJAQk7JZ2TYPO5MK8vlqfb++MPEzBgwNksO+/WW3i+1tb7+CynnA/4iILknh4+uEIyEob/N/IDf6WDdroqkUTvrlYddsjlSLhvBL9tMI+ntQEXRcNyoxzrCPc3UlTvOLah+qK6+cofwCYfS2owxV8RgawLOZwjnLEl9n38sdbtPxQnJtQhCa37WI2AtREnGdmfyCXr559wzk+3cSDL/MM0lH8FaGrqvBCYaV/r0359346RKEVQM3kDo4iYCIk5lCyXZy5gtTwvIVHm4+caN1YtS+Ohyu8YNrAKJxyPpoTyvoaOO1qplIVP/vR7KuJo0vEnX38OtzKE+ogmfesQHAcJ3i4t06V9DW6Ar8XhJi21qEvTVlS8gZK520S9/7TAOgsBoCPcfrpFQ5aeHr9yDJhtE9GB95IU/R628iEYAX3rzLrqhJj+HsGr7WgJOJzBxfDa4jwVYdnmqwbEhrm58AcryjGhLleElrFYhMa/cgnjGZ1H1uBDlE4=
     - secure: HpvdAU8t07iBt98ArR8HRCnOI/OBX+wfY2IXtVgoF43dwZBk5TJclWqrun7VqPRq3RHdw/om2fL+tw0Q9fRb7d1hYacE43Z5DKCHo7LTmKGAYsS489cRzkbO/wXtWIpZB1msOB0sn+FjJBGjq0eDZ3HfB9i8HlhkAP1/l8No3dM38RKCFiY51LsWvFtzvLDyYJ6H4xWFs/8/X7Sxg63FT2zgM+gJk+nN+x0y/yq7N5m7MVDJYyDykOedcize/g1019ZAQJWc8GsmZOQwqv7HERhrc4vsj9M064u3I1RUw2oqbaHb4BQ8fKYq8hCvtCotVxRP2PO79PWho3/OqBBilcVW9KaYDdf65Eoy/BVV2bYZFZn5FIdrGUzCpLmYNc73IicpBisjqHe6wsu5ZfJZ8IooldYqSH3xWRUBWZDrTPPHu8aUGDy1zaHnuqVk44YTAqHqsztEd1tzdGVJItQyWlOHkoXwDgW8hCbmn4keUv8ASRHiBlwtgO7G1gVG0l+jNljiNi0/bwFaO1pJ3T1a9+edl5D3Nz3wYhy1dF2O0aekqcqxRTbFGbCJ7+xCMoRyCy0HAhrSfP1NwG9R7/pwYy03XfxHOfbmEjJSwm0aVtNJzWJXMzTN3yQHK4o76vKbPfltV0rLgb66GA0paKHJxuxEnFelR6rZyZmPlVzrGxs=
     - secure: vEI6D49vPOq43YlrfqG24wkYfFkjraCgqXPMBpGMRyChUtFkum++65SUmKEJwlspn2T9mSwCwfQiuqQ6SsKHouPryS95xdv1dD6TnPnbnaNxwudbgpWMTYzkKYqmbY8+PLktv0YpZwOctNN6CyTACKYP+EB9aRDcYwOS+XFTP5lLfct7Gngh7xucLFzquycaY3LTgHhhRIyZpNBp8IhebczQXmg1LOEMZJv8eI6ygAkWn2VhwK0mK2rIsNjdXCnKKF+GfdhNoTWq1BOjZQHaz6f+wo8o38Db0KQIdl9RGWIqWyx6CebVZtoCrHS6P3djYLR6Eq5P9rCR8xl9+aTnAS4Pe2l0TRazvODYAQ9GdKz8VemI+WrGP5l6Owg9melS/MG+0bHLxwfcfJYsKG/1xyWqnSbHR8pxwWG2KEv9tLXUGXmdFSMz+eKaO3h3TAz+1KJSCEYMBWBIEkf0H041VCn4ry2/JVwqnY1WdEVu0Fi8vVJpUbK2TmKJzz1lHDKjj/RChsbkeCqJPreSqb7LAScDKT4La4kSkIy/VPJb9L6ndTYQ+j16ZaE0up0vvOoMBlhUcGNPTqvWIg+TzhFUD/VVnQfP7eNKP6uunA62Sxp9wpEC+YITh1HTCiI/uzDZhQ5AY+uZD3Ouxn4CHuWRXSi3SnSzAuktEj218t+kmK4=
+
+
+notifications:
+  email:
+    - julienboz@gmail.com
+    on_success: change
+    on_failure: always
