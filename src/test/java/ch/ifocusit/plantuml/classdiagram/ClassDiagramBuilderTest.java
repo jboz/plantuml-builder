@@ -55,7 +55,7 @@ public class ClassDiagramBuilderTest {
         String diagram = new ClassDiagramBuilder()
                 .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
                 .addPackage(Vehicule.class.getPackage())
-                .addClasse(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
+                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
                 .build();
         // end::createSimple[]
 
@@ -69,7 +69,7 @@ public class ClassDiagramBuilderTest {
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
                 .<ClassDiagramBuilder>excludes(".*\\.ignored")
-                .addClasse(Car.class)
+                .addClasses(Car.class)
                 .withDependencies()
                 .build();
         // end::createSimple[]
@@ -83,7 +83,7 @@ public class ClassDiagramBuilderTest {
 
         // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder()
-                .addClasse(AccessDataService.class)
+                .addClasses(AccessDataService.class)
                 .withDependencies()
                 .build();
         // end::createFromOneClassWithDependencies[]
@@ -99,7 +99,7 @@ public class ClassDiagramBuilderTest {
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
                 .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                .addClasse(Car.class)
+                .addClasses(Car.class)
                 .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR +
@@ -119,7 +119,7 @@ public class ClassDiagramBuilderTest {
                 .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
                 .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                .addClasse(Car.class)
+                .addClasses(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
                     public String getClassName(Class aClass) {
