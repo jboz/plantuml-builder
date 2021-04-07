@@ -24,19 +24,32 @@ package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
 import java.util.Optional;
 
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
+
 /**
  * @author Julien Boz
  */
 public class SimpleAttribute implements Attribute {
 
+    private Visibilty visibilty;
     private String type;
     private String name;
 
-    public SimpleAttribute(String name, String type) {
+    public SimpleAttribute(Visibilty visibilty, String name, String type) {
         this.type = type;
         this.name = name;
+        this.visibilty = visibilty;
     }
 
+    public SimpleAttribute(String name, String type) {
+    	this(Visibilty.NONE, name, type);
+    }
+
+    @Override
+    public Visibilty getVisibilty() {
+    	return visibilty;
+    }
+    
     @Override
     public Optional<String> getTypeName() {
         return Optional.ofNullable(type);

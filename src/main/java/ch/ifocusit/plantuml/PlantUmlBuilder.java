@@ -28,6 +28,8 @@ import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -84,8 +86,11 @@ public class PlantUmlBuilder {
         return HASHTAG + color;
     }
 
-    private PlantUmlBuilder writeClazzDefinition(Clazz clazz) {
-        content.append(clazz.getType()).append(SPACE).append(escape(clazz.getName()));
+    private PlantUmlBuilder writeClazzDefinition(Clazz clazz, boolean allowVisibility) {
+    	if(allowVisibility) {
+    		content.append(clazz.getVisibilty());
+    	}
+    	content.append(clazz.getType()).append(SPACE).append(escape(clazz.getName()));
         return this;
     }
 
@@ -123,7 +128,7 @@ public class PlantUmlBuilder {
             content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
             Stream.of(classes).forEach(clazz -> {
                 clazz.validate();
-                append(TAB).writeClazzDefinition(clazz).append(NEWLINE);
+                append(TAB).writeClazzDefinition(clazz, false).append(NEWLINE);
             });
             content.append(BRACE_CLOSE);
         }
@@ -140,7 +145,7 @@ public class PlantUmlBuilder {
         Validate.notNull(clazz, "No class defined !");
         clazz.validate();
 
-        writeClazzDefinition(clazz);
+        writeClazzDefinition(clazz, true);
         // stereotype
         clazz.getStereotypes().ifPresent(stereotypes -> content
                 .append(SPACE).append(STEREOTYPE_OPEN)
@@ -151,13 +156,14 @@ public class PlantUmlBuilder {
         // class color
         clazz.getBackgroundColor().ifPresent(color -> content.append(SPACE).append(color(color)));
 
-        if (clazz.hasContent()) {
+        boolean writeBody = clazz.hasContent() || clazz.getVisibilty() != Visibilty.NONE;
+        if (writeBody) {
             content.append(SPACE).append(BRACE_OPEN).append(NEWLINE);
         }
         // add attributes
         for (Attribute attribute : clazz.getAttributes()) {
             // name
-            content.append(TAB).append(attribute.getName());
+            content.append(TAB).append(attribute.getVisibilty()).append(attribute.getName());
             // type
             attribute.getTypeName().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // field link
@@ -167,7 +173,7 @@ public class PlantUmlBuilder {
         // add methods
         clazz.getMethods().stream().forEach(method -> {
             // name
-            content.append(TAB).append(method.getName());
+            content.append(TAB).append(method.getVisibilty()).append(method.getName());
             // parameters
             method.getParameters().ifPresent(params -> {
                 content.append(BRACKET_OPEN);
@@ -182,7 +188,7 @@ public class PlantUmlBuilder {
             method.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
             content.append(NEWLINE);
         });
-        if (clazz.hasContent()) {
+        if (writeBody) {
             content.append(BRACE_CLOSE);
         }
         if (!clazz.getAttributes().isEmpty()) {

@@ -1,44 +1,44 @@
 @startuml
 
 package ch.ifocusit.plantuml.test.helper.domain.material <<Folder>> {
-  class "Car"
-  interface "Machine"
-  interface "Vehicule"
-  class "Wheel"
+  +class "Car"
+  +interface "Machine"
+  +interface "Vehicule"
+  +class "Wheel"
 }
 
-class "Car" {
-  brand : String
-  model : String
-  drivers : Set<Driver>
-  price : Price
-  wheels : Collection<Wheel>
-  addDriver(Driver) : Car
-  addWheel(Wheel)
-  buyBy(Driver, BigDecimal, Devise) : Driver
++class "Car" {
+  -brand : String
+  -model : String
+  -drivers : Set<Driver>
+  -price : Price
+  -wheels : Collection<Wheel>
+  +addDriver(Driver) : Car
+  +addWheel(Wheel)
+  +buyBy(Driver, BigDecimal, Devise) : Driver
 }
 
-enum "Devise" {
-  CHF
-  EUR
-  USD
++enum "Devise" {
+  +CHF
+  +EUR
+  +USD
 }
 
-class "Driver" {
-  name : String
-  cars : List<Car>
-  addCar(Car)
-  buy(Car)
++class "Driver" {
+  -name : String
+  -cars : List<Car>
+  +addCar(Car)
+  +buy(Car)
 }
 
-class "Price" {
-  amount : BigDecimal
-  devise : Devise
++class "Price" {
+  -amount : BigDecimal
+  -devise : Devise
 }
 
-interface "Vehicule"
++interface "Vehicule"
 
-class "Wheel"
++class "Wheel"
 
 "Car" --> "Devise" : use
 "Car" "*" <-> "*" "Driver" : drivers/cars

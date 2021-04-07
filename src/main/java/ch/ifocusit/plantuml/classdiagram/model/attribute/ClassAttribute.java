@@ -24,6 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
 import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Field;
@@ -56,6 +57,11 @@ public class ClassAttribute implements Attribute, ClassMember {
         return Optional.of(ClassUtils.getSimpleName(field.getGenericType()));
     }
 
+	@Override
+	public Visibilty getVisibilty() {
+		return Visibilty.parseVisibilty(field.getModifiers());
+	}
+    
     @Override
     public Class getType() {
         return getFieldType();

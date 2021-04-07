@@ -1,6 +1,7 @@
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
 import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Parameter;
@@ -20,6 +21,11 @@ public class MethodAttribute implements Attribute, ClassMember {
         return ClassUtils.getConcernedTypes(methodParameter);
     }
 
+    @Override
+    public Visibilty getVisibilty() {
+    	return Visibilty.NONE;
+    }
+    
     public Class getParameterType() {
         return methodParameter.getType();
     }

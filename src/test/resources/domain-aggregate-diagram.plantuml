@@ -1,14 +1,14 @@
 @startuml
 
-class "Car" {
-  brand : String
-  model : String
-  drivers : Set<Driver>
-  price : Price
-  wheels : Collection<Wheel>
-  addDriver(Driver) : Car
-  addWheel(Wheel)
-  buyBy(Driver, BigDecimal, Devise) : Driver
++class "Car" {
+  -brand : String
+  -model : String
+  -drivers : Set<Driver>
+  -price : Price
+  -wheels : Collection<Wheel>
+  +addDriver(Driver) : Car
+  +addWheel(Wheel)
+  +buyBy(Driver, BigDecimal, Devise) : Driver
 }
 
 "Car" --> "Devise" : use

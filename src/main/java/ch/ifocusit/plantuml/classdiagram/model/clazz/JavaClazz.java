@@ -53,7 +53,12 @@ public class JavaClazz implements Clazz {
         return overridedName.orElse(ClassUtils.getSimpleName(relatedClass));
     }
 
-    public Type getType() {
+	@Override
+	public Visibilty getVisibilty() {
+		return Visibilty.parseVisibilty(relatedClass.getModifiers());
+	}
+
+	public Type getType() {
         return parseType(relatedClass);
     }
 
@@ -139,4 +144,5 @@ public class JavaClazz implements Clazz {
         javaClass.addMethods(methods);
         return javaClass;
     }
+
 }
