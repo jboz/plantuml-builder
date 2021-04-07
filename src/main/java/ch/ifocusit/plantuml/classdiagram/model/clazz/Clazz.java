@@ -22,14 +22,17 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
-import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.method.Method;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
-import org.apache.commons.lang3.Validate;
-
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.apache.commons.lang3.Validate;
+
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
+import ch.ifocusit.plantuml.classdiagram.model.method.Method;
 
 /**
  * @author Julien Boz
@@ -37,6 +40,8 @@ import java.util.Optional;
 public interface Clazz extends Comparable<Clazz> {
 
     public String getName();
+
+    public Visibilty getVisibilty();
 
     public Type getType();
 
@@ -74,6 +79,41 @@ public interface Clazz extends Comparable<Clazz> {
 
     default boolean hasContent() {
         return !getAttributes().isEmpty() || !getMethods().isEmpty();
+    }
+
+    public enum Visibilty {
+        PUBLIC("public", "+"),
+        PROTECTED("protected", "#"),
+        PACKAGE("package private", "~"),
+        PRIVATE("private", "-"),
+        NONE("", "");
+
+        public final String name;
+        public final String attributePrefix;
+
+        private Visibilty(String name, String attributePrefix) {
+            this.name = name;
+            this.attributePrefix = attributePrefix;
+        }
+
+        public static Visibilty parseVisibilty(int modifiers) {
+            if (Modifier.isPrivate(modifiers)) {
+                return Visibilty.PRIVATE;
+            }
+            if (Modifier.isProtected(modifiers)) {
+                return Visibilty.PROTECTED;
+            }
+            if (Modifier.isPublic(modifiers)) {
+                return Visibilty.PUBLIC;
+            }
+            return Visibilty.PACKAGE;
+        }
+        
+        @Override
+        public String toString() {
+            return attributePrefix;
+        }
+        
     }
 
     enum Type {

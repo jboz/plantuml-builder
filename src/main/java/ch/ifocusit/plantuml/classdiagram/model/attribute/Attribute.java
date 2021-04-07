@@ -23,6 +23,7 @@
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
 
 import java.util.Optional;
 
@@ -31,6 +32,8 @@ import java.util.Optional;
  */
 public interface Attribute {
 
+    public Visibilty getVisibilty();
+    
     public Optional<String> getTypeName();
 
     public String getName();

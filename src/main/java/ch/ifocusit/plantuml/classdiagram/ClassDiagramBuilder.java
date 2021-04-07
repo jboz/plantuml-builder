@@ -90,9 +90,21 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         return this;
     }
 
+    //for backward compatibility
+    @Deprecated
+    public ClassDiagramBuilder addClasse(Iterable<Class> classes) {
+        return addClasses(classes);
+    }
+
     public ClassDiagramBuilder addClasses(Class... classes) {
         this.classesRepository.addAll(Arrays.asList(classes));
         return this;
+    }
+
+    //for backward compatibility
+    @Deprecated
+    public ClassDiagramBuilder addClasse(Class... classes) {
+        return addClasses(classes);
     }
 
     public ClassDiagramBuilder addPackage(java.lang.Package... packages) {

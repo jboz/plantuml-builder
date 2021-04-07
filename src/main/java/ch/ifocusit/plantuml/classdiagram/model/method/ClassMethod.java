@@ -25,6 +25,7 @@ package ch.ifocusit.plantuml.classdiagram.model.method;
 import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
 import java.lang.reflect.Method;
@@ -52,6 +53,11 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.meth
     public ClassMethod(Method method, String methodName) {
         this.method = method;
         this.methodName = methodName;
+    }
+
+    @Override
+    public Visibilty getVisibilty() {
+        return Visibilty.parseVisibilty(method.getModifiers());
     }
 
     @Override

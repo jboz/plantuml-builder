@@ -24,6 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.method;
 
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
+import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz.Visibilty;
 
 import java.util.Optional;
 
@@ -31,6 +32,8 @@ import java.util.Optional;
  * @author Julien Boz
  */
 public interface Method {
+
+    public Visibilty getVisibilty();
 
     public Optional<String> getReturnTypeName();
 

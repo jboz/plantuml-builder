@@ -35,6 +35,7 @@ public class SimpleClazz implements Clazz {
 
     private String name;
     private Type type;
+    private Visibilty visibilty;
     private List<Attribute> attributes = new ArrayList<>();
 
     @Override
@@ -42,6 +43,11 @@ public class SimpleClazz implements Clazz {
         return name;
     }
 
+    @Override
+    public Visibilty getVisibilty() {
+        return visibilty;
+    }
+    
     @Override
     public Type getType() {
         return type;
@@ -52,11 +58,17 @@ public class SimpleClazz implements Clazz {
         return attributes;
     }
 
-    public static SimpleClazz create(String name, Type type, Attribute... attributes) {
+    public static SimpleClazz create(String name, Visibilty visibilty, Type type, Attribute... attributes) {
         SimpleClazz c = new SimpleClazz();
         c.name = name;
+        c.visibilty = visibilty;
         c.type = type;
         Stream.of(attributes).forEach(c.attributes::add);
         return c;
     }
+    
+    public static SimpleClazz create(String name, Type type, Attribute... attributes) {
+        return SimpleClazz.create(name, Visibilty.NONE, type, attributes);
+    }
+
 }

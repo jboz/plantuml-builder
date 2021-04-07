@@ -1,7 +1,7 @@
 @startuml
 
-interface "AccessDataService" {
-  whoDrive(Car, Instant) : Driver
++interface "AccessDataService" {
+  +whoDrive(Car, Instant) : Driver
 }
 
 "AccessDataService" --> "Car" : use
