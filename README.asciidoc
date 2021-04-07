@@ -32,39 +32,49 @@ Will get :
 ----
 @startuml
 
-interface Vehicule
-
-class Car {
-  brand : String
-  model : String
-  driver : Driver
-  price : Price
-  wheels : Collection<Wheel>
++class "Car" {
+  -ignored : Long
+  -brand : String
+  -model : String
+  -drivers : Set<Driver>
+  -price : Price
+  -wheels : Collection<Wheel>
+  +addDriver(Driver) : Car
+  +addWheel(Wheel)
+  +buyBy(Driver, BigDecimal, Devise) : Driver
 }
 
-class Driver {
-  name : String
-  cars : List<Car>
++enum "Devise" {
+  +CHF
+  +EUR
+  +USD
 }
 
-class Price {
-  amount : BigDecimal
-  devise : Devise
++class "Driver" {
+  -name : String
+  -ignored : Long
+  -cars : List<Car>
+  +addCar(Car)
+  +buy(Car)
 }
 
-class Wheel
-
-enum Devise {
-  CHF
-  EUR
-  USD
++class "Price" {
+  -amount : BigDecimal
+  -devise : Devise
 }
 
-Vehicule <|-- Car
-Car "*" <-> Driver : driver
-Car --> Price : price
-Car --> "*" Wheel : wheels
-Price --> Devise : devise
++interface "Vehicule" {
+}
+
++class "Wheel" {
+}
+
+"Car" --> "Devise" : use
+"Car" "*" <-> "*" "Driver" : drivers/cars
+"Car" --> "Price" : price
+"Car" --> "*" "Wheel" : wheels
+"Price" --> "Devise" : devise
+"Vehicule" <|-- "Car"
 
 @enduml
 ----
