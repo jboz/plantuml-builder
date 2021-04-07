@@ -23,7 +23,7 @@ public class MethodAttribute implements Attribute, ClassMember {
 
     @Override
     public Visibilty getVisibilty() {
-    	return Visibilty.NONE;
+        return Visibilty.NONE;
     }
     
     public Class getParameterType() {

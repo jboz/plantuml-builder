@@ -43,10 +43,10 @@ public class SimpleClazz implements Clazz {
         return name;
     }
 
-	@Override
-	public Visibilty getVisibilty() {
-		return visibilty;
-	}
+    @Override
+    public Visibilty getVisibilty() {
+        return visibilty;
+    }
     
     @Override
     public Type getType() {
@@ -68,7 +68,7 @@ public class SimpleClazz implements Clazz {
     }
     
     public static SimpleClazz create(String name, Type type, Attribute... attributes) {
-    	return SimpleClazz.create(name, Visibilty.NONE, type, attributes);
+        return SimpleClazz.create(name, Visibilty.NONE, type, attributes);
     }
 
 }

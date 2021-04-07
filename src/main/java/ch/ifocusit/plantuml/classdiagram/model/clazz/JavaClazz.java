@@ -53,12 +53,12 @@ public class JavaClazz implements Clazz {
         return overridedName.orElse(ClassUtils.getSimpleName(relatedClass));
     }
 
-	@Override
-	public Visibilty getVisibilty() {
-		return Visibilty.parseVisibilty(relatedClass.getModifiers());
-	}
+    @Override
+    public Visibilty getVisibilty() {
+        return Visibilty.parseVisibilty(relatedClass.getModifiers());
+    }
 
-	public Type getType() {
+    public Type getType() {
         return parseType(relatedClass);
     }
 

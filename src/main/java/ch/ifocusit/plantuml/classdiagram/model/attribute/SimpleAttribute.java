@@ -42,12 +42,12 @@ public class SimpleAttribute implements Attribute {
     }
 
     public SimpleAttribute(String name, String type) {
-    	this(Visibilty.NONE, name, type);
+        this(Visibilty.NONE, name, type);
     }
 
     @Override
     public Visibilty getVisibilty() {
-    	return visibilty;
+        return visibilty;
     }
     
     @Override

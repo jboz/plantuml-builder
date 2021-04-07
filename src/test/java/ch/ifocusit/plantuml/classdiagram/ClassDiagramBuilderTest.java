@@ -50,7 +50,7 @@ public class ClassDiagramBuilderTest {
     private static final String CR = PlantUmlBuilder.NEWLINE;
 
     public static String replaceNewlines(String in) {
-    	return in.replaceAll("\\r?\\n", CR);
+        return in.replaceAll("\\r?\\n", CR);
     }
     
     @Test @Ignore //because it does not work via eclipse integrated maven build

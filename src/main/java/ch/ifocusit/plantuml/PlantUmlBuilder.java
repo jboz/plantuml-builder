@@ -87,10 +87,10 @@ public class PlantUmlBuilder {
     }
 
     private PlantUmlBuilder writeClazzDefinition(Clazz clazz, boolean allowVisibility) {
-    	if(allowVisibility) {
-    		content.append(clazz.getVisibilty());
-    	}
-    	content.append(clazz.getType()).append(SPACE).append(escape(clazz.getName()));
+        if(allowVisibility) {
+            content.append(clazz.getVisibilty());
+        }
+        content.append(clazz.getType()).append(SPACE).append(escape(clazz.getName()));
         return this;
     }
 

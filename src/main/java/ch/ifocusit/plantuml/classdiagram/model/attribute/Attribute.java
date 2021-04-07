@@ -32,8 +32,8 @@ import java.util.Optional;
  */
 public interface Attribute {
 
-	public Visibilty getVisibilty();
-	
+    public Visibilty getVisibilty();
+    
     public Optional<String> getTypeName();
 
     public String getName();

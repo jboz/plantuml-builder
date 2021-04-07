@@ -55,12 +55,12 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.meth
         this.methodName = methodName;
     }
 
-	@Override
-	public Visibilty getVisibilty() {
-		return Visibilty.parseVisibilty(method.getModifiers());
-	}
+    @Override
+    public Visibilty getVisibilty() {
+        return Visibilty.parseVisibilty(method.getModifiers());
+    }
 
-	@Override
+    @Override
     public Optional<String> getReturnTypeName() {
         return Optional.ofNullable(method.getReturnType().equals(Void.TYPE) ? null : getSimpleName(method.getGenericReturnType()));
     }

@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 public interface Method {
 
-	public Visibilty getVisibilty();
+    public Visibilty getVisibilty();
 
     public Optional<String> getReturnTypeName();
 

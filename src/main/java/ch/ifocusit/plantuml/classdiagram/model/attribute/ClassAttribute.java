@@ -57,10 +57,10 @@ public class ClassAttribute implements Attribute, ClassMember {
         return Optional.of(ClassUtils.getSimpleName(field.getGenericType()));
     }
 
-	@Override
-	public Visibilty getVisibilty() {
-		return Visibilty.parseVisibilty(field.getModifiers());
-	}
+    @Override
+    public Visibilty getVisibilty() {
+        return Visibilty.parseVisibilty(field.getModifiers());
+    }
     
     @Override
     public Class getType() {
