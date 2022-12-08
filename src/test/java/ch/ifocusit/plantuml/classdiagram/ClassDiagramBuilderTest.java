@@ -33,23 +33,24 @@ import ch.ifocusit.plantuml.test.helper.domain.material.Wheel;
 import ch.ifocusit.plantuml.test.helper.service.AccessDataService;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.util.Objects;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Julien Boz
  */
-public class ClassDiagramBuilderTest {
+class ClassDiagramBuilderTest {
 
     private static final String CR = PlantUmlBuilder.NEWLINE;
 
     @Test
-    public void buildShouldGenerateDiagram() throws Exception {
-        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/domain-diagram.plantuml"), Charset.defaultCharset());
+    void buildShouldGenerateDiagram() throws Exception {
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
@@ -64,7 +65,7 @@ public class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
-        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml"), Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
@@ -79,7 +80,7 @@ public class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramWithDepth() throws Exception {
-        String expected = IOUtils.toString(this.getClass().getResourceAsStream("/service-diagram.plantuml"), Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/service-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder()
@@ -92,7 +93,7 @@ public class ClassDiagramBuilderTest {
     }
 
     @Test
-    public void buildShouldExportOnlyAnnotatedClassAndField() throws Exception {
+    public void buildShouldExportOnlyAnnotatedClassAndField() {
         String diagram = new ClassDiagramBuilder()
                 .excludes(".*\\.ignored")
                 // only annotated

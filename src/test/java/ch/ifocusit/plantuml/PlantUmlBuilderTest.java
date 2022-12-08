@@ -27,9 +27,9 @@ import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.SimpleAttribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.SimpleClazz;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.fest.assertions.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PlantUmlBuilderTest {
 
