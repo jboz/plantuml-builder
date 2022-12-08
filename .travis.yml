@@ -1,5 +1,4 @@
-dist: xenial
-sudo: required
+os: linux
 
 jobs:
   include:
@@ -25,7 +24,7 @@ jobs:
       deploy:
         provider: script
         script: deploy_maven.sh
-        skip_cleanup: true
+        cleanup: false
 
 branches:
   only:
