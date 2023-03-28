@@ -32,10 +32,6 @@ jobs:
         script: deploy_maven.sh
         cleanup: false
 
-branches:
-  only:
-    - master
-
 env:
   global:
     - GPG_DIR="`pwd`/.travis"
