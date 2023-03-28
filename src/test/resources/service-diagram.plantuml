@@ -1,5 +1,9 @@
 @startuml
 
+header
+Service diagram
+endheader
+
 interface "AccessDataService" {
   whoDrive(Car, Instant) : Driver
 }

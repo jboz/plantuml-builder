@@ -22,21 +22,19 @@
  */
 package ch.ifocusit.plantuml;
 
+import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.DIRECTION;
+import static org.apache.commons.lang3.StringUtils.SPACE;
+import java.text.MessageFormat;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
 import ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType;
 import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-
-import java.text.MessageFormat;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.DIRECTION;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * Plantuml diagram helper for java classes.
@@ -100,9 +98,16 @@ public class PlantUmlBuilder {
     // HEADER/FOOTER
     //*********************************************************************************
 
-    public PlantUmlBuilder appendPart(String part) {
-        if (part != null) {
-            content.append(NEWLINE).append(NEWLINE).append(part).append(NEWLINE).append(NEWLINE);
+    public PlantUmlBuilder appendHeader(String header) {
+        if (header != null) {
+            content.append("header").append(NEWLINE).append(header).append(NEWLINE).append("endheader").append(NEWLINE).append(NEWLINE);
+        }
+        return this;
+    }
+
+    public PlantUmlBuilder appendFooter(String footer) {
+        if (footer != null) {
+            content.append("footer").append(NEWLINE).append(footer).append(NEWLINE).append("endfooter").append(NEWLINE).append(NEWLINE);
         }
         return this;
     }

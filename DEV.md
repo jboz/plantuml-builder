@@ -1,3 +1,13 @@
+# Github actions
+
+TODO:
+
+- https://github.com/jonashackt/github-actions-release-maven
+- github package avec même numéro de version que maven (donc lire la version depuis le pom)
+- création release page avec doc
+- ajout changelog
+- mettre à jour les boutons dans le README principal
+
 # Publication maven centrale en local
 
 A titre d'exemple, voici les commande permettant de chiffrer et publier les artefacts.

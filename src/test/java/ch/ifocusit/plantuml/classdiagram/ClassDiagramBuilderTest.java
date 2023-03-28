@@ -22,6 +22,12 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.util.Objects;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.test.helper.domain.Devise;
 import ch.ifocusit.plantuml.test.helper.domain.Driver;
@@ -32,14 +38,6 @@ import ch.ifocusit.plantuml.test.helper.domain.material.Vehicule;
 import ch.ifocusit.plantuml.test.helper.domain.material.Wheel;
 import ch.ifocusit.plantuml.test.helper.service.AccessDataService;
 import ch.ifocusit.plantuml.utils.ClassUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
-import java.util.Objects;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Julien Boz
@@ -86,6 +84,7 @@ class ClassDiagramBuilderTest {
         String diagram = new ClassDiagramBuilder()
                 .addClasses(AccessDataService.class)
                 .withDependencies()
+                .setHeader("Service diagram")
                 .build();
         // end::createFromOneClassWithDependencies[]
 

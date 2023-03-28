@@ -22,34 +22,22 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import com.google.common.collect.Lists;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
-import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import ch.ifocusit.plantuml.utils.PlantUmlUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.reflect.ClassPath;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.*;
-import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.MANY;
-import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.NONE;
-import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
-import static org.apache.commons.lang3.ClassUtils.getAllInterfaces;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Build class diagram from Class definition.
@@ -58,7 +46,9 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
-    private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
+    private Predicate<ClassAttribute> additionalFieldPredicate = a -> {
+        return !a.getName().equals("ENUM$VALUES");
+    };
 
     private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
 
@@ -132,11 +122,11 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         detectAssociations();
         // generate diagram from configuration
         builder.start();
-        builder.appendPart(header);
+        builder.appendHeader(header);
         addPackages(); // add package definition
         addTypes(); // add types definition
         addAssociations(); // then add their associations
-        builder.appendPart(footer);
+        builder.appendFooter(footer);
         builder.end();
         return builder.build();
     }
