@@ -16,7 +16,7 @@ jobs:
           java-version: 19
           distribution: adopt
           # cache: maven
-          server-id: oss.sonatype.org
+          server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
@@ -26,9 +26,7 @@ jobs:
       #   run: mvn versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}
 
       - name: Build and Deploy
-        run: |
-          echo "will publish with user ${{ env.MAVEN_USERNAME }}"
-          mvn --batch-mode clean deploy -P release
+        run: mvn clean deploy -P release
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
