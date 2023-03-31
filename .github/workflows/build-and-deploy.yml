@@ -6,21 +6,40 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
 jobs:
-  tests_jvm:
+  tests_java:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         version: [8, 11, 15, 17, 19]
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check production files changes
+        run: |
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" == "" ]; then
+            echo "No code changes, skipped"
+            exit 0
+          fi
+          echo ::set-env name=changes::true
+          echo "Application will be build and published"
+
       - name: Set up java
+        if: ${{ env.changes }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.version }}
           distribution: adopt
           cache: maven
+
       - name: Test ${{ matrix.version }}
+        if: ${{ env.changes }}
         run: mvn verify
 
   publish:
