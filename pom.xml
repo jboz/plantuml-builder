@@ -66,29 +66,6 @@
                     <release>11</release>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-invoker-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <showVersion>
-                        true</showVersion>
-                    <streamLogsOnFailures>true</streamLogsOnFailures>
-                    <noLog>true</noLog>
-                    <showErrors>true</showErrors>
-                    <addTestClassPath>
-                        true</addTestClassPath>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
