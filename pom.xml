@@ -44,7 +44,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>19</maven.compiler.source>
     </properties>
 
     <build>
@@ -58,6 +57,39 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <showVersion>
+                        true</showVersion>
+                    <streamLogsOnFailures>true</streamLogsOnFailures>
+                    <noLog>true</noLog>
+                    <showErrors>true</showErrors>
+                    <addTestClassPath>
+                        true</addTestClassPath>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -76,19 +108,19 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.1</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.9.0</version>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.23.1</version>
+            <version>3.24.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -137,7 +169,8 @@
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <showSuccess>true</showSuccess>
+                    <showSuccess>
+                        true</showSuccess>
                 </configuration>
             </plugin>
         </plugins>
@@ -158,7 +191,8 @@
         <profile>
             <id>release</id>
             <properties>
-                <gpg.executable>gpg2</gpg.executable>
+                <gpg.executable>
+                    gpg2</gpg.executable>
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
@@ -208,9 +242,11 @@
                         <artifactId>maven-release-plugin</artifactId>
                         <version>3.0.0</version>
                         <configuration>
-                            <tagNameFormat>v@{project.version}</tagNameFormat>
+                            <tagNameFormat>
+                                v@{project.version}</tagNameFormat>
                             <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <autoVersionSubmodules>
+                                true</autoVersionSubmodules>
                         </configuration>
                         <dependencies>
                             <dependency>
@@ -224,7 +260,8 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>3.1.1</version>
                         <configuration>
-                            <updateReleaseInfo>true</updateReleaseInfo>
+                            <updateReleaseInfo>
+                                true</updateReleaseInfo>
                         </configuration>
                     </plugin>
                     <plugin><!-- Release dist files to maven central -->
@@ -233,7 +270,8 @@
                         <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
+                            <serverId>
+                                ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>

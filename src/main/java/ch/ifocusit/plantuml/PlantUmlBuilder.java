@@ -1,24 +1,20 @@
 /*
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package ch.ifocusit.plantuml;
 
@@ -94,32 +90,35 @@ public class PlantUmlBuilder {
         return this;
     }
 
-    //*********************************************************************************
+    // *********************************************************************************
     // HEADER/FOOTER
-    //*********************************************************************************
+    // *********************************************************************************
 
     public PlantUmlBuilder appendHeader(String header) {
         if (header != null) {
-            content.append("header").append(NEWLINE).append(header).append(NEWLINE).append("endheader").append(NEWLINE).append(NEWLINE);
+            content.append("header").append(NEWLINE).append(header).append(NEWLINE)
+                    .append("endheader").append(NEWLINE).append(NEWLINE);
         }
         return this;
     }
 
     public PlantUmlBuilder appendFooter(String footer) {
         if (footer != null) {
-            content.append("footer").append(NEWLINE).append(footer).append(NEWLINE).append("endfooter").append(NEWLINE).append(NEWLINE);
+            content.append("footer").append(NEWLINE).append(footer).append(NEWLINE)
+                    .append("endfooter").append(NEWLINE).append(NEWLINE);
         }
         return this;
     }
 
-    //*********************************************************************************
+    // *********************************************************************************
     // PACKAGE
-    //*********************************************************************************
+    // *********************************************************************************
 
     public PlantUmlBuilder addPackage(Package aPackage, Clazz... classes) {
         Validate.notNull(aPackage, "no package defined !");
         aPackage.validate();
-        Validate.notEmpty(classes, String.format("Package '%s' must not be empty !", aPackage.getName()));
+        Validate.notEmpty(classes,
+                String.format("Package '%s' must not be empty !", aPackage.getName()));
 
         content.append(MessageFormat.format(PACKAGE_TMPL, aPackage.getName(), aPackage.getType()));
         aPackage.getColor().ifPresent(color -> content.append(SPACE).append(color(color)));
@@ -137,9 +136,9 @@ public class PlantUmlBuilder {
         return this;
     }
 
-    //*********************************************************************************
+    // *********************************************************************************
     // TYPE
-    //*********************************************************************************
+    // *********************************************************************************
 
     public PlantUmlBuilder addType(Clazz clazz) {
         Validate.notNull(clazz, "No class defined !");
@@ -147,10 +146,10 @@ public class PlantUmlBuilder {
 
         writeClazzDefinition(clazz);
         // stereotype
-        clazz.getStereotypes().ifPresent(stereotypes -> content
-                .append(SPACE).append(STEREOTYPE_OPEN)
-                .append(stereotypes.stream().collect(Collectors.joining(", ")))
-                .append(STEREOTYPE_CLOSE));
+        clazz.getStereotypes()
+                .ifPresent(stereotypes -> content.append(SPACE).append(STEREOTYPE_OPEN)
+                        .append(stereotypes.stream().collect(Collectors.joining(", ")))
+                        .append(STEREOTYPE_CLOSE));
         // class link
         clazz.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
         // class color
@@ -164,7 +163,8 @@ public class PlantUmlBuilder {
             // name
             content.append(TAB).append(attribute.getName());
             // type
-            attribute.getTypeName().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            attribute.getTypeName().ifPresent(
+                    type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // field link
             attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
             content.append(NEWLINE);
@@ -176,13 +176,14 @@ public class PlantUmlBuilder {
             // parameters
             method.getParameters().ifPresent(params -> {
                 content.append(BRACKET_OPEN);
-                content.append(Stream.of(params)
-                        .map(param -> param.getTypeName().orElse(param.getName()))
-                        .collect(Collectors.joining(COMMA + SPACE)));
+                content.append(
+                        Stream.of(params).map(param -> param.getTypeName().orElse(param.getName()))
+                                .collect(Collectors.joining(COMMA + SPACE)));
                 content.append(BRACKET_CLOSE);
             });
             // type
-            method.getReturnTypeName().ifPresent(type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
+            method.getReturnTypeName().ifPresent(
+                    type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // method link
             method.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
             content.append(NEWLINE);
@@ -197,9 +198,9 @@ public class PlantUmlBuilder {
         return this;
     }
 
-    //*********************************************************************************
+    // *********************************************************************************
     // TYPE ASSOCIATION
-    //*********************************************************************************
+    // *********************************************************************************
 
     public PlantUmlBuilder addAssociation(String aName, String bName) {
         return addAssociation(aName, bName, DIRECTION, null);
@@ -213,15 +214,19 @@ public class PlantUmlBuilder {
         return addAssociation(aName, bName, DIRECTION, label);
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type, String label) {
+    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
+            String label) {
         return addAssociation(aName, bName, type, label, Cardinality.NONE, Cardinality.NONE);
     }
 
     public PlantUmlBuilder addAssociation(Association association) {
-        return addAssociation(association.getaName(), association.getbName(), association.getType(), association.getLabel(), association.getaCardinality(), association.getbCardinality());
+        return addAssociation(association.getaName(), association.getbName(), association.getType(),
+                association.getLabel(), association.getaCardinality(),
+                association.getbCardinality());
     }
 
-    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type, String label, Cardinality aCardinality, Cardinality bCardinality) {
+    public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
+            String label, Cardinality aCardinality, Cardinality bCardinality) {
         Validate.notBlank(aName, "Class a name is mandatory");
         Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(type, "Association type is mandatory");

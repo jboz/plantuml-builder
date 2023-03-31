@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,16 +22,15 @@
  */
 package ch.ifocusit.plantuml.test.helper.domain.material;
 
-import ch.ifocusit.plantuml.test.helper.domain.Devise;
-import ch.ifocusit.plantuml.test.helper.domain.Driver;
-import ch.ifocusit.plantuml.test.helper.domain.Price;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import ch.ifocusit.plantuml.test.helper.domain.Devise;
+import ch.ifocusit.plantuml.test.helper.domain.Driver;
+import ch.ifocusit.plantuml.test.helper.domain.Price;
 
 @Machine
 public class Car implements Vehicule {

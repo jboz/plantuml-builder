@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,24 +22,23 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.method;
 
-import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
-import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
-import ch.ifocusit.plantuml.utils.ClassUtils;
-
+import static ch.ifocusit.plantuml.utils.ClassUtils.getGenericTypes;
+import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static ch.ifocusit.plantuml.utils.ClassUtils.getGenericTypes;
-import static ch.ifocusit.plantuml.utils.ClassUtils.getSimpleName;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
+import ch.ifocusit.plantuml.utils.ClassUtils;
 
 /**
  * @author Julien Boz
  */
-public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.method.Method, ClassMember {
+public class ClassMethod
+        implements ch.ifocusit.plantuml.classdiagram.model.method.Method, ClassMember {
 
     private final Method method;
     private final String methodName;
@@ -56,7 +55,8 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.meth
 
     @Override
     public Optional<String> getReturnTypeName() {
-        return Optional.ofNullable(method.getReturnType().equals(Void.TYPE) ? null : getSimpleName(method.getGenericReturnType()));
+        return Optional.ofNullable(method.getReturnType().equals(Void.TYPE) ? null
+                : getSimpleName(method.getGenericReturnType()));
     }
 
     @Override
@@ -71,7 +71,8 @@ public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.meth
 
     @Override
     public Optional<MethodAttribute[]> getParameters() {
-        return Optional.of(Stream.of(method.getParameters()).map(param -> new MethodAttribute(param)).toArray(MethodAttribute[]::new));
+        return Optional.of(Stream.of(method.getParameters())
+                .map(param -> new MethodAttribute(param)).toArray(MethodAttribute[]::new));
     }
 
     public Method getMethod() {

@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,14 +22,13 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
-import ch.ifocusit.plantuml.classdiagram.model.Link;
-import ch.ifocusit.plantuml.classdiagram.model.method.Method;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
-import org.apache.commons.lang3.Validate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.Validate;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
+import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+import ch.ifocusit.plantuml.classdiagram.model.method.Method;
 
 /**
  * @author Julien Boz
@@ -77,10 +76,7 @@ public interface Clazz extends Comparable<Clazz> {
     }
 
     enum Type {
-        INTERFACE("interface"),
-        ENUM("enum"),
-        CLASS("class"),
-        ABSTRACT("abstract class");
+        INTERFACE("interface"), ENUM("enum"), CLASS("class"), ABSTRACT("abstract class");
 
         private String name;
 

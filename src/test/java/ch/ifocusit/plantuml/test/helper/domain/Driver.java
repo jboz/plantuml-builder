@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,10 +22,9 @@
  */
 package ch.ifocusit.plantuml.test.helper.domain;
 
-import ch.ifocusit.plantuml.test.helper.domain.material.Car;
-
 import java.util.ArrayList;
 import java.util.List;
+import ch.ifocusit.plantuml.test.helper.domain.material.Car;
 
 public class Driver {
     private String name;
