@@ -61,6 +61,8 @@ jobs:
           git push
 
   tests_java:
+    if: github.event_name == 'pull_request'
+    needs: publish
     runs-on: ubuntu-latest
     strategy:
       matrix:
