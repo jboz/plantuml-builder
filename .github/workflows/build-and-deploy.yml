@@ -1,0 +1,99 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check production files changes
+        run: |
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" == "" ]; then
+            echo "No code changes, skipped"
+            exit 0
+          fi
+          echo ::set-env name=changes::true
+          echo "Application will be build and published"
+
+      - name: Set up java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 19
+          distribution: adopt
+          cache: maven
+          server-id: ossrh
+          server-username: OSS_SONATYPE_USERNAME
+          server-password: OSS_SONATYPE_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Create maven release version
+        if: ${{ env.changes && github.event_name == 'push' }}
+        run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit
+
+      - name: Deploy
+        if: ${{ env.changes }}
+        run: mvn deploy -P release -DskipTests=true
+        env:
+          OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      - name: Create and commit next dev version
+        if: ${{ env.changes && github.event_name == 'push' }}
+        run: |
+          mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+          git config --global user.name 'Julien'
+          git config --global user.email 'julienboz@gmail.com'
+          git commit -am "New release"
+          git push
+
+  tests_java:
+    if: github.event_name == 'pull_request'
+    needs: publish
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [11, 15, 17]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check production files changes
+        run: |
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" == "" ]; then
+            echo "No code changes, skipped"
+            exit 0
+          fi
+          echo ::set-env name=changes::true
+          echo "Application will be build and published"
+
+      - name: Set up java
+        if: ${{ env.changes }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.version }}
+          distribution: adopt
+          cache: maven
+
+      - name: Test ${{ matrix.version }}
+        if: ${{ env.changes }}
+        run: |
+          cd src/it/example-java-x
+          mvn verify
+        env:
+          JAVA_VERSION: ${{ matrix.version }}

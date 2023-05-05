@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -41,7 +41,9 @@ public class Association {
         return from(aName, bName, DIRECTION, null, NONE, NONE);
     }
 
-    public static Association from(final String aName, final String bName, final AssociationType assoc, final String label, final Cardinality aCardinality, final Cardinality bCardinality) {
+    public static Association from(final String aName, final String bName,
+            final AssociationType assoc, final String label, final Cardinality aCardinality,
+            final Cardinality bCardinality) {
         Association association = new Association();
         association.aName = aName;
         association.bName = bName;
@@ -102,10 +104,7 @@ public class Association {
 
     public enum AssociationType {
 
-        LINK("-"),
-        DIRECTION("-->"),
-        BI_DIRECTION("<->"),
-        INHERITANCE("<|--");
+        LINK("-"), DIRECTION("-->"), BI_DIRECTION("<->"), INHERITANCE("<|--");
 
         private String symbol;
 

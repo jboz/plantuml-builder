@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,9 +22,8 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
-import ch.ifocusit.plantuml.classdiagram.model.Link;
-
 import java.util.Optional;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
 
 /**
  * @author Julien Boz

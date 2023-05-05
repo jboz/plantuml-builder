@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,9 +22,8 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model;
 
-import org.apache.commons.lang3.Validate;
-
 import java.util.Optional;
+import org.apache.commons.lang3.Validate;
 
 /**
  * @author Julien Boz
@@ -49,7 +48,8 @@ public class Package {
 
     public void validate() {
         Validate.notNull(getName(), "Package name must be defined !");
-        Validate.notNull(getType(), String.format("Package '%s' tpye must be defined !", getName()));
+        Validate.notNull(getType(),
+                String.format("Package '%s' tpye must be defined !", getName()));
     }
 
     public static Package from(java.lang.Package javaPkg) {

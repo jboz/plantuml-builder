@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,34 +22,21 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
-import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
-import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
-import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import ch.ifocusit.plantuml.utils.PlantUmlUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.reflect.ClassPath;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
-import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.*;
-import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.MANY;
-import static ch.ifocusit.plantuml.classdiagram.model.Cardinality.NONE;
-import static ch.ifocusit.plantuml.utils.ClassUtils.DOLLAR;
-import static org.apache.commons.lang3.ClassUtils.getAllInterfaces;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Build class diagram from Class definition.
@@ -58,12 +45,17 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
-    private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
+    private Predicate<ClassAttribute> additionalFieldPredicate = a -> {
+        return !a.getName().equals("ENUM$VALUES");
+    };
 
-    private static final List<String> DEFAULT_METHODS_EXCLUDED = Lists.newArrayList("equals", "hashCode", "toString");
+    private static final List<String> DEFAULT_METHODS_EXCLUDED =
+            List.of("equals", "hashCode", "toString");
 
     // by default java Object methods and getter/setter will be ignored
-    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName()) && ClassUtils.isNotGetterSetter(m.getMethod());
+    private Predicate<ClassMethod> additionalMethodPredicate =
+            m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName())
+                    && ClassUtils.isNotGetterSetter(m.getMethod());
 
     protected final PlantUmlBuilder builder = new PlantUmlBuilder();
 
@@ -85,41 +77,44 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     protected boolean hideSelfLink = true;
 
-    public AbstractClassDiagramBuilder() {
-    }
+    public AbstractClassDiagramBuilder() {}
 
     public <B extends AbstractClassDiagramBuilder> B setHeader(String header) {
         this.header = header;
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  setFooter(String footer) {
+    public <B extends AbstractClassDiagramBuilder> B setFooter(String footer) {
         this.footer = footer;
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  excludes(String... excludes) {
+    public <B extends AbstractClassDiagramBuilder> B excludes(String... excludes) {
         // keep the corresponding fields
-        Predicate<ClassAttribute> notMatchField = field -> Stream.of(excludes).noneMatch(excl -> field.toStringAttribute().matches(excl));
+        Predicate<ClassAttribute> notMatchField = field -> Stream.of(excludes)
+                .noneMatch(excl -> field.toStringAttribute().matches(excl));
         this.additionalFieldPredicate = this.additionalFieldPredicate.and(notMatchField);
 
         // keep the corresponding fields
-        Predicate<ClassMethod> notMatchMethod = field -> Stream.of(excludes).noneMatch(excl -> field.toStringMethod().matches(excl));
+        Predicate<ClassMethod> notMatchMethod = field -> Stream.of(excludes)
+                .noneMatch(excl -> field.toStringMethod().matches(excl));
         this.additionalMethodPredicate = this.additionalMethodPredicate.and(notMatchMethod);
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  addFieldPredicate(Predicate<ClassAttribute> predicate) {
+    public <B extends AbstractClassDiagramBuilder> B addFieldPredicate(
+            Predicate<ClassAttribute> predicate) {
         this.additionalFieldPredicate = this.additionalFieldPredicate.and(predicate);
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  addMethodPredicate(Predicate<ClassMethod> predicate) {
+    public <B extends AbstractClassDiagramBuilder> B addMethodPredicate(
+            Predicate<ClassMethod> predicate) {
         this.additionalMethodPredicate = this.additionalMethodPredicate.and(predicate);
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  withLinkMaker(LinkMaker linkMaker) {
+    public <B extends AbstractClassDiagramBuilder> B withLinkMaker(LinkMaker linkMaker) {
         this.linkMaker = linkMaker;
         return (B) this;
     }
@@ -132,11 +127,11 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         detectAssociations();
         // generate diagram from configuration
         builder.start();
-        builder.appendPart(header);
+        builder.appendHeader(header);
         addPackages(); // add package definition
         addTypes(); // add types definition
         addAssociations(); // then add their associations
-        builder.appendPart(footer);
+        builder.appendFooter(footer);
         builder.end();
         return builder.build();
     }
@@ -146,11 +141,13 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
     public abstract void detectAssociations();
 
     public boolean hideFields(JavaClazz javaClazz) {
-        return PlantUmlUtils.hideFields(javaClazz, header) || PlantUmlUtils.hideFields(javaClazz, footer);
+        return PlantUmlUtils.hideFields(javaClazz, header)
+                || PlantUmlUtils.hideFields(javaClazz, footer);
     }
 
     public boolean hideMethods(JavaClazz javaClazz) {
-        return PlantUmlUtils.hideMethods(javaClazz, header) || PlantUmlUtils.hideMethods(javaClazz, footer);
+        return PlantUmlUtils.hideMethods(javaClazz, header)
+                || PlantUmlUtils.hideMethods(javaClazz, footer);
     }
 
     public abstract void readClasses();
@@ -171,22 +168,22 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         detectedAssociations.stream().sorted().forEach(builder::addAssociation);
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  withDependencies(boolean flag) {
+    public <B extends AbstractClassDiagramBuilder> B withDependencies(boolean flag) {
         withDependencies = flag;
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  hideSelfLink() {
+    public <B extends AbstractClassDiagramBuilder> B hideSelfLink() {
         hideSelfLink = true;
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  showSelfLink() {
+    public <B extends AbstractClassDiagramBuilder> B showSelfLink() {
         hideSelfLink = false;
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B  withDependencies() {
+    public <B extends AbstractClassDiagramBuilder> B withDependencies() {
         return withDependencies(true);
     }
 

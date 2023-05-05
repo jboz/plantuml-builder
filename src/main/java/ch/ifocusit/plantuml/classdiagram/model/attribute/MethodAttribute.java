@@ -1,11 +1,10 @@
 package ch.ifocusit.plantuml.classdiagram.model.attribute;
 
-import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
-import ch.ifocusit.plantuml.utils.ClassUtils;
-
 import java.lang.reflect.Parameter;
 import java.util.Optional;
 import java.util.Set;
+import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
+import ch.ifocusit.plantuml.utils.ClassUtils;
 
 public class MethodAttribute implements Attribute, ClassMember {
 

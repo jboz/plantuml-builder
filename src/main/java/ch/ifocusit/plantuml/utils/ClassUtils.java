@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2017 Focus IT
+ * Copyright (C) 2023 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,14 +22,21 @@
  */
 package ch.ifocusit.plantuml.utils;
 
-import com.google.common.base.CharMatcher;
-
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.google.common.base.CharMatcher;
 
 /**
  * @author Julien Boz
@@ -50,7 +57,8 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         int lastDollarSign = className.lastIndexOf(DOLLAR);
         if (lastDollarSign != -1) {
             String innerClassName = className.substring(lastDollarSign + 1);
-            // local and anonymous classes are prefixed with number (1,2,3...), anonymous classes are
+            // local and anonymous classes are prefixed with number (1,2,3...), anonymous classes
+            // are
             // entirely numeric whereas local classes have the user supplied name as a suffix
             return CharMatcher.digit().trimLeadingFrom(innerClassName);
         }
@@ -71,8 +79,7 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
     public static String getParameterizedTypeName(ParameterizedType genericType) {
         // manage generics
         String subtypes = Stream.of(genericType.getActualTypeArguments())
-                .map(ClassUtils::getSimpleName)
-                .collect(Collectors.joining(GENERICS_SEP));
+                .map(ClassUtils::getSimpleName).collect(Collectors.joining(GENERICS_SEP));
         return GENERICS_OPEN + subtypes + GENERICS_CLOSE;
     }
 
@@ -81,9 +88,8 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
     }
 
     public static Optional<Field> getField(Class container, Class aClass) {
-        return Stream.of(container.getDeclaredFields())
-                .filter(attr -> getConcernedTypes(attr).stream().anyMatch(fieldType -> fieldType.equals(aClass)))
-                .findFirst();
+        return Stream.of(container.getDeclaredFields()).filter(attr -> getConcernedTypes(attr)
+                .stream().anyMatch(fieldType -> fieldType.equals(aClass))).findFirst();
     }
 
     public static Set<Class> getConcernedTypes(Field field) {
@@ -113,7 +119,8 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
     }
 
     public static Set<Class> getGenericTypes(ParameterizedType type) {
-        return Stream.of(type.getActualTypeArguments()).filter(Class.class::isInstance).map(Class.class::cast).collect(Collectors.toSet());
+        return Stream.of(type.getActualTypeArguments()).filter(Class.class::isInstance)
+                .map(Class.class::cast).collect(Collectors.toSet());
     }
 
     public static Set<Class> getGenericTypes(Field field) {
@@ -142,9 +149,10 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
     public static boolean isGetter(Method method) {
         try {
-            return Stream.of(Introspector.getBeanInfo(method.getDeclaringClass()).getPropertyDescriptors())
-                    .map(desc -> desc.getReadMethod())
-                    .filter(Objects::nonNull)
+            return Stream
+                    .of(Introspector.getBeanInfo(method.getDeclaringClass())
+                            .getPropertyDescriptors())
+                    .map(desc -> desc.getReadMethod()).filter(Objects::nonNull)
                     .anyMatch(getter -> getter.equals(method));
         } catch (IntrospectionException e) {
             throw new IllegalStateException(e);
@@ -153,9 +161,10 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
 
     public static boolean isSetter(Method method) {
         try {
-            return Stream.of(Introspector.getBeanInfo(method.getDeclaringClass()).getPropertyDescriptors())
-                    .map(desc -> desc.getWriteMethod())
-                    .filter(Objects::nonNull)
+            return Stream
+                    .of(Introspector.getBeanInfo(method.getDeclaringClass())
+                            .getPropertyDescriptors())
+                    .map(desc -> desc.getWriteMethod()).filter(Objects::nonNull)
                     .anyMatch(setter -> setter.equals(method));
         } catch (IntrospectionException e) {
             throw new IllegalStateException(e);
