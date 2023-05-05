@@ -6,10 +6,10 @@
 
     <groupId>ch.ifocusit</groupId>
     <version>0.0.1</version>
-    <artifactId>javaversion-test</artifactId>
+    <artifactId>javaversion8-test</artifactId>
     <packaging>jar</packaging>
 
-    <description>Use plantuml builder in a java project</description>
+    <description>Use plantuml builder in a java 8 project</description>
 
     <organization>
         <name>Focus IT</name>
@@ -26,7 +26,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>{env.JAVA_VERSION}</maven.compiler.release>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
 
     <dependencies>
