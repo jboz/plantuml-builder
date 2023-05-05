@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.ifocusit</groupId>
@@ -147,7 +147,8 @@
                 <version>2.22.2</version>
                 <configuration>
                     <showSuccess>
-                        true</showSuccess>
+                        true
+                    </showSuccess>
                 </configuration>
             </plugin>
         </plugins>
@@ -169,7 +170,8 @@
             <id>release</id>
             <properties>
                 <gpg.executable>
-                    gpg2</gpg.executable>
+                    gpg2
+                </gpg.executable>
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
@@ -219,11 +221,11 @@
                         <artifactId>maven-release-plugin</artifactId>
                         <version>3.0.0</version>
                         <configuration>
-                            <tagNameFormat>
-                                v@{project.version}</tagNameFormat>
+                            <tagNameFormat>v@{project.version}</tagNameFormat>
                             <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                             <autoVersionSubmodules>
-                                true</autoVersionSubmodules>
+                                true
+                            </autoVersionSubmodules>
                         </configuration>
                         <dependencies>
                             <dependency>
@@ -237,8 +239,7 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>3.1.1</version>
                         <configuration>
-                            <updateReleaseInfo>
-                                true</updateReleaseInfo>
+                            <updateReleaseInfo>true</updateReleaseInfo>
                         </configuration>
                     </plugin>
                     <plugin><!-- Release dist files to maven central -->
@@ -247,8 +248,7 @@
                         <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>
-                                ossrh</serverId>
+                            <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>

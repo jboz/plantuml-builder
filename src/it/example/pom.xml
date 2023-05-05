@@ -6,10 +6,10 @@
 
     <groupId>ch.ifocusit</groupId>
     <version>0.0.1</version>
-    <artifactId>java11</artifactId>
+    <artifactId>javaversion-test</artifactId>
     <packaging>jar</packaging>
 
-    <description>Use plantuml builder in java 8 project</description>
+    <description>Use plantuml builder in a java project</description>
 
     <organization>
         <name>Focus IT</name>
