@@ -12,7 +12,7 @@
     <name>Plantuml builder</name>
     <description>Plantuml diagram generation from java code sources</description>
     <url>https://github.com/jboz/plantuml-builder</url>
-    <inceptionYear>2017</inceptionYear>
+    <inceptionYear>2023</inceptionYear>
 
     <organization>
         <name>Focus IT</name>
