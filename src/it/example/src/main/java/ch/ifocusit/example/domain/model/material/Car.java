@@ -43,12 +43,12 @@ public class Car implements Vehicule {
     @Machine
     private String model;
 
-    private Set<Driver> drivers = new HashSet<>();
+    private Set drivers = new HashSet();
 
     private Price price;
 
     @Machine
-    private Collection<Wheel> wheels;
+    private Collection wheels;
 
     public Driver buyBy(Driver driver, BigDecimal amount, Devise devise) {
         this.drivers.add(driver);
@@ -63,7 +63,7 @@ public class Car implements Vehicule {
         return this;
     }
 
-    public Collection<Wheel> getWheels() {
+    public Collection getWheels() {
         return wheels;
     }
 

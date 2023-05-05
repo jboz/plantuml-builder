@@ -29,7 +29,7 @@ import ch.ifocusit.example.domain.model.material.Car;
 public class Driver {
     private String name;
     private Long ignored;
-    private List<Car> cars = new ArrayList<>();
+    private List cars = new ArrayList();
 
     public void buy(Car car) {
         cars.add(car);
@@ -43,11 +43,11 @@ public class Driver {
         this.name = name;
     }
 
-    public List<Car> getCars() {
+    public List getCars() {
         return cars;
     }
 
-    public void setCars(final List<Car> cars) {
+    public void setCars(final List cars) {
         this.cars = cars;
     }
 
