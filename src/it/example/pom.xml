@@ -26,6 +26,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>{env.JAVA_VERSION}</maven.compiler.source>
+        <maven.compiler.target>{env.JAVA_VERSION}</maven.compiler.target>
     </properties>
 
     <dependencies>

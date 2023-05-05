@@ -95,3 +95,5 @@ jobs:
         run: |
           cd src/it/example
           mvn verify
+        env:
+          JAVA_VERSION: ${{ matrix.version }}
