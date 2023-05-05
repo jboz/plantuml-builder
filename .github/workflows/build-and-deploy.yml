@@ -93,9 +93,6 @@ jobs:
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
         run: |
-          echo "JAVA_VERSION=${{ env.JAVA_VERSION }}"
-          echo "JAVA_VERSION=$JAVA_VERSION"
-          export JAVA_VERSION=${{ env.JAVA_VERSION }}
           cd src/it/example
           mvn verify
         env:
