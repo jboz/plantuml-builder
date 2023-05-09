@@ -2,9 +2,9 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -15,10 +15,6 @@ permissions:
   contents: write
   pages: write
   id-token: write
-
-concurrency:
-  group: 'build-deploy'
-  cancel-in-progress: true
 
 jobs:
   check:
@@ -41,7 +37,6 @@ jobs:
           if [ "${{ steps.changes.outputs.production }}" == "true" ]; then
             status="deploy"
           fi
-          echo "status=$status"
           echo "status=$status" >> $GITHUB_OUTPUT
 
   publish:
@@ -52,16 +47,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.ACTION_BOT_SECRET_KEY }}
-
-      - name: Check production files changes
-        run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
-          echo ::set-env name=changes::true
-          echo "Application will be build and published"
 
       - name: Set up java
         uses: actions/setup-java@v3
