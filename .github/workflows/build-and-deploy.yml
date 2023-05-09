@@ -112,7 +112,7 @@ jobs:
         id: download
         with:
           name: my-artifact
-          working-directory: ${{ env.ARTIFACT_PATH }}
+          path: ${{ env.ARTIFACT_PATH }}
 
       - name: 'Echo download path'
         run: echo ${{steps.download.outputs.download-path}}
