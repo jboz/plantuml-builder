@@ -61,7 +61,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: target/plantuml-builder-*.(jar|pom)
+          path: |
+            target/plantuml-builder-*.jar
+            target/plantuml-builder-*.pom
+          retention-days: 1
 
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
@@ -99,6 +102,8 @@ jobs:
           ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
           echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
+          echo "path='$ARTIFACT_PATH'"
+          echo "path='${{ env.ARTIFACT_PATH }}'"
           mkdir -p $ARTIFACT_PATH
           ls -al $ARTIFACT_PATH
 
