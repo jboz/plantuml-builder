@@ -41,10 +41,12 @@ jobs:
           if [ "${{ steps.changes.outputs.production }}" == "true" ]; then
             status="deploy"
           fi
+          echo "status=$status"
           echo "status=$status" >> $GITHUB_OUTPUT
 
   publish:
     runs-on: ubuntu-latest
+    needs: check
     if: "needs.check.outputs.status == 'deploy' && !contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
@@ -101,8 +103,10 @@ jobs:
           commit_message: New release - ci skip
 
   tests_java:
+    needs:
+      - publish
+      - check
     if: "needs.check.outputs.status == 'deploy' && github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')"
-    needs: publish
     runs-on: ubuntu-latest
     strategy:
       matrix:
