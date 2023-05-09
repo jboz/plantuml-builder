@@ -115,7 +115,9 @@ jobs:
           path: ${{ env.ARTIFACT_PATH }}
 
       - name: 'Echo download path'
-        run: echo ${{steps.download.outputs.download-path}}
+        run: |
+          echo ${{steps.download.outputs.download-path}}
+          ls -alR ${{steps.download.outputs.download-path}}
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}

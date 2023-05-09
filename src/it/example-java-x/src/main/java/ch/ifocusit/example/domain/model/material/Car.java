@@ -78,7 +78,7 @@ public class Car implements Vehicule {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Car car)) return false;
+        if (!(o instanceof Car)) return false;
         return Objects.equals(ignored, car.ignored) && Objects.equals(brand, car.brand) && Objects.equals(model, car.model) && Objects.equals(drivers, car.drivers) && Objects.equals(price, car.price) && Objects.equals(wheels, car.wheels);
     }
 
