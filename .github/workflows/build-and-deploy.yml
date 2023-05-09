@@ -41,6 +41,7 @@ jobs:
           echo "Application will be build and published"
 
       - name: Set up java
+        if: ${{ env.changes }}
         uses: actions/setup-java@v3
         with:
           java-version: 19
@@ -65,6 +66,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - uses: actions/upload-artifact@v3
+        if: ${{ env.changes }}
         with:
           name: my-artifact
           path: |
@@ -77,11 +79,12 @@ jobs:
         run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
 
       - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ env.changes }}
         with:
           commit_message: New release - ci skip
 
   tests_java:
-    if: github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')
+    if: "github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')"
     needs: publish
     runs-on: ubuntu-latest
     strategy:
@@ -110,13 +113,14 @@ jobs:
           distribution: adopt
 
       - name: Install plantuml-builder artifact locally
+        if: ${{ env.changes }}
         run: |
           ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
           echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
 
       - uses: actions/download-artifact@v3
-        id: download
+        if: ${{ env.changes }}
         with:
           name: my-artifact
           path: ${{ env.ARTIFACT_PATH }}
