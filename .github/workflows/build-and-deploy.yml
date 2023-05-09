@@ -44,7 +44,6 @@ jobs:
         with:
           java-version: 19
           distribution: adopt
-          cache: maven
           server-id: ossrh
           server-username: OSS_SONATYPE_USERNAME
           server-password: OSS_SONATYPE_PASSWORD
@@ -81,7 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          ref: ${{ github.head_ref }}
 
       - name: Check production files changes
         run: |
@@ -99,7 +98,6 @@ jobs:
         with:
           java-version: ${{ matrix.version }}
           distribution: adopt
-          cache: maven
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
