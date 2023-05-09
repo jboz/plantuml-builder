@@ -5,7 +5,53 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.ifocusit</groupId>
-    <artifactId>plantuml-builder-test</artifactId>
+    <artifactId>* fix: 🐛 releasing
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* feat: 🎸 upgrades
+
+* New release
+
+* feat: 🎸 upgrades
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+* fix: 🐛 releasing
+
+---------
+
+Co-authored-by: Julien Boz <julien.boz@mobi.ch>plantuml-builder-test</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
 

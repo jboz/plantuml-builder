@@ -23,6 +23,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: !contains(github.event.head_commit.message, 'ci skip')
     steps:
       - uses: actions/checkout@v3
         with:
@@ -31,6 +32,11 @@ jobs:
 
       - name: Check production files changes
         run: |
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" == "" ]; then
+            echo "No code changes, skipped"
+            exit 0
+          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
@@ -72,10 +78,10 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: New release
+          commit_message: New release - ci skip
 
   tests_java:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')
     needs: publish
     runs-on: ubuntu-latest
     strategy:
@@ -88,6 +94,11 @@ jobs:
 
       - name: Check production files changes
         run: |
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" == "" ]; then
+            echo "No code changes, skipped"
+            exit 0
+          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
