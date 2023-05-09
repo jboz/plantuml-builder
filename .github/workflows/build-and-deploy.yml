@@ -98,25 +98,24 @@ jobs:
           java-version: ${{ matrix.version }}
           distribution: adopt
 
-      - run: |
+      - name: Install plantuml-builder artifact locally
+        run: |
           ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
           echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
-          echo "path='$ARTIFACT_PATH'"
-          echo "path='${{ env.ARTIFACT_PATH }}'"
           mkdir -p $ARTIFACT_PATH
           ls -al $ARTIFACT_PATH
 
       - run: echo "path='${{ env.ARTIFACT_PATH }}'"
 
       - uses: actions/download-artifact@v3
+        id: download
         with:
           name: my-artifact
           working-directory: ${{ env.ARTIFACT_PATH }}
 
-      - run: |
-          echo "path=${{ env.ARTIFACT_PATH }}"
-          ls -al ${{ env.ARTIFACT_PATH }}
+      - name: 'Echo download path'
+        run: echo ${{steps.download.outputs.download-path}}
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
