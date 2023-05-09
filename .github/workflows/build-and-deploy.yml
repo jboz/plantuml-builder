@@ -24,17 +24,21 @@ jobs:
   check:
     runs-on: ubuntu-latest
     outputs:
-      status: ${{ steps.early.outputs.status }}
+      status: ${{ steps.check.outputs.status }}
     steps:
       - uses: actions/checkout@v3
+      - id: changes
+        uses: dorny/paths-filter@v2
         with:
-          ref: ${{ github.head_ref }}
-      - id: early
+          filters: |
+            production:
+              - 'src/**'
+              - 'pom.xml'
+      - id: check
         name: Check production files changes
         run: |
           status="skip"
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" != "" ]; then
+          if [ "${{ steps.early.outputs.status }}" == "true" ]; then
             status="deploy"
           fi
           echo "status=$status" >> $GITHUB_OUTPUT
