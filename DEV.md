@@ -7,6 +7,7 @@ TODO:
 - création release page avec doc
 - ajout changelog
 - mettre à jour les boutons dans le README principal
+- remove github page/maven site settings
 
 # Publication maven centrale en local
 

@@ -27,7 +27,7 @@ jobs:
       status: ${{ steps.check.outputs.status }}
     steps:
       - uses: actions/checkout@v3
-      - id: changes
+      - id: cmaven-fluido-skinhanges
         uses: dorny/paths-filter@v2
         with:
           filters: |
