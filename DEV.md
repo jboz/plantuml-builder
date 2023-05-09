@@ -2,7 +2,6 @@
 
 TODO:
 
-- https://github.com/jonashackt/github-actions-release-maven
 - github package avec même numéro de version que maven (donc lire la version depuis le pom)
 - création release page avec doc
 - ajout changelog
@@ -33,13 +32,13 @@ sub   rsa3072/0xBBBBBBBB 2023-03-28 [E] [expire : 2025-03-27]
 sig          0xtututututu 2023-03-28  Julien Boz <julienboz@gmail.com>
 ```
 
-Optional, distribut public key on the internet to allow people to verify files:
+Optional but best practice, distribute public key on the internet to allow people to verify files:
 
 ```bash
 gpg --keyserver keyserver.ubuntu.com --send-keys 6666666666666666666666666666666666666666
 ```
 
-Export keys:
+Optional, Export keys:
 
 ```bash
 gpg --output .release/pubring.gpg --armor --export 6666666666666666666666666666666666666666
@@ -57,9 +56,9 @@ mvn clean verify -P release
 
 ## 2. Upload maven centrale
 
-https://central.sonatype.org/publish/manage-user/
+Documentation is here: https://central.sonatype.org/publish/manage-user/
 
-Generate an access token on this page https://oss.sonatype.org/#profile;User%20Token
+Generate an access token on this page https://oss.sonatype.org/#profile;User%20Token (some time the web interface bugs and you have to reconnect yourself)
 
 Create settings.xml :
 

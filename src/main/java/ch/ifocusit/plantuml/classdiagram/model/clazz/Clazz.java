@@ -33,35 +33,36 @@ import ch.ifocusit.plantuml.classdiagram.model.method.Method;
 /**
  * @author Julien Boz
  */
+@SuppressWarnings("unused")
 public interface Clazz extends Comparable<Clazz> {
 
-    public String getName();
+    String getName();
 
-    public Type getType();
+    Type getType();
 
-    default public Optional<Link> getLink() {
+    default Optional<Link> getLink() {
         return Optional.empty();
     }
 
-    public List<? extends Attribute> getAttributes();
+    List<? extends Attribute> getAttributes();
 
-    default public List<? extends Method> getMethods() {
+    default List<? extends Method> getMethods() {
         return new ArrayList<>();
     }
 
-    default public Optional<List<String>> getStereotypes() {
+    default Optional<List<String>> getStereotypes() {
         return Optional.empty();
     }
 
-    default public Optional<String> getBackgroundColor() {
+    default Optional<String> getBackgroundColor() {
         return Optional.empty();
     }
 
-    default public Optional<String> getBorderColor() {
+    default Optional<String> getBorderColor() {
         return Optional.empty();
     }
 
-    default public void validate() {
+    default void validate() {
         Validate.notNull(getName(), "Class name must be defined !");
         Validate.notNull(getType(), String.format("Class '%s' type must be defined !", getName()));
     }
@@ -78,7 +79,7 @@ public interface Clazz extends Comparable<Clazz> {
     enum Type {
         INTERFACE("interface"), ENUM("enum"), CLASS("class"), ABSTRACT("abstract class");
 
-        private String name;
+        private final String name;
 
         Type(String name) {
             this.name = name;

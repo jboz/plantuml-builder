@@ -31,8 +31,8 @@ import org.apache.commons.lang3.Validate;
 public class Package {
 
     private String name;
-    private Type type = Type.Folder;
-    private Optional<String> color = Optional.empty();
+    private final Type type = Type.Folder;
+    private String color;
 
     public String getName() {
         return name;
@@ -43,7 +43,7 @@ public class Package {
     }
 
     public Optional<String> getColor() {
-        return color;
+        return Optional.ofNullable(color);
     }
 
     public void validate() {
@@ -58,7 +58,7 @@ public class Package {
         return p;
     }
 
-    public static enum Type {
+    public enum Type {
         Node, Rectangle, Folder, Frame, Cloud, Database;
     }
 

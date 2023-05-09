@@ -6,6 +6,7 @@ import java.util.Set;
 import ch.ifocusit.plantuml.classdiagram.model.ClassMember;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 
+@SuppressWarnings("rawtypes")
 public class MethodAttribute implements Attribute, ClassMember {
 
     private final Parameter methodParameter;

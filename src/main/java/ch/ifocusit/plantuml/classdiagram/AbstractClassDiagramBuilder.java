@@ -43,6 +43,7 @@ import ch.ifocusit.plantuml.utils.PlantUmlUtils;
  *
  * @author Julien Boz
  */
+@SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> {

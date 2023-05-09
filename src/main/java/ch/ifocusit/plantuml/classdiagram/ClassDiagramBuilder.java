@@ -62,12 +62,12 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
  *
  * @author Julien Boz
  */
+@SuppressWarnings({"rawtypes", "UnstableApiUsage", "unused"})
 public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements NamesMapper {
 
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
     private final Set<Class> classesRepository = new LinkedHashSet<>();
-    private Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by
-                                                                            // default
+    private final Predicate<ClassAttribute> additionalFieldPredicate = a -> true; // always true by default
 
     private NamesMapper namesMapper = this;
 
@@ -110,10 +110,9 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
     }
 
     public void addPackages() {
-        packages.stream().forEach(pkg -> {
+        packages.forEach(pkg -> {
             try {
-                ClassPath classPath =
-                        ClassPath.from(Thread.currentThread().getContextClassLoader());
+                ClassPath classPath = ClassPath.from(Thread.currentThread().getContextClassLoader());
                 Clazz[] classes = classPath.getTopLevelClasses(pkg.getName()).stream()
                         .map(ClassPath.ClassInfo::load).map(this::createJavaClass).sorted()
                         .toArray(Clazz[]::new);
@@ -245,14 +244,10 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         classesRepository.forEach(clazz -> clazzes.add(createJavaClass(clazz)));
     }
 
-    public void addTypes() {
-        clazzes.forEach(builder::addType);
-    }
-
     public JavaClazz createJavaClass(Class clazz) {
         return JavaClazz.from(clazz, readFields(clazz), readMethods(clazz))
                 .setOverridedName(namesMapper.getClassName(clazz))
-                .setLink(linkMaker.getClassLink(clazz));
+                .setLink(linkMaker.getClassLink(clazz).orElse(null));
     }
 
     public ClassMethod[] readMethods(Class aClass) {
@@ -267,7 +262,7 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
 
     public ClassMethod createClassMethod(java.lang.reflect.Method method) {
         ClassMethod classMethod = new ClassMethod(method, namesMapper.getMethodName(method));
-        classMethod.setLink(linkMaker.getMethodLink(method));
+        classMethod.setLink(linkMaker.getMethodLink(method).orElse(null));
 
         return classMethod;
     }
@@ -286,7 +281,7 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
 
     public ClassAttribute createClassAttribute(Field field) {
         ClassAttribute attribute = new ClassAttribute(field, namesMapper.getFieldName(field));
-        attribute.setLink(linkMaker.getFieldLink(field));
+        attribute.setLink(linkMaker.getFieldLink(field).orElse(null));
         return attribute;
     }
 

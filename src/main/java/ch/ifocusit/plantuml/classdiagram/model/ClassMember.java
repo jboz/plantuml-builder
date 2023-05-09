@@ -3,6 +3,7 @@ package ch.ifocusit.plantuml.classdiagram.model;
 import java.util.Collection;
 import java.util.Set;
 
+@SuppressWarnings({"unused", "rawtypes"})
 public interface ClassMember extends Comparable<ClassMember> {
 
     Set<Class> getConcernedTypes();
@@ -14,7 +15,6 @@ public interface ClassMember extends Comparable<ClassMember> {
     Class getType();
 
     /**
-     * @param classes
      * @return true if concerned types are in the <code>classes</code> collection
      */
     default boolean isManaged(Collection<Class> classes) {

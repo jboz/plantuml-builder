@@ -5,9 +5,20 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'build-deploy'
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -15,7 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          ref: ${{ github.head_ref }}
+          ssh-key: ${{ secrets.ACTION_BOT_SECRET_KEY }}
 
       - name: Check production files changes
         run: |
@@ -53,12 +65,11 @@ jobs:
 
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
-        run: |
-          mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
-          git config --global user.name 'Julien'
-          git config --global user.email 'julienboz@gmail.com'
-          git commit -am "New release"
-          git push
+        run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: New release
 
   tests_java:
     if: github.event_name == 'pull_request'
@@ -92,8 +103,7 @@ jobs:
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
-        run: |
-          cd src/it/example-java-x
-          mvn verify
+        working-directory: ./src/it/example-java-x
+        run: mvn verify
         env:
           JAVA_VERSION: ${{ matrix.version }}

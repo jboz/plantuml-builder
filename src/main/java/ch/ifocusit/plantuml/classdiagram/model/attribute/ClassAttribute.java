@@ -32,11 +32,12 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 /**
  * @author Julien Boz
  */
+@SuppressWarnings({"rawtypes", "unused"})
 public class ClassAttribute implements Attribute, ClassMember {
 
     private final Field field;
     private final String fieldName;
-    private Optional<Link> link;
+    private Link link;
 
     public ClassAttribute(Field field) {
         this(field, field.getName());
@@ -86,10 +87,10 @@ public class ClassAttribute implements Attribute, ClassMember {
     }
 
     public Optional<Link> getLink() {
-        return link;
+        return Optional.ofNullable(link);
     }
 
-    public ClassAttribute setLink(Optional<Link> link) {
+    public ClassAttribute setLink(Link link) {
         this.link = link;
         return this;
     }

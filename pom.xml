@@ -44,7 +44,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>19</maven.compiler.release>
+        <java.version>19</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <build>
@@ -58,16 +61,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <release>11</release>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <dependencies>
@@ -170,9 +163,7 @@
         <profile>
             <id>release</id>
             <properties>
-                <gpg.executable>
-                    gpg2
-                </gpg.executable>
+                <gpg.executable>gpg2</gpg.executable>
                 <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
