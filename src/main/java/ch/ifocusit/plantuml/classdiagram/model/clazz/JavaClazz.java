@@ -24,6 +24,7 @@ package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
@@ -34,13 +35,14 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 /**
  * @author Julien Boz
  */
+@SuppressWarnings({"unused", "rawtypes"})
 public class JavaClazz implements Clazz {
 
     private final Class<?> relatedClass;
-    private Optional<String> overridedName;
-    private Optional<Link> link;
-    private List<ClassAttribute> attributes = new ArrayList<>();
-    private List<ClassMethod> methods = new ArrayList<>();
+    private String overridedName;
+    private Link link;
+    private final List<ClassAttribute> attributes = new ArrayList<>();
+    private final List<ClassMethod> methods = new ArrayList<>();
     private String backgroundColor;
     private String borderColor;
 
@@ -49,7 +51,7 @@ public class JavaClazz implements Clazz {
     }
 
     public String getName() {
-        return overridedName.orElse(ClassUtils.getSimpleName(relatedClass));
+        return Optional.ofNullable(overridedName).orElse(ClassUtils.getSimpleName(relatedClass));
     }
 
     public Type getType() {
@@ -57,10 +59,10 @@ public class JavaClazz implements Clazz {
     }
 
     public Optional<Link> getLink() {
-        return link;
+        return Optional.ofNullable(link);
     }
 
-    public JavaClazz setLink(Optional<Link> link) {
+    public JavaClazz setLink(Link link) {
         this.link = link;
         return this;
     }
@@ -74,9 +76,7 @@ public class JavaClazz implements Clazz {
     }
 
     public void addAttributes(ClassAttribute... attributes) {
-        for (ClassAttribute attribute : attributes) {
-            this.attributes.add(attribute);
-        }
+        this.attributes.addAll(Arrays.asList(attributes));
     }
 
     public List<ClassMethod> getMethods() {
@@ -84,19 +84,12 @@ public class JavaClazz implements Clazz {
     }
 
     public void addMethods(ClassMethod... methods) {
-        for (ClassMethod method : methods) {
-            this.methods.add(method);
-        }
+        this.methods.addAll(Arrays.asList(methods));
     }
 
     public JavaClazz setOverridedName(String overridedName) {
-        this.overridedName = Optional.ofNullable(overridedName);
+        this.overridedName = overridedName;
         return this;
-    }
-
-    @Override
-    public Optional<List<String>> getStereotypes() {
-        return Optional.empty();
     }
 
     private Type parseType(Class aClass) {

@@ -29,8 +29,8 @@ import java.util.Optional;
  */
 public class SimpleAttribute implements Attribute {
 
-    private String type;
-    private String name;
+    private final String type;
+    private final String name;
 
     public SimpleAttribute(String name, String type) {
         this.type = type;

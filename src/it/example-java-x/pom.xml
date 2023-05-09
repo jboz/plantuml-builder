@@ -5,52 +5,43 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ch.ifocusit</groupId>
+    <artifactId>plantuml-builder-test</artifactId>
     <version>0.0.1</version>
-    <artifactId>javaversion8-test</artifactId>
     <packaging>jar</packaging>
 
     <description>Use plantuml builder in a java 8 project</description>
 
     <organization>
         <name>Focus IT</name>
-        <url>http://ifocusit.ch</url>
+        <url>https://ifocusit.ch</url>
     </organization>
 
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>${env.JAVA_VERSION}</maven.compiler.release>
+        <maven.compiler.source>${env.JAVA_VERSION}</maven.compiler.source>
+        <maven.compiler.target>${env.JAVA_VERSION}</maven.compiler.target>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${env.JAVA_VERSION}</source>
-                    <target>${env.JAVA_VERSION}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
             <groupId>ch.ifocusit</groupId>
             <artifactId>plantuml-builder</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>2.1-SNAPSHOT</version>
         </dependency>
 
         <!-- test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
@@ -73,4 +64,14 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>

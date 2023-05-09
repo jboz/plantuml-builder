@@ -1,6 +1,6 @@
 @startuml
 
-package ch.ifocusit.plantuml.test.helper.domain.material <<Folder>> {
+package ch.ifocusit.example.domain.model.material <<Folder>> {
   class "Car"
   interface "Machine"
   interface "Vehicule"

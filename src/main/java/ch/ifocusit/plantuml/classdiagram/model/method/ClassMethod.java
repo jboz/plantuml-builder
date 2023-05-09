@@ -37,12 +37,12 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 /**
  * @author Julien Boz
  */
-public class ClassMethod
-        implements ch.ifocusit.plantuml.classdiagram.model.method.Method, ClassMember {
+@SuppressWarnings({"rawtypes", "unused"})
+public class ClassMethod implements ch.ifocusit.plantuml.classdiagram.model.method.Method, ClassMember {
 
     private final Method method;
     private final String methodName;
-    private Optional<Link> link;
+    private Link link;
 
     public ClassMethod(Method method) {
         this(method, method.getName());
@@ -72,7 +72,7 @@ public class ClassMethod
     @Override
     public Optional<MethodAttribute[]> getParameters() {
         return Optional.of(Stream.of(method.getParameters())
-                .map(param -> new MethodAttribute(param)).toArray(MethodAttribute[]::new));
+                .map(MethodAttribute::new).toArray(MethodAttribute[]::new));
     }
 
     public Method getMethod() {
@@ -104,10 +104,10 @@ public class ClassMethod
     }
 
     public Optional<Link> getLink() {
-        return link;
+        return Optional.ofNullable(link);
     }
 
-    public ClassMethod setLink(Optional<Link> link) {
+    public ClassMethod setLink(Link link) {
         this.link = link;
         return this;
     }

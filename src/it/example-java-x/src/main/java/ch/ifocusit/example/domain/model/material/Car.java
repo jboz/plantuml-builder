@@ -25,9 +25,9 @@ package ch.ifocusit.example.domain.model.material;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import ch.ifocusit.example.domain.model.Devise;
 import ch.ifocusit.example.domain.model.Driver;
 import ch.ifocusit.example.domain.model.Price;
@@ -77,13 +77,21 @@ public class Car implements Vehicule {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Car)) return false;
+        Car car = (Car) o;
+        return Objects.equals(ignored, car.ignored)
+                && Objects.equals(brand, car.brand)
+                && Objects.equals(model, car.model)
+                && Objects.equals(drivers, car.drivers)
+                && Objects.equals(price, car.price)
+                && Objects.equals(wheels, car.wheels);
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return Objects.hash(ignored, brand, model, drivers, price, wheels);
     }
 
     private String showMeTheCarInfo() {

@@ -19,10 +19,12 @@
 package ch.ifocusit.plantuml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.sql.Driver;
 import java.util.Objects;
+
+import ch.ifocusit.example.domain.model.Driver;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import ch.ifocusit.example.domain.model.Devise;
@@ -44,94 +46,87 @@ public class ClassDiagramBuilderTest {
     private static final String CR = PlantUmlBuilder.NEWLINE;
 
     @Test
-        public void buildShouldGenerateDiagram() throws Exception {
+    public void buildShouldGenerateDiagram() throws Exception {
         String expected = IOUtils.toString(
                 Objects.requireNonNull(this.getClass()
-                                                .getResourceAsStream("/domain-diagram.plantuml")),
+                        .getResourceAsStream("/domain-diagram.plantuml")),
                 Charset.defaultCharset());
 
-        // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
-                                .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
-                                .addPackage(Vehicule.class.getPackage())
-                                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class,
-                                            Wheel.class, Devise.class)
-                                .build();
-        // end::createSimple[]
+                .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
+                .addPackage(Vehicule.class.getPackage())
+                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
+                .build();
 
         assertThat(diagram).isEqualTo(expected);
     }
 
     @Test
-        public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
+    public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
         String expected = IOUtils.toString(
                 Objects.requireNonNull(this.getClass().getResourceAsStream(
                         "/domain-aggregate-diagram.plantuml")),
                 Charset.defaultCharset());
 
-        // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
-                                .<ClassDiagramBuilder>excludes(".*\\.ignored").addClasses(Car.class)
-                                .withDependencies().build();
-        // end::createSimple[]
+                .<ClassDiagramBuilder>excludes(".*\\.ignored").addClasses(Car.class)
+                .withDependencies().build();
 
         assertThat(diagram).isEqualTo(expected);
     }
 
     @Test
-        public void buildShouldGenerateDiagramWithDepth() throws Exception {
+    public void buildShouldGenerateDiagramWithDepth() throws Exception {
         String expected = IOUtils.toString(
                 Objects.requireNonNull(this.getClass()
-                                                .getResourceAsStream("/service-diagram.plantuml")),
+                        .getResourceAsStream("/service-diagram.plantuml")),
                 Charset.defaultCharset());
 
-        // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
-                                .withDependencies().setHeader("Service diagram").build();
-        // end::createFromOneClassWithDependencies[]
+                .withDependencies().setHeader("Service diagram").build();
 
         assertThat(diagram).isEqualTo(expected);
     }
 
     @Test
-        public void buildShouldExportOnlyAnnotatedClassAndField() {
+    public void buildShouldExportOnlyAnnotatedClassAndField() {
         String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
-                                // only annotated
-                                .addFieldPredicate(attribute -> attribute.getField()
-                                                .isAnnotationPresent(Machine.class))
-                                // no method
-                                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                                .addClasses(Car.class).build();
+                // only annotated
+                .addFieldPredicate(attribute -> attribute.getField()
+                        .isAnnotationPresent(Machine.class))
+                // no method
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                .addClasses(Car.class).build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"Car\" {" + CR
-                                      + "  brand : String" + CR + "  model : String" + CR
-                                      + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
-                                      + "@enduml");
+                + "  brand : String" + CR + "  model : String" + CR
+                + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
+                + "@enduml");
     }
 
     @Test
-        public void testOverrideNames() {
+    public void testOverrideNames() {
         String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
-                                // only annotated
-                                .addFieldPredicate(attribute -> attribute.getField()
-                                                .isAnnotationPresent(Machine.class))
-                                // no method
-                                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                                .addClasses(Car.class).withNamesMapper(new NamesMapper() {
-                                    @Override
-                                        public String getClassName(Class aClass) {
-                                        return "domain." + ClassUtils.getSimpleName(aClass);
-                                    }
+                // only annotated
+                .addFieldPredicate(attribute -> attribute.getField()
+                        .isAnnotationPresent(Machine.class))
+                // no method
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                .addClasses(Car.class).withNamesMapper(new NamesMapper() {
+                    @Override
+                    public String getClassName(Class aClass) {
+                        return "domain." + ClassUtils.getSimpleName(aClass);
+                    }
 
-                                    @Override
-                                        public String getFieldName(Field field) {
-                                        return "attr." + field.getName();
-                                    }
-                                }).build();
+                    @Override
+                    public String getFieldName(Field field) {
+                        return "attr." + field.getName();
+                    }
+                }).build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"domain.Car\" {" + CR
-                                      + "  attr.brand : String" + CR + "  attr.model : String" + CR
-                                      + "  attr.wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
-                                      + "@enduml");
+                + "  attr.brand : String" + CR + "  attr.model : String" + CR
+                + "  attr.wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
+                + "@enduml");
     }
 }

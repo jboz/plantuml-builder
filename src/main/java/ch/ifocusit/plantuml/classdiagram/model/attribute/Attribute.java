@@ -30,11 +30,11 @@ import ch.ifocusit.plantuml.classdiagram.model.Link;
  */
 public interface Attribute {
 
-    public Optional<String> getTypeName();
+    Optional<String> getTypeName();
 
-    public String getName();
+    String getName();
 
-    default public Optional<Link> getLink() {
+    default Optional<Link> getLink() {
         return Optional.empty();
     }
 }

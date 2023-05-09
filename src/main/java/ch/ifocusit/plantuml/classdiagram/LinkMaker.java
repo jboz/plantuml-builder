@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import ch.ifocusit.plantuml.classdiagram.model.Link;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public interface LinkMaker {
 
     /**

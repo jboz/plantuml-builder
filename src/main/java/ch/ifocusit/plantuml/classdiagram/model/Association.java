@@ -106,7 +106,7 @@ public class Association {
 
         LINK("-"), DIRECTION("-->"), BI_DIRECTION("<->"), INHERITANCE("<|--");
 
-        private String symbol;
+        private final String symbol;
 
         AssociationType(String symbol) {
             this.symbol = symbol;

@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 /**
  * @author Julien Boz
  */
+@SuppressWarnings("rawtypes")
 public interface NamesMapper {
 
     /**

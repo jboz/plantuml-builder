@@ -19,9 +19,11 @@
 package ch.ifocusit.plantuml.classdiagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Objects;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import ch.ifocusit.plantuml.PlantUmlBuilder;

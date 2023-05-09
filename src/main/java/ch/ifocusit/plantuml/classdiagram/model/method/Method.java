@@ -31,13 +31,13 @@ import ch.ifocusit.plantuml.classdiagram.model.attribute.MethodAttribute;
  */
 public interface Method {
 
-    public Optional<String> getReturnTypeName();
+    Optional<String> getReturnTypeName();
 
-    public String getName();
+    String getName();
 
-    public Optional<MethodAttribute[]> getParameters();
+    Optional<MethodAttribute[]> getParameters();
 
-    default public Optional<Link> getLink() {
+    default Optional<Link> getLink() {
         return Optional.empty();
     }
 }

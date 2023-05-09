@@ -22,10 +22,11 @@
  */
 package ch.ifocusit.plantuml.classdiagram.model.clazz;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Julien Boz
@@ -34,7 +35,7 @@ public class SimpleClazz implements Clazz {
 
     private String name;
     private Type type;
-    private List<Attribute> attributes = new ArrayList<>();
+    private final List<Attribute> attributes = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -55,7 +56,7 @@ public class SimpleClazz implements Clazz {
         SimpleClazz c = new SimpleClazz();
         c.name = name;
         c.type = type;
-        Stream.of(attributes).forEach(c.attributes::add);
+        c.attributes.addAll(Arrays.asList(attributes));
         return c;
     }
 }

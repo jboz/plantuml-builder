@@ -1,5 +1,6 @@
 package ch.ifocusit.plantuml.classdiagram.model;
 
+@SuppressWarnings("unused")
 public class Link {
     private String url;
     private String label;

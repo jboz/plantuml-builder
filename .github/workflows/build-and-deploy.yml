@@ -5,9 +5,20 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'build-deploy'
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -15,15 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          ref: ${{ github.head_ref }}
+          ssh-key: ${{ secrets.ACTION_BOT_SECRET_KEY }}
 
       - name: Check production files changes
         run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
@@ -45,20 +52,27 @@ jobs:
 
       - name: Deploy
         if: ${{ env.changes }}
-        run: mvn deploy -P release -DskipTests=true
+        run: mvn --batch-mode --update-snapshots deploy -P release -DskipTests=true
         env:
           OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: |
+            target/plantuml-builder-*.jar
+            target/plantuml-builder-*.pom
+          retention-days: 1
+
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
-        run: |
-          mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
-          git config --global user.name 'Julien'
-          git config --global user.email 'julienboz@gmail.com'
-          git commit -am "New release"
-          git push
+        run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: New release
 
   tests_java:
     if: github.event_name == 'pull_request'
@@ -70,15 +84,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          ref: ${{ github.head_ref }}
 
       - name: Check production files changes
         run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
@@ -88,12 +97,22 @@ jobs:
         with:
           java-version: ${{ matrix.version }}
           distribution: adopt
-          cache: maven
+
+      - name: Install plantuml-builder artifact locally
+        run: |
+          ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
+          echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
+
+      - uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: my-artifact
+          path: ${{ env.ARTIFACT_PATH }}
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
-        run: |
-          cd src/it/example-java-x
-          mvn verify
+        working-directory: ./src/it/example-java-x
+        run: mvn verify
         env:
           JAVA_VERSION: ${{ matrix.version }}

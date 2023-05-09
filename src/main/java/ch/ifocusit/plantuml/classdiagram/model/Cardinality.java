@@ -29,7 +29,7 @@ public enum Cardinality {
 
     NONE(""), MANY("*"), ONE("1");
 
-    private String symbol;
+    private final String symbol;
 
     Cardinality(String symbol) {
         this.symbol = symbol;
