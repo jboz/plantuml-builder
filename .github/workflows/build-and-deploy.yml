@@ -31,11 +31,11 @@ jobs:
 
       - name: Check production files changes
         run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
+#          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+#          if [ "$GITDIFF" == "" ]; then
+#            echo "No code changes, skipped"
+#            exit 0
+#          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
@@ -84,11 +84,11 @@ jobs:
 
       - name: Check production files changes
         run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
+#          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+#          if [ "$GITDIFF" == "" ]; then
+#            echo "No code changes, skipped"
+#            exit 0
+#          fi
           echo ::set-env name=changes::true
           echo "Application will be build and published"
 
