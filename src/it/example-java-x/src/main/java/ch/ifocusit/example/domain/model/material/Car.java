@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
 import ch.ifocusit.example.domain.model.Devise;
 import ch.ifocusit.example.domain.model.Driver;
 import ch.ifocusit.example.domain.model.Price;
@@ -79,7 +80,13 @@ public class Car implements Vehicule {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Car)) return false;
-        return Objects.equals(ignored, car.ignored) && Objects.equals(brand, car.brand) && Objects.equals(model, car.model) && Objects.equals(drivers, car.drivers) && Objects.equals(price, car.price) && Objects.equals(wheels, car.wheels);
+        Car car = (Car) o;
+        return Objects.equals(ignored, car.ignored)
+                && Objects.equals(brand, car.brand)
+                && Objects.equals(model, car.model)
+                && Objects.equals(drivers, car.drivers)
+                && Objects.equals(price, car.price)
+                && Objects.equals(wheels, car.wheels);
     }
 
     @Override
