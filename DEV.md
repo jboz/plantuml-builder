@@ -2,10 +2,12 @@
 
 TODO:
 
-- github package avec même numéro de version que maven (donc lire la version depuis le pom)
+- tag on release
+- upload github package
 - création release page avec doc
 - ajout changelog
 - mettre à jour les boutons dans le README principal
+- remove github page/maven site settings
 
 # Publication maven centrale en local
 
