@@ -16,13 +16,13 @@
 
     <organization>
         <name>Focus IT</name>
-        <url>http://www.ifocusit.ch</url>
+        <url>https://www.ifocusit.ch</url>
     </organization>
 
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
