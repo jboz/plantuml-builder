@@ -63,6 +63,7 @@ jobs:
         with:
           name: Package
           path: staging
+      - run: rm -rf staging
 
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
