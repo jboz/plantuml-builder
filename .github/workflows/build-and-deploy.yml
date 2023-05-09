@@ -38,7 +38,7 @@ jobs:
         name: Check production files changes
         run: |
           status="skip"
-          if [ "${{ steps.early.outputs.status }}" == "true" ]; then
+          if [ "${{ steps.changes.outputs.production }}" == "true" ]; then
             status="deploy"
           fi
           echo "status=$status" >> $GITHUB_OUTPUT
