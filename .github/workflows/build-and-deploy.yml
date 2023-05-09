@@ -21,13 +21,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
+  check:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    outputs:
+      status: ${{ steps.early.outputs.status }}
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
+      - id: early
+        name: Check production files changes
+        run: |
+          status="skip"
+          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
+          if [ "$GITDIFF" != "" ]; then
+            status="deploy"
+          fi
+          echo "status=$status" >> $GITHUB_OUTPUT
+
+  publish:
+    runs-on: ubuntu-latest
+    if: "needs.check.outputs.status == 'deploy' && !contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+        with:
           ssh-key: ${{ secrets.ACTION_BOT_SECRET_KEY }}
 
       - name: Check production files changes
@@ -41,7 +58,6 @@ jobs:
           echo "Application will be build and published"
 
       - name: Set up java
-        if: ${{ env.changes }}
         uses: actions/setup-java@v3
         with:
           java-version: 19
@@ -54,11 +70,10 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Create maven release version
-        if: ${{ env.changes && github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' }}
         run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit
 
       - name: Deploy
-        if: ${{ env.changes }}
         run: mvn --batch-mode --update-snapshots deploy -P release -DskipTests=true
         env:
           OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
@@ -66,7 +81,6 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - uses: actions/upload-artifact@v3
-        if: ${{ env.changes }}
         with:
           name: my-artifact
           path: |
@@ -75,16 +89,15 @@ jobs:
           retention-days: 1
 
       - name: Create and commit next dev version
-        if: ${{ env.changes && github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' }}
         run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
 
       - uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ env.changes }}
         with:
           commit_message: New release - ci skip
 
   tests_java:
-    if: "github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')"
+    if: "needs.check.outputs.status == 'deploy' && github.event_name == 'pull_request' && !contains(github.event.head_commit.message, 'ci skip')"
     needs: publish
     runs-on: ubuntu-latest
     strategy:
@@ -92,41 +105,25 @@ jobs:
         version: [11, 15, 17]
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Check production files changes
-        run: |
-          GITDIFF=$(git diff --name-only HEAD^ HEAD | grep -E -- 'src|pom.xml' | tr -d '[:space:]')
-          if [ "$GITDIFF" == "" ]; then
-            echo "No code changes, skipped"
-            exit 0
-          fi
-          echo ::set-env name=changes::true
-          echo "Application will be build and published"
 
       - name: Set up java
-        if: ${{ env.changes }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.version }}
           distribution: adopt
 
       - name: Install plantuml-builder artifact locally
-        if: ${{ env.changes }}
         run: |
           ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
           echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
 
       - uses: actions/download-artifact@v3
-        if: ${{ env.changes }}
         with:
           name: my-artifact
           path: ${{ env.ARTIFACT_PATH }}
 
       - name: Test ${{ matrix.version }}
-        if: ${{ env.changes }}
         working-directory: ./src/it/example-java-x
         run: mvn verify
         env:

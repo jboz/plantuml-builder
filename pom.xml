@@ -11,7 +11,7 @@
 
     <name>Plantuml builder</name>
     <description>Plantuml diagram generation from java code sources</description>
-    <url>https://github.com/jboz/plantuml-builder</url>
+    <url>https://plantuml-builder.ifocusit.ch</url>
     <inceptionYear>2023</inceptionYear>
 
     <organization>
