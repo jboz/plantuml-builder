@@ -58,12 +58,10 @@ jobs:
           OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - run: mkdir -p staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v3
         with:
-          name: Package
-          path: staging
-      - run: rm -rf staging
+          name: my-artifact
+          path: target/plantuml-builder-*.(jar|pom)
 
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
@@ -97,9 +95,18 @@ jobs:
           java-version: ${{ matrix.version }}
           distribution: adopt
 
+      - run: |
+          echo ::set-env name=ARTIFACT_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo ::set-env name=ARTIFACT_PATH::~/.m2/repository/ch/ifocusit/plantuml-builder/${{ env.ARTIFACT_VERSION }}/
+
       - uses: actions/download-artifact@v3
         with:
-          name: Package
+          name: my-artifact
+          working-directory: ${{ env.ARTIFACT_PATH }}
+
+      - run: |
+          echo "path=${{ env.ARTIFACT_PATH }}"
+          ls -al ${{ env.ARTIFACT_PATH }}
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
