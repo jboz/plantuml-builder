@@ -39,6 +39,7 @@ jobs:
         with:
           java-version: 19
           distribution: adopt
+          cache: maven
           server-id: ossrh
           server-username: OSS_SONATYPE_USERNAME
           server-password: OSS_SONATYPE_PASSWORD
@@ -51,11 +52,17 @@ jobs:
 
       - name: Deploy
         if: ${{ env.changes }}
-        run: mvn deploy -P release -DskipTests=true
+        run: mvn --batch-mode --update-snapshots deploy -P release -DskipTests=true
         env:
           OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      - run: mkdir staging && cp target/*.jar staging
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package
+          path: staging
 
       - name: Create and commit next dev version
         if: ${{ env.changes && github.event_name == 'push' }}
@@ -88,6 +95,10 @@ jobs:
         with:
           java-version: ${{ matrix.version }}
           distribution: adopt
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Package
 
       - name: Test ${{ matrix.version }}
         if: ${{ env.changes }}
