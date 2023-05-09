@@ -58,7 +58,7 @@ jobs:
           OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - run: mkdir staging && cp target/*.jar staging
+      - run: mkdir -p staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v3
         with:
           name: Package
