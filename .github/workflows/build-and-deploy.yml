@@ -110,6 +110,7 @@ jobs:
           ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           ARTIFACT_PATH=~/.m2/repository/ch/ifocusit/plantuml-builder/$ARTIFACT_VERSION/
           echo ::set-env name=ARTIFACT_PATH::$ARTIFACT_PATH
+          echo ::set-env name=PLANTUML_BUILDER_VERSION::$ARTIFACT_VERSION
 
       - uses: actions/download-artifact@v3
         with:
@@ -118,6 +119,9 @@ jobs:
 
       - name: Test ${{ matrix.version }}
         working-directory: ./src/it/example-java-x
-        run: mvn --batch-mode --update-snapshots verify
+        run: |
+          sed -i -e "s/\${env.PLANTUML_BUILDER_VERSION}/${{ env.PLANTUML_BUILDER_VERSION }}/g" pom.xml
+          mvn --batch-mode --update-snapshots verify
         env:
           JAVA_VERSION: ${{ matrix.version }}
+          PLANTUML_BUILDER_VERSION: ${{ env.PLANTUML_BUILDER_VERSION }}
