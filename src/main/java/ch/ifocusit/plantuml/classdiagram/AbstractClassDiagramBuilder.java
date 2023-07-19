@@ -44,13 +44,11 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> !a.getName().equals("ENUM$VALUES");
 
-    private static final List<String> DEFAULT_METHODS_EXCLUDED =
-            List.of("equals", "hashCode", "toString");
+    private static final List<String> DEFAULT_METHODS_EXCLUDED = List.of("equals", "hashCode", "toString");
 
     // by default java Object methods and getter/setter will be ignored
-    private Predicate<ClassMethod> additionalMethodPredicate =
-            m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName())
-                    && ClassUtils.isNotGetterSetter(m.getMethod());
+    private Predicate<ClassMethod> additionalMethodPredicate = m -> !DEFAULT_METHODS_EXCLUDED.contains(m.getName())
+            && ClassUtils.isNotGetterSetter(m.getMethod());
 
     protected final PlantUmlBuilder builder = new PlantUmlBuilder();
 
