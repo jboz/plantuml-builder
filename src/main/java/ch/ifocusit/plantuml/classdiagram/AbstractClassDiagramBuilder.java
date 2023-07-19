@@ -22,14 +22,6 @@
  */
 package ch.ifocusit.plantuml.classdiagram;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import ch.ifocusit.plantuml.PlantUmlBuilder;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.ClassAttribute;
@@ -37,6 +29,10 @@ import ch.ifocusit.plantuml.classdiagram.model.clazz.JavaClazz;
 import ch.ifocusit.plantuml.classdiagram.model.method.ClassMethod;
 import ch.ifocusit.plantuml.utils.ClassUtils;
 import ch.ifocusit.plantuml.utils.PlantUmlUtils;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Build class diagram from Class definition.
@@ -46,9 +42,7 @@ import ch.ifocusit.plantuml.utils.PlantUmlUtils;
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
-    private Predicate<ClassAttribute> additionalFieldPredicate = a -> {
-        return !a.getName().equals("ENUM$VALUES");
-    };
+    private Predicate<ClassAttribute> additionalFieldPredicate = a -> !a.getName().equals("ENUM$VALUES");
 
     private static final List<String> DEFAULT_METHODS_EXCLUDED =
             List.of("equals", "hashCode", "toString");
@@ -66,6 +60,7 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     protected LinkMaker linkMaker = this;
 
+    private String afterStartTag;
     private String header;
     private String footer;
 
@@ -78,10 +73,16 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     protected boolean hideSelfLink = true;
 
-    public AbstractClassDiagramBuilder() {}
+    public AbstractClassDiagramBuilder() {
+    }
 
     public <B extends AbstractClassDiagramBuilder> B setHeader(String header) {
         this.header = header;
+        return (B) this;
+    }
+
+    public <B extends AbstractClassDiagramBuilder> B setAfterStartTag(String afterStartTag) {
+        this.afterStartTag = afterStartTag;
         return (B) this;
     }
 
@@ -127,7 +128,7 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         // from java classes, detect associations
         detectAssociations();
         // generate diagram from configuration
-        builder.start();
+        builder.start(afterStartTag);
         builder.appendHeader(header);
         addPackages(); // add package definition
         addTypes(); // add types definition

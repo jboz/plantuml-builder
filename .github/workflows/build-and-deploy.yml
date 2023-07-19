@@ -65,7 +65,7 @@ jobs:
         run: mvn -f pom.xml -q build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion} versions:commit
 
       - name: Deploy
-        run: mvn --batch-mode --update-snapshots deploy -P release -DskipTests=true
+        run: mvn --batch-mode --update-snapshots deploy -P release
         env:
           OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           OSS_SONATYPE_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
@@ -118,6 +118,6 @@ jobs:
 
       - name: Test ${{ matrix.version }}
         working-directory: ./src/it/example-java-x
-        run: mvn verify
+        run: mvn --batch-mode --update-snapshots verify
         env:
           JAVA_VERSION: ${{ matrix.version }}
