@@ -18,25 +18,28 @@
  */
 package ch.ifocusit.plantuml;
 
-import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.DIRECTION;
-import static org.apache.commons.lang3.StringUtils.SPACE;
-import java.text.MessageFormat;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
 import ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType;
 import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+
+import java.text.MessageFormat;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType.DIRECTION;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * Plantuml diagram helper for java classes.
  *
  * @author Julien Boz
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class PlantUmlBuilder {
     private static final String STARTUML = "@startuml";
     private static final String ENDUML = "@enduml";
@@ -56,8 +59,12 @@ public class PlantUmlBuilder {
 
     private final StringBuilder content = new StringBuilder();
 
-    public PlantUmlBuilder start() {
-        content.append(STARTUML).append(NEWLINE).append(NEWLINE);
+    public PlantUmlBuilder start(String afterStartTag) {
+        content.append(STARTUML).append(NEWLINE);
+        if (afterStartTag != null) {
+            content.append(afterStartTag).append(NEWLINE);
+        }
+        content.append(NEWLINE);
         return this;
     }
 
@@ -83,7 +90,7 @@ public class PlantUmlBuilder {
         return this;
     }
 
-    private PlantUmlBuilder append(String s) {
+    public PlantUmlBuilder append(String s) {
         if (s != null) {
             content.append(s);
         }
@@ -148,10 +155,10 @@ public class PlantUmlBuilder {
         // stereotype
         clazz.getStereotypes()
                 .ifPresent(stereotypes -> content.append(SPACE).append(STEREOTYPE_OPEN)
-                        .append(stereotypes.stream().collect(Collectors.joining(", ")))
+                        .append(String.join(", ", stereotypes))
                         .append(STEREOTYPE_CLOSE));
         // class link
-        clazz.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+        clazz.getLink().ifPresent(link -> content.append(SPACE).append(link));
         // class color
         clazz.getBackgroundColor().ifPresent(color -> content.append(SPACE).append(color(color)));
 
@@ -166,11 +173,11 @@ public class PlantUmlBuilder {
             attribute.getTypeName().ifPresent(
                     type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // field link
-            attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+            attribute.getLink().ifPresent(link -> content.append(SPACE).append(link));
             content.append(NEWLINE);
         }
         // add methods
-        clazz.getMethods().stream().forEach(method -> {
+        clazz.getMethods().forEach(method -> {
             // name
             content.append(TAB).append(method.getName());
             // parameters
@@ -185,14 +192,11 @@ public class PlantUmlBuilder {
             method.getReturnTypeName().ifPresent(
                     type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // method link
-            method.getLink().ifPresent(link -> content.append(SPACE).append(link.toString()));
+            method.getLink().ifPresent(link -> content.append(SPACE).append(link));
             content.append(NEWLINE);
         });
         if (clazz.hasContent()) {
             content.append(BRACE_CLOSE);
-        }
-        if (!clazz.getAttributes().isEmpty()) {
-
         }
         content.append(NEWLINE).append(NEWLINE);
         return this;
@@ -215,7 +219,7 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
-            String label) {
+                                          String label) {
         return addAssociation(aName, bName, type, label, Cardinality.NONE, Cardinality.NONE);
     }
 
@@ -226,7 +230,7 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
-            String label, Cardinality aCardinality, Cardinality bCardinality) {
+                                          String label, Cardinality aCardinality, Cardinality bCardinality) {
         Validate.notBlank(aName, "Class a name is mandatory");
         Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(type, "Association type is mandatory");

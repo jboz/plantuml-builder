@@ -1,4 +1,5 @@
 @startuml
+!pragma layout smetana
 
 class "Car" {
   brand : String

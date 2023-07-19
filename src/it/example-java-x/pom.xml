@@ -35,7 +35,7 @@
         <dependency>
             <groupId>ch.ifocusit</groupId>
             <artifactId>plantuml-builder</artifactId>
-            <version>2.3-SNAPSHOT</version>
+            <version>${env.PLANTUML_BUILDER_VERSION}</version>
         </dependency>
 
         <!-- test -->
