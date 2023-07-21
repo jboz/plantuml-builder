@@ -19,6 +19,7 @@
 package ch.ifocusit.plantuml.classdiagram;
 
 import ch.ifocusit.plantuml.PlantUmlBuilder;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.test.helper.domain.Devise;
 import ch.ifocusit.plantuml.test.helper.domain.Driver;
 import ch.ifocusit.plantuml.test.helper.domain.Price;
@@ -31,9 +32,11 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,10 +50,7 @@ class ClassDiagramBuilderTest {
 
     @Test
     void buildShouldGenerateDiagram() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(
-                        this.getClass().getResourceAsStream("/domain-diagram.plantuml")),
-                Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram =
@@ -136,5 +136,50 @@ class ClassDiagramBuilderTest {
         assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"domain.Car\" {" + CR
                 + "  attr.brand : String" + CR + "  attr.model : String" + CR
                 + "  attr.wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR + "@enduml");
+    }
+
+    @Test
+    public void testLinkRenderer() throws IOException {
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/links.puml")), Charset.defaultCharset());
+
+        String diagram = new ClassDiagramBuilder()
+                .addClasses(Car.class, Driver.class)
+                .withLinkMaker(new LinkMaker() {
+                    @Override
+                    public Optional<Link> getClassLink(Class aClass) {
+                        String label = aClass.getSimpleName();
+                        Link link = new Link();
+                        link.setLabel(label);
+                        link.setUrl("https://link.com/" + label.toLowerCase());
+                        if (aClass.equals(Driver.class)) {
+                            link.setTooltip("Taxi Driver");
+                        }
+                        return Optional.of(link);
+                    }
+
+                    @Override
+                    public Optional<Link> getFieldLink(Field field) {
+                        if (field.getName().equals("wheels") || field.getDeclaringClass().equals(Driver.class)) {
+                            return Optional.empty();
+                        }
+                        Link link = new Link();
+                        link.setUrl("https://link.com/car/" + field.getName().toLowerCase());
+                        if (field.getName().equals("brand") ) {
+                            link.setLabel("lien");
+                        }
+                        if (field.getName().equals("price") ) {
+                            link.setTooltip("Show details");
+                        }
+                        if (field.getName().equals("model") ) {
+                            link.setLabel("Car models");
+                            link.setTooltip("Show all cars' models");
+                        }
+                        return Optional.of(link);
+                    }
+                })
+                .excludes(".*\\.ignored")
+                .build();
+
+        assertThat(diagram).isEqualTo(expected);
     }
 }
