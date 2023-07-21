@@ -21,6 +21,7 @@ package ch.ifocusit.plantuml;
 import ch.ifocusit.plantuml.classdiagram.model.Association;
 import ch.ifocusit.plantuml.classdiagram.model.Association.AssociationType;
 import ch.ifocusit.plantuml.classdiagram.model.Cardinality;
+import ch.ifocusit.plantuml.classdiagram.model.Link;
 import ch.ifocusit.plantuml.classdiagram.model.Package;
 import ch.ifocusit.plantuml.classdiagram.model.attribute.Attribute;
 import ch.ifocusit.plantuml.classdiagram.model.clazz.Clazz;
@@ -177,7 +178,7 @@ public class PlantUmlBuilder {
                         .append(String.join(", ", stereotypes))
                         .append(STEREOTYPE_CLOSE));
         // class link
-        clazz.getLink().ifPresent(link -> content.append(SPACE).append(link));
+        clazz.getLink().ifPresent(link -> content.append(SPACE).append(link.render(Link.LinkContext.CLASS)));
         // class color
         clazz.getBackgroundColor().ifPresent(color -> content.append(SPACE).append(color(color)));
 
@@ -192,7 +193,7 @@ public class PlantUmlBuilder {
             attribute.getTypeName().ifPresent(
                     type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // field link
-            attribute.getLink().ifPresent(link -> content.append(SPACE).append(link));
+            attribute.getLink().ifPresent(link -> content.append(SPACE).append(link.render(Link.LinkContext.FIELD)));
             content.append(NEWLINE);
         }
         // add methods
@@ -211,7 +212,7 @@ public class PlantUmlBuilder {
             method.getReturnTypeName().ifPresent(
                     type -> content.append(SPACE).append(SEMICOLON).append(SPACE).append(type));
             // method link
-            method.getLink().ifPresent(link -> content.append(SPACE).append(link));
+            method.getLink().ifPresent(link -> content.append(SPACE).append(link.render(Link.LinkContext.METHOD)));
             content.append(NEWLINE);
         });
         if (clazz.hasContent()) {

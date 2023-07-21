@@ -1,0 +1,23 @@
+@startuml
+
+class "Car" [[https://link.com/car]] {
+  brand : String [[[https://link.com/car/brand lien]]]
+  model : String [[[https://link.com/car/model{Show all cars' models} Car models]]]
+  drivers : Set<Driver> [[[https://link.com/car/drivers]]]
+  price : Price [[[https://link.com/car/price{Show details}]]]
+  wheels : Collection<Wheel>
+  addDriver(Driver) : Car
+  addWheel(Wheel)
+  buyBy(Driver, BigDecimal, Devise) : Driver
+}
+
+class "Driver" [[https://link.com/driver{Taxi Driver}]] {
+  name : String
+  cars : List<Car>
+  addCar(Car)
+  buy(Car)
+}
+
+"Car" "*" <-> "*" "Driver" : drivers/cars
+
+@enduml
