@@ -85,7 +85,7 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: New release - ci skip
+          commit_message: Post release - ci skip
 
   tests_java:
     needs:

@@ -59,10 +59,10 @@ public class PlantUmlBuilder {
 
     private final StringBuilder content = new StringBuilder();
 
-    public PlantUmlBuilder start(String afterStartTag) {
+    public PlantUmlBuilder start(String... afterStartTags) {
         content.append(STARTUML).append(NEWLINE);
-        if (afterStartTag != null) {
-            content.append(afterStartTag).append(NEWLINE);
+        if (afterStartTags != null && afterStartTags.length > 0) {
+            content.append(String.join(NEWLINE, afterStartTags)).append(NEWLINE);
         }
         content.append(NEWLINE);
         return this;
@@ -90,9 +90,15 @@ public class PlantUmlBuilder {
         return this;
     }
 
-    public PlantUmlBuilder append(String s) {
-        if (s != null) {
-            content.append(s);
+    public PlantUmlBuilder append(String value) {
+        if (value != null) {
+            content.append(value);
+        }
+        return this;
+    }
+    public PlantUmlBuilder appendTitle(String title) {
+        if (title != null) {
+            content.append("title ").append(title).append(NEWLINE).append(NEWLINE);
         }
         return this;
     }
@@ -111,8 +117,8 @@ public class PlantUmlBuilder {
 
     public PlantUmlBuilder appendFooter(String footer) {
         if (footer != null) {
-            content.append("footer").append(NEWLINE).append(footer).append(NEWLINE)
-                    .append("endfooter").append(NEWLINE).append(NEWLINE);
+            content.append(NEWLINE).append("footer").append(NEWLINE).append(footer).append(NEWLINE)
+                    .append("endfooter").append(NEWLINE);
         }
         return this;
     }
