@@ -58,7 +58,8 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     protected LinkMaker linkMaker = this;
 
-    private String[] afterStartTags;
+    private String[] startOptions;
+    private String[] endOptions;
     private String header;
     private String title;
     private String footer;
@@ -85,8 +86,12 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         return (B) this;
     }
 
-    public <B extends AbstractClassDiagramBuilder> B setAfterStartTags(String... afterStartTags) {
-        this.afterStartTags = afterStartTags;
+    public <B extends AbstractClassDiagramBuilder> B setStartOptions(String... lines) {
+        this.startOptions = lines;
+        return (B) this;
+    }
+    public <B extends AbstractClassDiagramBuilder> B setEndOptions(String... lines) {
+        this.endOptions = lines;
         return (B) this;
     }
 
@@ -132,14 +137,14 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         // from java classes, detect associations
         detectAssociations();
         // generate diagram from configuration
-        builder.start(afterStartTags);
+        builder.start(startOptions);
         builder.appendHeader(header);
         builder.appendTitle(title);
         addPackages(); // add package definition
         addTypes(); // add types definition
         addAssociations(); // then add their associations
         builder.appendFooter(footer);
-        builder.end();
+        builder.end(endOptions);
         return builder.build();
     }
 

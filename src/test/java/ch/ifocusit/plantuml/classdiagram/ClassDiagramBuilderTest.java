@@ -72,7 +72,7 @@ class ClassDiagramBuilderTest {
                 .<ClassDiagramBuilder>excludes(".*\\.ignored")
                 .addClasses(Car.class)
                 .withDependencies()
-                .setAfterStartTags("!pragma layout smetana")
+                .setStartOptions("!pragma layout smetana")
                 .build();
         // end::createSimple[]
 
@@ -86,10 +86,11 @@ class ClassDiagramBuilderTest {
         // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
                 .withDependencies()
-                .setAfterStartTags("skinparam backgroundColor lightgray", "show methods", "hide fields")
+                .setStartOptions("skinparam backgroundColor lightgray")
                 .setHeader("class diagram type")
                 .setTitle("Service diagram")
                 .setFooter("page 1/1")
+                .setEndOptions("show methods", "hide fields")
                 .build();
         // end::createFromOneClassWithDependencies[]
 

@@ -59,20 +59,6 @@ public class PlantUmlBuilder {
 
     private final StringBuilder content = new StringBuilder();
 
-    public PlantUmlBuilder start(String... afterStartTags) {
-        content.append(STARTUML).append(NEWLINE);
-        if (afterStartTags != null && afterStartTags.length > 0) {
-            content.append(String.join(NEWLINE, afterStartTags)).append(NEWLINE);
-        }
-        content.append(NEWLINE);
-        return this;
-    }
-
-    public PlantUmlBuilder end() {
-        content.append(NEWLINE).append(ENDUML);
-        return this;
-    }
-
     public String build() {
         return content.toString();
     }
@@ -96,6 +82,33 @@ public class PlantUmlBuilder {
         }
         return this;
     }
+
+    // *********************************************************************************
+    // START/END
+    // *********************************************************************************
+
+    public PlantUmlBuilder start(String... options) {
+        content.append(STARTUML).append(NEWLINE);
+        if (options != null && options.length > 0) {
+            content.append(String.join(NEWLINE, options)).append(NEWLINE);
+        }
+        content.append(NEWLINE);
+        return this;
+    }
+
+    public PlantUmlBuilder end(String... options) {
+        content.append(NEWLINE);
+        if (options != null && options.length > 0) {
+            content.append(String.join(NEWLINE, options)).append(NEWLINE);
+        }
+        content.append(ENDUML);
+        return this;
+    }
+
+    // *********************************************************************************
+    // TITLE
+    // *********************************************************************************
+
     public PlantUmlBuilder appendTitle(String title) {
         if (title != null) {
             content.append("title ").append(title).append(NEWLINE).append(NEWLINE);

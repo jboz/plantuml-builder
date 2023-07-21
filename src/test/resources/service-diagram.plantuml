@@ -1,7 +1,5 @@
 @startuml
 skinparam backgroundColor lightgray
-show methods
-hide fields
 
 header
 class diagram type
@@ -20,4 +18,6 @@ footer
 page 1/1
 endfooter
 
+show methods
+hide fields
 @enduml
