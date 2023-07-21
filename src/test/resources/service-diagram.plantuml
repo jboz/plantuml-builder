@@ -1,8 +1,11 @@
 @startuml
+skinparam backgroundColor lightgray
 
 header
-Service diagram
+class diagram type
 endheader
+
+title Service diagram
 
 interface "AccessDataService" {
   whoDrive(Car, Instant) : Driver
@@ -11,4 +14,10 @@ interface "AccessDataService" {
 "AccessDataService" --> "Car" : use
 "AccessDataService" --> "Driver" : use
 
+footer
+page 1/1
+endfooter
+
+show methods
+hide fields
 @enduml

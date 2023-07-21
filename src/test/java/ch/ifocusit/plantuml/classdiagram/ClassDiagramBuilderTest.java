@@ -65,17 +65,14 @@ class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(
-                        this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml")),
-                Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
                 .<ClassDiagramBuilder>excludes(".*\\.ignored")
                 .addClasses(Car.class)
                 .withDependencies()
-                .setAfterStartTag("!pragma layout smetana")
+                .setStartOptions("!pragma layout smetana")
                 .build();
         // end::createSimple[]
 
@@ -84,14 +81,17 @@ class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramWithDepth() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(
-                        this.getClass().getResourceAsStream("/service-diagram.plantuml")),
-                Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/service-diagram.plantuml")), Charset.defaultCharset());
 
         // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
-                .withDependencies().setHeader("Service diagram").build();
+                .withDependencies()
+                .setStartOptions("skinparam backgroundColor lightgray")
+                .setHeader("class diagram type")
+                .setTitle("Service diagram")
+                .setFooter("page 1/1")
+                .setEndOptions("show methods", "hide fields")
+                .build();
         // end::createFromOneClassWithDependencies[]
 
         assertThat(diagram).isEqualTo(expected);
@@ -101,10 +101,10 @@ class ClassDiagramBuilderTest {
     public void buildShouldExportOnlyAnnotatedClassAndField() {
         String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
                 // only annotated
-                .addFieldPredicate(
-                        attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
-                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false).addClasses(Car.class)
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                .addClasses(Car.class)
                 .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"Car\" {" + CR
@@ -116,10 +116,10 @@ class ClassDiagramBuilderTest {
     public void testOverrideNames() {
         String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
                 // only annotated
-                .addFieldPredicate(
-                        attribute -> attribute.getField().isAnnotationPresent(Machine.class))
+                .addFieldPredicate(attribute -> attribute.getField().isAnnotationPresent(Machine.class))
                 // no method
-                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false).addClasses(Car.class)
+                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                .addClasses(Car.class)
                 .withNamesMapper(new NamesMapper() {
                     @Override
                     public String getClassName(Class aClass) {
@@ -130,7 +130,8 @@ class ClassDiagramBuilderTest {
                     public String getFieldName(Field field) {
                         return "attr." + field.getName();
                     }
-                }).build();
+                })
+                .build();
 
         assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"domain.Car\" {" + CR
                 + "  attr.brand : String" + CR + "  attr.model : String" + CR
