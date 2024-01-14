@@ -45,10 +45,10 @@ jobs:
           echo ${{secrets.OSS_SONATYPE_USERNAME}} | sed 's/./& /g'
           echo "OSS_SONATYPE_PASSWORD"
           echo ${{secrets.OSS_SONATYPE_PASSWORD}} | sed 's/./& /g'
-          echo "MAVEN_GPG_PRIVATE_KEY"
-          echo ${{secrets.MAVEN_GPG_PRIVATE_KEY}} | sed 's/./& /g'
           echo "MAVEN_GPG_PASSPHRASE"
           echo ${{secrets.MAVEN_GPG_PASSPHRASE}} | sed 's/./& /g'
+          echo "MAVEN_GPG_PRIVATE_KEY"
+          echo ${{secrets.MAVEN_GPG_PRIVATE_KEY}} | sed 's/./& /g'
 
   publish:
     runs-on: ubuntu-latest
