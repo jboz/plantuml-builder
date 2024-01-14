@@ -95,6 +95,6 @@ Use this in github action :
   run: |
     import os
     for q in (os.getenv("MY_VAL")):
-    print(q)
+      print(q)
   shell: python
 ```
