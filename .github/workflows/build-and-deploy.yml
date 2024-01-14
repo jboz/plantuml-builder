@@ -39,15 +39,6 @@ jobs:
           fi
           echo "status=$status" >> $GITHUB_OUTPUT
 
-      - name: Set env as secret
-        env:
-          MY_VAL: ${{ secrets.ACTION_BOT_SECRET_KEY }}
-        run: |
-          import os
-          for q in (os.getenv("MY_VAL")):
-            print(q)
-        shell: python
-
   publish:
     runs-on: ubuntu-latest
     needs: check
