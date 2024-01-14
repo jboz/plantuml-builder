@@ -39,11 +39,8 @@ jobs:
           fi
           echo "status=$status" >> $GITHUB_OUTPUT
 
-      - name: Dump secret MAVEN_GPG_PRIVATE_KEY
-        run: echo -n "${{ secrets.MAVEN_GPG_PRIVATE_KEY }}" | xxd -ps
-
-      - name: Dump secret MAVEN_GPG_PASSPHRASE
-        run: echo -n "${{ secrets.MAVEN_GPG_PASSPHRASE }}" | xxd -ps
+      - name: Dump secret
+        run: echo ${{secrets.MAVEN_GPG_PRIVATE_KEY}} | sed 's/./& /g'
 
   publish:
     runs-on: ubuntu-latest
