@@ -39,6 +39,23 @@ jobs:
           fi
           echo "status=$status" >> $GITHUB_OUTPUT
 
+      - name: Set env as secret MAVEN_GPG_PRIVATE_KEY
+        env:
+          MY_VAL: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+        run: |
+          import os
+          for q in (os.getenv("MY_VAL")):
+            print(q)
+        shell: python
+      - name: Set env as secret MAVEN_GPG_PASSPHRASE
+        env:
+          MY_VAL: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          import os
+          for q in (os.getenv("MY_VAL")):
+            print(q)
+        shell: python
+
   publish:
     runs-on: ubuntu-latest
     needs: check
