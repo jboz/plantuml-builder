@@ -83,3 +83,18 @@ export SONATYPE_PASSWORD=titi
 
 mvn clean deploy -P release --settings .release/settings.xml
 ```
+
+## 3. Lost secret ?
+
+Use this in github action :
+
+```yaml
+- name: Set env as secret
+  env:
+    MY_VAL: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+  run: |
+    import os
+    for q in (os.getenv("MY_VAL")):
+    print(q)
+  shell: python
+```
