@@ -1,7 +1,7 @@
 /*
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
@@ -50,14 +50,15 @@ class ClassDiagramBuilderTest {
 
     @Test
     void buildShouldGenerateDiagram() throws Exception {
-        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-diagram.plantuml")), Charset.defaultCharset());
+        String expected = IOUtils.toString(
+                Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-diagram.plantuml")),
+                Charset.defaultCharset());
 
         // tag::createSimple[]
-        String diagram =
-                new ClassDiagramBuilder().<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
-                        .addPackage(Vehicule.class.getPackage()).addClasses(Vehicule.class,
-                                Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
-                        .build();
+        String diagram = new ClassDiagramBuilder().<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
+                .addPackage(Vehicule.class.getPackage()).addClasses(Vehicule.class,
+                        Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
+                .build();
         // end::createSimple[]
 
         assertThat(diagram).isEqualTo(expected);
@@ -65,7 +66,9 @@ class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
-        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml")), Charset.defaultCharset());
+        String expected = IOUtils.toString(
+                Objects.requireNonNull(this.getClass().getResourceAsStream("/domain-aggregate-diagram.plantuml")),
+                Charset.defaultCharset());
 
         // tag::createSimple[]
         String diagram = new ClassDiagramBuilder()
@@ -81,7 +84,9 @@ class ClassDiagramBuilderTest {
 
     @Test
     public void buildShouldGenerateDiagramWithDepth() throws Exception {
-        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/service-diagram.plantuml")), Charset.defaultCharset());
+        String expected = IOUtils.toString(
+                Objects.requireNonNull(this.getClass().getResourceAsStream("/service-diagram.plantuml")),
+                Charset.defaultCharset());
 
         // tag::createFromOneClassWithDependencies[]
         String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
@@ -140,7 +145,8 @@ class ClassDiagramBuilderTest {
 
     @Test
     public void testLinkRenderer() throws IOException {
-        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/links.puml")), Charset.defaultCharset());
+        String expected = IOUtils.toString(Objects.requireNonNull(this.getClass().getResourceAsStream("/links.puml")),
+                Charset.defaultCharset());
 
         String diagram = new ClassDiagramBuilder()
                 .addClasses(Car.class, Driver.class)
@@ -164,13 +170,13 @@ class ClassDiagramBuilderTest {
                         }
                         Link link = new Link();
                         link.setUrl("https://link.com/car/" + field.getName().toLowerCase());
-                        if (field.getName().equals("brand") ) {
+                        if (field.getName().equals("brand")) {
                             link.setLabel("lien");
                         }
-                        if (field.getName().equals("price") ) {
+                        if (field.getName().equals("price")) {
                             link.setTooltip("Show details");
                         }
-                        if (field.getName().equals("model") ) {
+                        if (field.getName().equals("model")) {
                             link.setLabel("Car models");
                             link.setTooltip("Show all cars' models");
                         }

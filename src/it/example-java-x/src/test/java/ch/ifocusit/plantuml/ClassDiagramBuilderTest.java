@@ -1,7 +1,7 @@
 /*
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus ITCopyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus ITCopyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
@@ -43,90 +43,91 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
  */
 public class ClassDiagramBuilderTest {
 
-    private static final String CR = PlantUmlBuilder.NEWLINE;
+        private static final String CR = PlantUmlBuilder.NEWLINE;
 
-    @Test
-    public void buildShouldGenerateDiagram() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(this.getClass()
-                        .getResourceAsStream("/domain-diagram.plantuml")),
-                Charset.defaultCharset());
+        @Test
+        public void buildShouldGenerateDiagram() throws Exception {
+                String expected = IOUtils.toString(
+                                Objects.requireNonNull(this.getClass()
+                                                .getResourceAsStream("/domain-diagram.plantuml")),
+                                Charset.defaultCharset());
 
-        String diagram = new ClassDiagramBuilder()
-                .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
-                .addPackage(Vehicule.class.getPackage())
-                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class, Devise.class)
-                .build();
+                String diagram = new ClassDiagramBuilder()
+                                .<ClassDiagramBuilder>excludes(".*\\.ignored", "Machine")
+                                .addPackage(Vehicule.class.getPackage())
+                                .addClasses(Vehicule.class, Car.class, Driver.class, Price.class, Wheel.class,
+                                                Devise.class)
+                                .build();
 
-        assertThat(diagram).isEqualTo(expected);
-    }
+                assertThat(diagram).isEqualTo(expected);
+        }
 
-    @Test
-    public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(this.getClass().getResourceAsStream(
-                        "/domain-aggregate-diagram.plantuml")),
-                Charset.defaultCharset());
+        @Test
+        public void buildShouldGenerateDiagramFromAggregateMaster() throws Exception {
+                String expected = IOUtils.toString(
+                                Objects.requireNonNull(this.getClass().getResourceAsStream(
+                                                "/domain-aggregate-diagram.plantuml")),
+                                Charset.defaultCharset());
 
-        String diagram = new ClassDiagramBuilder()
-                .<ClassDiagramBuilder>excludes(".*\\.ignored").addClasses(Car.class)
-                .withDependencies().build();
+                String diagram = new ClassDiagramBuilder()
+                                .<ClassDiagramBuilder>excludes(".*\\.ignored").addClasses(Car.class)
+                                .withDependencies().build();
 
-        assertThat(diagram).isEqualTo(expected);
-    }
+                assertThat(diagram).isEqualTo(expected);
+        }
 
-    @Test
-    public void buildShouldGenerateDiagramWithDepth() throws Exception {
-        String expected = IOUtils.toString(
-                Objects.requireNonNull(this.getClass()
-                        .getResourceAsStream("/service-diagram.plantuml")),
-                Charset.defaultCharset());
+        @Test
+        public void buildShouldGenerateDiagramWithDepth() throws Exception {
+                String expected = IOUtils.toString(
+                                Objects.requireNonNull(this.getClass()
+                                                .getResourceAsStream("/service-diagram.plantuml")),
+                                Charset.defaultCharset());
 
-        String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
-                .withDependencies().setHeader("Service diagram").build();
+                String diagram = new ClassDiagramBuilder().addClasses(AccessDataService.class)
+                                .withDependencies().setHeader("Service diagram").build();
 
-        assertThat(diagram).isEqualTo(expected);
-    }
+                assertThat(diagram).isEqualTo(expected);
+        }
 
-    @Test
-    public void buildShouldExportOnlyAnnotatedClassAndField() {
-        String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
-                // only annotated
-                .addFieldPredicate(attribute -> attribute.getField()
-                        .isAnnotationPresent(Machine.class))
-                // no method
-                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                .addClasses(Car.class).build();
+        @Test
+        public void buildShouldExportOnlyAnnotatedClassAndField() {
+                String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
+                                // only annotated
+                                .addFieldPredicate(attribute -> attribute.getField()
+                                                .isAnnotationPresent(Machine.class))
+                                // no method
+                                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                                .addClasses(Car.class).build();
 
-        assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"Car\" {" + CR
-                + "  brand : String" + CR + "  model : String" + CR
-                + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
-                + "@enduml");
-    }
+                assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"Car\" {" + CR
+                                + "  brand : String" + CR + "  model : String" + CR
+                                + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
+                                + "@enduml");
+        }
 
-    @Test
-    public void testOverrideNames() {
-        String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
-                // only annotated
-                .addFieldPredicate(attribute -> attribute.getField()
-                        .isAnnotationPresent(Machine.class))
-                // no method
-                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
-                .addClasses(Car.class).withNamesMapper(new NamesMapper() {
-                    @Override
-                    public String getClassName(Class aClass) {
-                        return "domain." + ClassUtils.getSimpleName(aClass);
-                    }
+        @Test
+        public void testOverrideNames() {
+                String diagram = new ClassDiagramBuilder().excludes(".*\\.ignored")
+                                // only annotated
+                                .addFieldPredicate(attribute -> attribute.getField()
+                                                .isAnnotationPresent(Machine.class))
+                                // no method
+                                .<ClassDiagramBuilder>addMethodPredicate(classMethod -> false)
+                                .addClasses(Car.class).withNamesMapper(new NamesMapper() {
+                                        @Override
+                                        public String getClassName(Class aClass) {
+                                                return "domain." + ClassUtils.getSimpleName(aClass);
+                                        }
 
-                    @Override
-                    public String getFieldName(Field field) {
-                        return "attr." + field.getName();
-                    }
-                }).build();
+                                        @Override
+                                        public String getFieldName(Field field) {
+                                                return "attr." + field.getName();
+                                        }
+                                }).build();
 
-        assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"domain.Car\" {" + CR
-                + "  attr.brand : String" + CR + "  attr.model : String" + CR
-                + "  attr.wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
-                + "@enduml");
-    }
+                assertThat(diagram).isEqualTo("@startuml" + CR + CR + "class \"domain.Car\" {" + CR
+                                + "  attr.brand : String" + CR + "  attr.model : String" + CR
+                                + "  attr.wheels : Collection<Wheel>" + CR + "}" + CR + CR + CR
+                                + "@enduml");
+        }
 }

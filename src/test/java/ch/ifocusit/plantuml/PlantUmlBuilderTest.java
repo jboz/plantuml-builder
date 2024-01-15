@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -33,59 +33,59 @@ import ch.ifocusit.plantuml.classdiagram.model.clazz.SimpleClazz;
 
 public class PlantUmlBuilderTest {
 
-    private static final String CR = PlantUmlBuilder.NEWLINE;
+        private static final String CR = PlantUmlBuilder.NEWLINE;
 
-    @Test
-    public void buildInterface() {
-        final String diagram = new PlantUmlBuilder()
-                .addType(SimpleClazz.create("Vehicule", Clazz.Type.INTERFACE))
-                .build();
-        assertThat(diagram).isEqualTo("interface \"Vehicule\"" + CR + CR);
-    }
+        @Test
+        public void buildInterface() {
+                final String diagram = new PlantUmlBuilder()
+                                .addType(SimpleClazz.create("Vehicule", Clazz.Type.INTERFACE))
+                                .build();
+                assertThat(diagram).isEqualTo("interface \"Vehicule\"" + CR + CR);
+        }
 
-    @Test
-    public void buildClassNoField() {
-        final String diagram = new PlantUmlBuilder()
-                .addType(SimpleClazz.create("Wheel", Clazz.Type.CLASS)).build();
-        assertThat(diagram).isEqualTo("class \"Wheel\"" + CR + CR);
-    }
+        @Test
+        public void buildClassNoField() {
+                final String diagram = new PlantUmlBuilder()
+                                .addType(SimpleClazz.create("Wheel", Clazz.Type.CLASS)).build();
+                assertThat(diagram).isEqualTo("class \"Wheel\"" + CR + CR);
+        }
 
-    @Test
-    public void buildClassWithManyFields() {
-        final String diagram = new PlantUmlBuilder()
-                .addType(SimpleClazz.create("Car", Clazz.Type.CLASS,
-                        new SimpleAttribute("brand", "String"),
-                        new SimpleAttribute("wheels", "Collection<Wheel>")))
-                .build();
+        @Test
+        public void buildClassWithManyFields() {
+                final String diagram = new PlantUmlBuilder()
+                                .addType(SimpleClazz.create("Car", Clazz.Type.CLASS,
+                                                new SimpleAttribute("brand", "String"),
+                                                new SimpleAttribute("wheels", "Collection<Wheel>")))
+                                .build();
 
-        assertThat(diagram).isEqualTo("class \"Car\" {" + CR + "  brand : String" + CR
-                + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR);
-    }
+                assertThat(diagram).isEqualTo("class \"Car\" {" + CR + "  brand : String" + CR
+                                + "  wheels : Collection<Wheel>" + CR + "}" + CR + CR);
+        }
 
-    @Test
-    public void buildEnum() {
-        final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Devise",
-                        Clazz.Type.ENUM, new SimpleAttribute("CHF", null),
-                        new SimpleAttribute("EUR", null), new SimpleAttribute("USD", null)))
-                .build();
+        @Test
+        public void buildEnum() {
+                final String diagram = new PlantUmlBuilder().addType(SimpleClazz.create("Devise",
+                                Clazz.Type.ENUM, new SimpleAttribute("CHF", null),
+                                new SimpleAttribute("EUR", null), new SimpleAttribute("USD", null)))
+                                .build();
 
-        assertThat(diagram).isEqualTo("enum \"Devise\" {" + CR + "  CHF" + CR + "  EUR" + CR
-                + "  USD" + CR + "}" + CR + CR);
-    }
+                assertThat(diagram).isEqualTo("enum \"Devise\" {" + CR + "  CHF" + CR + "  EUR" + CR
+                                + "  USD" + CR + "}" + CR + CR);
+        }
 
-    @Test
-    public void buildAssociations() throws Exception {
-        String diagram = new PlantUmlBuilder()
-                .addAssociation("Vehicule", "Car", AssociationType.INHERITANCE)
-                .addAssociation("Car", "Price", AssociationType.DIRECTION, "price")
-                .addAssociation("Car", "Wheel", AssociationType.DIRECTION, "wheels",
-                        Cardinality.NONE, Cardinality.MANY)
-                .addAssociation("Price", "Devise", AssociationType.DIRECTION)
-                .build();
+        @Test
+        public void buildAssociations() throws Exception {
+                String diagram = new PlantUmlBuilder()
+                                .addAssociation("Vehicule", "Car", AssociationType.INHERITANCE)
+                                .addAssociation("Car", "Price", AssociationType.DIRECTION, "price")
+                                .addAssociation("Car", "Wheel", AssociationType.DIRECTION, "wheels",
+                                                Cardinality.NONE, Cardinality.MANY)
+                                .addAssociation("Price", "Devise", AssociationType.DIRECTION)
+                                .build();
 
-        assertThat(diagram).isEqualTo(
-                "\"Vehicule\" <|-- \"Car\"" + CR + "\"Car\" --> \"Price\" : price"
-                        + CR + "\"Car\" --> \"*\" \"Wheel\" : wheels" + CR
-                        + "\"Price\" --> \"Devise\"" + CR);
-    }
+                assertThat(diagram).isEqualTo(
+                                "\"Vehicule\" <|-- \"Car\"" + CR + "\"Car\" --> \"Price\" : price"
+                                                + CR + "\"Car\" --> \"*\" \"Wheel\" : wheels" + CR
+                                                + "\"Price\" --> \"Devise\"" + CR);
+        }
 }

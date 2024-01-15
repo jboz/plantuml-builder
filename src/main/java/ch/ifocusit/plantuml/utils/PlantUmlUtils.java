@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,6 +39,5 @@ public class PlantUmlUtils {
     public static boolean hideMethods(JavaClazz javaClazz, String part) {
         return isHide(javaClazz, part, "methods");
     }
-
 
 }

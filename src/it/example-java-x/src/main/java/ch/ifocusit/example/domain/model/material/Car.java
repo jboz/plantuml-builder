@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -78,8 +78,10 @@ public class Car implements Vehicule {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Car)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Car))
+            return false;
         Car car = (Car) o;
         return Objects.equals(ignored, car.ignored)
                 && Objects.equals(brand, car.brand)
