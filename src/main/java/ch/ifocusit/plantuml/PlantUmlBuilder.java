@@ -1,7 +1,7 @@
 /*
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
@@ -40,7 +40,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  *
  * @author Julien Boz
  */
-@SuppressWarnings({"UnusedReturnValue", "unused"})
+@SuppressWarnings({ "UnusedReturnValue", "unused" })
 public class PlantUmlBuilder {
     private static final String STARTUML = "@startuml";
     private static final String ENDUML = "@enduml";
@@ -239,7 +239,7 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
-                                          String label) {
+            String label) {
         return addAssociation(aName, bName, type, label, Cardinality.NONE, Cardinality.NONE);
     }
 
@@ -250,7 +250,7 @@ public class PlantUmlBuilder {
     }
 
     public PlantUmlBuilder addAssociation(String aName, String bName, AssociationType type,
-                                          String label, Cardinality aCardinality, Cardinality bCardinality) {
+            String label, Cardinality aCardinality, Cardinality bCardinality) {
         Validate.notBlank(aName, "Class a name is mandatory");
         Validate.notBlank(bName, "Class b name is mandatory");
         Validate.notNull(type, "Association type is mandatory");

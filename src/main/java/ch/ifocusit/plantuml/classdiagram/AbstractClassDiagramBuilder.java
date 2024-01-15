@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  *
  * @author Julien Boz
  */
-@SuppressWarnings({"rawtypes", "unchecked", "unused"})
+@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     private Predicate<ClassAttribute> additionalFieldPredicate = a -> !a.getName().equals("ENUM$VALUES");
@@ -54,7 +54,6 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
 
     protected final Set<JavaClazz> clazzes = new TreeSet<>();
     protected final Set<Association> detectedAssociations = new HashSet<>();
-
 
     protected LinkMaker linkMaker = this;
 
@@ -90,6 +89,7 @@ public abstract class AbstractClassDiagramBuilder implements LinkMaker {
         this.startOptions = lines;
         return (B) this;
     }
+
     public <B extends AbstractClassDiagramBuilder> B setEndOptions(String... lines) {
         this.endOptions = lines;
         return (B) this;

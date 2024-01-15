@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -35,7 +35,7 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
 /**
  * @author Julien Boz
  */
-@SuppressWarnings({"unused", "rawtypes"})
+@SuppressWarnings({ "unused", "rawtypes" })
 public class JavaClazz implements Clazz {
 
     private final Class<?> relatedClass;

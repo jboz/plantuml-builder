@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -62,7 +62,7 @@ import ch.ifocusit.plantuml.utils.ClassUtils;
  *
  * @author Julien Boz
  */
-@SuppressWarnings({"rawtypes", "UnstableApiUsage", "unused"})
+@SuppressWarnings({ "rawtypes", "UnstableApiUsage", "unused" })
 public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements NamesMapper {
 
     private final Set<java.lang.Package> packages = new LinkedHashSet<>();
@@ -87,7 +87,8 @@ public class ClassDiagramBuilder extends AbstractClassDiagramBuilder implements 
         Files.write(path, diagram.getBytes());
     }
 
-    public ClassDiagramBuilder() {}
+    public ClassDiagramBuilder() {
+    }
 
     public ClassDiagramBuilder addClasses(Iterable<Class> classes) {
         classes.forEach(this.classesRepository::add);

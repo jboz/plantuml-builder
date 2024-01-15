@@ -1,7 +1,7 @@
 /*-
  * Plantuml builder
  *
- * Copyright (C) 2023 Focus IT
+ * Copyright (C) 2024 Focus IT
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -57,9 +57,11 @@ public class ClassUtils extends org.apache.commons.lang3.ClassUtils {
         int lastDollarSign = className.lastIndexOf(DOLLAR);
         if (lastDollarSign != -1) {
             String innerClassName = className.substring(lastDollarSign + 1);
-            // local and anonymous classes are prefixed with number (1,2,3...), anonymous classes
+            // local and anonymous classes are prefixed with number (1,2,3...), anonymous
+            // classes
             // are
-            // entirely numeric whereas local classes have the user supplied name as a suffix
+            // entirely numeric whereas local classes have the user supplied name as a
+            // suffix
             return CharMatcher.digit().trimLeadingFrom(innerClassName);
         }
         return className;
